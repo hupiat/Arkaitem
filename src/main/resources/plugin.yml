@@ -4,3 +4,11 @@ description: Plugin de création d'items customs avec des effets visuels avancé
 author: dxxxxy
 main: com.arkaitem.Program
 api-version: 1.8.8
+commands:
+  arkaitem:
+    description: Commande principale pour gérer les items custom
+    usage: /arkaitem <give/menu/enable/disable/reload>
+    permission: arkaitem.admin
+permissions:
+  arkaitem.admin:
+    default: op

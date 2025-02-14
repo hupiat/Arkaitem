@@ -29,6 +29,10 @@ public class ManagerCustomItems {
         return itemsConfig;
     }
 
+    public void reloadItemsConfig() {
+        this.itemsConfig.setDefaults(YamlConfiguration.loadConfiguration(itemsFile));
+    }
+
     public void saveItemsConfig() {
         try {
             itemsConfig.save(itemsFile);
