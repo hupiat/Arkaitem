@@ -1,6 +1,6 @@
-name: ExamplePlugin
+name: Arkaitem
 version: 1.0
-description: 1.8.8SpigotTemplate
+description: Plugin de création d'items customs avec des effets visuels avancés
 author: dxxxxy
-main: com.arkaitem.ExamplePlugin
+main: com.arkaitem.Program
 api-version: 1.8.8
