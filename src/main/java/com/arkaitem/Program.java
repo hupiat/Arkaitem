@@ -3,16 +3,29 @@ package com.arkaitem;
 import com.arkaitem.items.CommandArkaItem;
 import com.arkaitem.items.EventsItems;
 import com.arkaitem.items.ManagerCustomItems;
+import com.arkaitem.messages.ManagerMessages;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Program extends JavaPlugin {
-    private ManagerCustomItems itemManager;
+    public static Program INSTANCE;
+
+    public final ManagerCustomItems ITEMS_MANAGER = new ManagerCustomItems(Program.this);
+    public final ManagerMessages MESSAGES_MANAGER = new ManagerMessages(this);
+
+    public Program() {
+        INSTANCE = this;
+    }
 
     @Override
     public void onEnable() {
-        this.itemManager = new ManagerCustomItems(this);
-        getCommand("arkaitem").setExecutor(new CommandArkaItem(itemManager));
-
+        getCommand("arkaitem").setExecutor(new CommandArkaItem(ITEMS_MANAGER));
         getServer().getPluginManager().registerEvents(new EventsItems(), this);
+
+        getLogger().info(MESSAGES_MANAGER.getMessage("plugin_enabled", null));
+    }
+
+    @Override
+    public void onDisable() {
+        getLogger().info(MESSAGES_MANAGER.getMessage("plugin_disabled", null));
     }
 }

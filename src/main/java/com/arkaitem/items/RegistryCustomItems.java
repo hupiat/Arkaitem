@@ -8,6 +8,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,28 +16,23 @@ public class RegistryCustomItems {
 
     public static ItemStack createItem(FileConfiguration config, String id) {
         ConfigurationSection section = config.getConfigurationSection("items." + id);
-        if (section == null) return null;
 
-        Material material = Material.valueOf(section.getString("material", "STONE"));
+        Material material = Material.valueOf(section.getString("material"));
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
 
-        if (meta == null) return item;
-
-        // Nom de l'item
         if (section.contains("name")) {
             meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', section.getString("name")));
         }
 
-        // Lore
+        List<String> lore = new ArrayList<>();
         if (section.contains("lore")) {
-            List<String> lore = section.getStringList("lore").stream()
+            lore = section.getStringList("lore").stream()
                     .map(line -> ChatColor.translateAlternateColorCodes('&', line))
                     .collect(Collectors.toList());
             meta.setLore(lore);
         }
 
-        // Enchantements
         if (section.contains("enchantments")) {
             List<String> enchants = section.getStringList("enchantments");
             for (String enchant : enchants) {
@@ -48,6 +44,14 @@ public class RegistryCustomItems {
                         meta.addEnchant(enchantment, level, true);
                     }
                 }
+            }
+        }
+
+        // Handling custom adds by putting them into lore, hidden way
+        if (section.contains("customAdds")) {
+            List<String> customAdds = section.getStringList("customAdds");
+            for (String customAdd : customAdds) {
+                lore.add(ChatColor.DARK_GRAY + "[HIDDEN] " + customAdd);
             }
         }
 
