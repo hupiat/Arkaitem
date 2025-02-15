@@ -1,5 +1,6 @@
 package com.arkaitem.items;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -9,12 +10,34 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-public class RegistryCustomItems {
+public abstract class RegistryCustomItems {
+    private static final Set<ItemStack> items = new HashSet<>();
 
-    public static ItemStack createItem(FileConfiguration config, String id) {
+    public static Set<ItemStack> getItems() {
+        return items;
+    }
+
+    public static void processAllItems(FileConfiguration config) {
+        ConfigurationSection itemsSection = config.getConfigurationSection("items");
+        if (itemsSection != null) {
+            for (String key : itemsSection.getKeys(false)) {
+                try {
+                    ItemStack item = getItemFromFile(config, key);
+                    items.add(item);
+                } catch (Exception e) {
+                    Bukkit.getLogger().log(Level.SEVERE, "Failed to load items: ", e);
+                }
+            }
+        }
+    }
+
+    public static ItemStack getItemFromFile(FileConfiguration config, String id) {
         ConfigurationSection section = config.getConfigurationSection("items." + id);
 
         Material material = Material.valueOf(section.getString("material"));

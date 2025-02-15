@@ -1,5 +1,12 @@
 package com.arkaitem.items;
 
+import org.bukkit.Bukkit;
+
+import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Level;
+
 public interface ICustomAdds {
     String CANT_DROP = "CANT_DROP";
     String TREE_FELLER = "TREE_FELLER";
@@ -27,4 +34,21 @@ public interface ICustomAdds {
     String EXECUTE_COMMAND_ON_KILL = "EXECUTE_COMMAND_ON_KILL";
     String HIDE_PLAYER_NAME = "HIDE_PLAYER_NAME";
     String MULTIPLICATEUR = "MULTIPLICATEUR";
+
+    default Set<String> getAllCustomAdds() {
+        Set<String> customAdds = new HashSet<>();
+        Field[] fields = ICustomAdds.class.getDeclaredFields();
+
+        for (Field field : fields) {
+            if (field.getType().equals(String.class)) {
+                try {
+                    customAdds.add((String) field.get(null));
+                } catch (IllegalAccessException e) {
+                    Bukkit.getLogger().log(Level.SEVERE, "Unable to access field " + field.getName(), e);
+                }
+            }
+        }
+
+        return customAdds;
+    }
 }

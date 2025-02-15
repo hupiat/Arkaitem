@@ -12,10 +12,8 @@ import java.util.logging.Level;
 public class ManagerCustomItems {
     private final FileConfiguration itemsConfig;
     private final File itemsFile;
-    private final JavaPlugin plugin;
 
     public ManagerCustomItems(JavaPlugin plugin) {
-        this.plugin = plugin;
         this.itemsFile = new File(plugin.getDataFolder(), "items.yml");
 
         if (!itemsFile.exists()) {
@@ -37,7 +35,7 @@ public class ManagerCustomItems {
         try {
             itemsConfig.save(itemsFile);
         } catch (IOException e) {
-            Bukkit.getLogger().log(Level.SEVERE, "Failed to save items.yml", e);
+            Bukkit.getLogger().log(Level.SEVERE, "Failed to save items.yml: ", e);
         }
     }
 }

@@ -13,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -27,6 +28,32 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.*;
 
 public class EventsItems implements Listener, ICustomAdds {
+
+    @EventHandler
+    public void onItemDrop(PlayerDropItemEvent event) {
+        ItemStack item = event.getItemDrop().getItemStack();
+        if (hasCustomAdd(item, CANT_DROP)) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cannot_drop", null));
+        } else {
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("item_name", item.getItemMeta().getDisplayName());
+            event.getPlayer().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_dropped", placeholders));
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        Inventory inventory = event.getInventory();
+        ItemStack item = event.getCurrentItem();
+
+        if (hasCustomAdd(item, NO_DISCARD)) {
+            if (inventory.getName().trim().equalsIgnoreCase("poubelle")) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
     @EventHandler
     public void onItemDamage(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player)) return;
@@ -39,18 +66,6 @@ public class EventsItems implements Listener, ICustomAdds {
         }
     }
 
-    @EventHandler
-    public void onItemDrop(PlayerDropItemEvent event) {
-        ItemStack item = event.getItemDrop().getItemStack();
-        if (hasCustomAdd(item, CANT_DROP) || hasCustomAdd(item, NO_DISCARD)) {
-            event.setCancelled(true);
-            event.getPlayer().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cannot_drop", null));
-        } else {
-            Map<String, String> placeholders = new HashMap<>();
-            placeholders.put("item_name", item.getItemMeta().getDisplayName());
-            event.getPlayer().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_dropped", placeholders));
-        }
-    }
 
     @EventHandler
     public void onEntityDamage(EntityDamageByEntityEvent event) {

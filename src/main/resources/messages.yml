@@ -2,7 +2,7 @@ messages:
   # Messages généraux
   plugin_enabled: "&aLe plugin Arkaitem est maintenant actif."
   plugin_disabled: "&cLe plugin Arkaitem est désactivé."
-  Plugin_reload: "&aVous avez rechargé les configuration du plugin."
+  plugin_reload: "&aVous avez rechargé les configuration du plugin."
   item_received: "&aVous avez reçu l'item {item_name}."
   no_permission: "&cVous n'avez pas la permission d'utiliser cette commande."
   item_not_found: "&cL'item {item_name} n'existe pas."
@@ -36,26 +36,3 @@ messages:
   insufficient_blocks: "&cVous n'avez pas assez de {block_type} pour placer une colonne."
   no_inventory_space: "&cVous n'avez pas assez de place dans votre inventaire."
   durability_exceeded: "&cCet item n'a plus assez de durabilité pour cette action."
-
-
-Placeholders (il y a en surement pleins d'autre)
-
-    {kills} : Nombre de joueurs tués.
-    {damage_done} : Dégâts infligés.
-    {last_player_killed} : Dernier joueur tué.
-    {arrows_shot} : Nombre de flèches tirées.
-    {last_enemy_hit} : Dernier ennemi touché.
-    {blocks_walked} : Nombre de blocs parcourus.
-    {blocks_mined} : Nombre de blocs minés.
-    {armor_hits_taken} : Nombre de coups reçus par une armure.
-    {item_owner} : Propriétaire de l’item.
-    {mobs_killed} : Nombre de monstres tués.
-    {logs_cut} : Nombre de bûches coupées.
-    {item_uses} : Nombre d’utilisations d’un item.
-    {blocks_placed} : Nombre de blocs posés avec un item.
-    {times_equipped} : Nombre de fois où l’item a été équipé.
-    {money_stolen} : Argent total volé avec l’item.
-    {life_drain_total} : Total de points de vie volés avec l’item.
-    {lightning_strikes} : Nombre de fois où un éclair a été généré.
-    {teleportations_used} : Nombre de téléportations effectuées.
-    {farm_bonus_applied} : Bonus de vente total appliqué avec un masque de farm.
