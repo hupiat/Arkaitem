@@ -1,6 +1,7 @@
 package com.arkaitem.items;
 
 import com.arkaitem.Program;
+import com.arkaitem.messages.MessagesUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -34,7 +35,7 @@ public class EventsItems implements Listener, ICustomAdds {
 
         if (hasCustomAdd(item, UNBREAKABLE)) {
             event.setCancelled(true);
-            player.sendMessage(ChatColor.RED + Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_unbreakable", null));
+            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_unbreakable", null));
         }
     }
 
@@ -43,35 +44,11 @@ public class EventsItems implements Listener, ICustomAdds {
         ItemStack item = event.getItemDrop().getItemStack();
         if (hasCustomAdd(item, CANT_DROP) || hasCustomAdd(item, NO_DISCARD)) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(ChatColor.RED + Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cannot_drop", null));
+            event.getPlayer().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cannot_drop", null));
         } else {
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("item_name", item.getItemMeta().getDisplayName());
-            event.getPlayer().sendMessage(ChatColor.RED + Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_dropped", null));
-        }
-    }
-
-    @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent event) {
-        Player player = event.getEntity();
-
-        event.getDrops().removeIf(item -> hasCustomAdd(item, KEEP_ON_DEATH));
-
-        for (ItemStack item : player.getInventory().getContents()) {
-            if (hasCustomAdd(item, KEEP_ON_DEATH)) {
-                player.getInventory().addItem(item);
-            }
-
-            if (hasCustomAdd(item, DEATH_CHANCE_TP)) {
-                String[] values = getCustomAddData(item, DEATH_CHANCE_TP).split(";");
-                int chance = Integer.parseInt(values[0]);
-                if (new Random().nextInt(100) < chance) {
-                    int radius = Integer.parseInt(values[3]);
-                    Location randomLocation = player.getLocation().add(new Random().nextInt(radius * 2) - radius, 0, new Random().nextInt(radius * 2) - radius);
-                    player.teleport(randomLocation);
-                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("teleport_on_death", null));
-                }
-            }
+            event.getPlayer().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_dropped", placeholders));
         }
     }
 
@@ -92,8 +69,12 @@ public class EventsItems implements Listener, ICustomAdds {
                     int stolenAmount = new Random().nextInt(maxAmount - minAmount + 1) + minAmount;
                     Player victim = (Player) event.getEntity();
                     // TODO: Integrate Vault
-                    player.sendMessage(ChatColor.GREEN + "Vous avez volé " + stolenAmount + " pièces à " + victim.getName() + "!");
-                    victim.sendMessage(ChatColor.RED + "Vous avez perdu " + stolenAmount + " pièces à cause d'un vol!");
+                    Map<String, String> placeholders = new HashMap<>();
+                    placeholders.put("money", String.valueOf(stolenAmount));
+                    placeholders.put("target", victim.getName());
+                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_money_stolen", placeholders));
+                    placeholders.remove("target");
+                    victim.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_money_stolen_victim", placeholders));
                 }
             }
         }
@@ -123,6 +104,10 @@ public class EventsItems implements Listener, ICustomAdds {
                 if (new Random().nextInt(100) < chance) {
                     if (event.getEntity() instanceof Player) {
                         ((Player) event.getEntity()).addPotionEffect(new PotionEffect(effectType, duration, level));
+                        Map<String, String> placeholders = new HashMap<>();
+                        placeholders.put("effect", effectType.getName());
+                        placeholders.put("target", event.getEntity().getName());
+                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_effect_applied", placeholders));
                     }
                 }
             }
@@ -136,8 +121,13 @@ public class EventsItems implements Listener, ICustomAdds {
                     String victimCommand = commands[1].replace("{player}", player.getName()).replace("{victim}", event.getEntity().getName());
 
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), killerCommand);
+                    Map<String, String> placeholders = new HashMap<>();
+                    placeholders.put("command", killerCommand);
+                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("kill_command_executed", placeholders));
                     if (event.getEntity() instanceof Player) {
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), victimCommand);
+                        placeholders.put("command", victimCommand);
+                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("victim_command_executed", placeholders));
                     }
                 }
             }
@@ -155,7 +145,7 @@ public class EventsItems implements Listener, ICustomAdds {
 
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("target", targetLocation.toString());
-            player.sendMessage(ChatColor.LIGHT_PURPLE + Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation", null));
+            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation", placeholders));
         }
 
         for (ItemStack inventoryItem : player.getInventory().getArmorContents()) {
@@ -169,17 +159,17 @@ public class EventsItems implements Listener, ICustomAdds {
             double stolenHealth = event.getDamage() * 0.1;
             event.setDamage(event.getDamage() * 1.1);
             player.setHealth(Math.min(player.getMaxHealth(), player.getHealth() + stolenHealth));
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("health", String.valueOf(stolenHealth));
+            placeholders.put("target", event.getEntity().getName());
+            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_health_stolen", placeholders));
         }
 
         if (hasCustomAdd(item, SPAWN_LIGHTNING)) {
             event.getEntity().getWorld().strikeLightning(event.getEntity().getLocation());
-        }
-
-        if (hasCustomAdd(item, SPAWN_HEAD_ON_KILL)) {
-            if (event.getEntity() instanceof Player) {
-                ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-                event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), skull);
-            }
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("target", event.getEntity().getName());
+            MessagesUtils.sendToAll(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_lightning_strike", placeholders));
         }
     }
 
@@ -193,7 +183,9 @@ public class EventsItems implements Listener, ICustomAdds {
             if (values.length == 1) {
                 double multiplier = Double.parseDouble(values[0]);
                 // TODO: Integrate Vault
-                player.sendMessage(ChatColor.GREEN + "Votre bonus de vente est maintenant de x" + multiplier + "!");
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("bonus", String.valueOf(multiplier * 100 - 100));
+                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("farm_mask_bonus", placeholders));
             }
         }
     }
@@ -313,7 +305,10 @@ public class EventsItems implements Listener, ICustomAdds {
                 }
 
                 inventory.clear();
-                player.sendMessage(ChatColor.GREEN + "You sold the chest contents for " + totalValue + " coins.");
+
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("amount", String.valueOf(totalValue));
+                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_sell_chest", placeholders));
                 // addCoinsToPlayer(player, totalValue);
             }
         }
@@ -341,6 +336,44 @@ public class EventsItems implements Listener, ICustomAdds {
                             }
                         }
                     }
+                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_tree_cut", null));
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        Player player = event.getEntity();
+
+        event.getDrops().removeIf(item -> hasCustomAdd(item, KEEP_ON_DEATH));
+
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (hasCustomAdd(item, KEEP_ON_DEATH)) {
+                player.getInventory().addItem(item);
+            }
+
+            if (hasCustomAdd(item, DEATH_CHANCE_TP)) {
+                String[] values = getCustomAddData(item, DEATH_CHANCE_TP).split(";");
+                int chance = Integer.parseInt(values[0]);
+                int radius = Integer.parseInt(values[3]);
+
+                if (new Random().nextInt(100) < chance) {
+                    Location currentLocation = player.getLocation();
+                    Location randomLocation;
+
+                    Block groundBlock, aboveBlock;
+                    do {
+                        int offsetX = new Random().nextInt(radius * 2) - radius;
+                        int offsetZ = new Random().nextInt(radius * 2) - radius;
+                        randomLocation = currentLocation.clone().add(offsetX, 0, offsetZ);
+
+                        groundBlock = randomLocation.getBlock();
+                        aboveBlock = groundBlock.getRelative(BlockFace.UP);
+                    } while (!groundBlock.getType().isSolid() || !aboveBlock.isEmpty());
+
+                    player.teleport(randomLocation);
+                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("teleport_on_death", null));
                 }
             }
         }
@@ -359,11 +392,22 @@ public class EventsItems implements Listener, ICustomAdds {
             int duration = Integer.parseInt(values[2]);
             player.addPotionEffect(new PotionEffect(effect, duration * 20, level));
         }
+        if (hasCustomAdd(item, SPAWN_HEAD_ON_KILL)) {
+            if (event.getEntity() instanceof Player) {
+                ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+                event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), skull);
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("victim", entity.getName());
+                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("head_dropped", placeholders));
+            }
+        }
     }
 
     private boolean hasCustomAdd(ItemStack item, String tag) {
         for (String line : item.getItemMeta().getLore()) {
-            if (ChatColor.stripColor(line).contains(tag)) return true;
+            if (ChatColor.stripColor(line).contains(tag)) {
+                return true;
+            }
         }
         return false;
     }
@@ -371,7 +415,6 @@ public class EventsItems implements Listener, ICustomAdds {
     private String getCustomAddData(ItemStack item, String tag) {
         ItemMeta meta = item.getItemMeta();
         List<String> lore = meta.getLore();
-        if (lore == null) return "";
         for (String line : lore) {
             String strippedLine = ChatColor.stripColor(line);
             if (strippedLine.startsWith(tag + ";")) {

@@ -17,8 +17,10 @@ messages:
   item_tree_cut: "&aVous avez coupé un arbre entier!"
   item_health_stolen: "&cVous avez volé {health} cœur(s) à {target}."
   item_money_stolen: "&aVous avez volé {money} à {target}."
+  item_money_stolen_victim: "&aVous avez perdu {money} pièces à cause d'un vol !"
   item_effect_applied: "&aVous avez appliqué {effect} à {target}."
   item_no_pvp_near: "&cAucun ennemi à portée pour utiliser cet item."
+  item_sell_chest: "&aVous avez vendu le contenu du coffre pour ${amount} pièces."
   
   # Masques de farm
   farm_mask_bonus: "&aVous avez reçu un bonus de {bonus}% sur vos ventes."
