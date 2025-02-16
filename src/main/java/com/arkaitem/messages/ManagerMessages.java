@@ -8,7 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.Map;
 
-public class ManagerMessages extends JavaPlugin {
+public class ManagerMessages {
     private final JavaPlugin plugin;
     private FileConfiguration messagesConfig;
     private File messagesFile;

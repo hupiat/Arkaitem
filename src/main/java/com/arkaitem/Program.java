@@ -12,7 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Program extends JavaPlugin {
     public static Program INSTANCE;
 
-    public final ManagerCustomItems ITEMS_MANAGER = new ManagerCustomItems(this);
+    public final ManagerCustomItems ITEMS_MANAGER = new ManagerCustomItems(Program.this);
     public final ManagerMessages MESSAGES_MANAGER = new ManagerMessages(this);
     public final ManagerRecipes RECIPES_MANAGER = new ManagerRecipes(this);
 

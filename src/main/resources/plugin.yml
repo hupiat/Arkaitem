@@ -1,7 +1,7 @@
 name: Arkaitem
 version: 1.0
 description: Plugin de création d'items customs avec des effets visuels avancés
-author: dxxxxy
+author: Hugo PIAT-LILLO
 main: com.arkaitem.Program
 api-version: 1.8.8
 commands:
