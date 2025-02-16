@@ -1,5 +1,7 @@
 package com.arkaitem.crafts.recipes;
 
+import com.arkaitem.Program;
+import com.arkaitem.items.CustomItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -8,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -39,10 +42,16 @@ public abstract class RegistryRecipes {
     static ShapedRecipe getRecipeFromFile(FileConfiguration config, String id) {
         ConfigurationSection section = config.getConfigurationSection("recipe." + id);
 
-        ItemStack result = new ItemStack(Material.valueOf(section.getString("result.item")));
-        result.setAmount(section.getInt("result.amount", 1));
+        String itemId = section.getString("result.item");
+        Optional<CustomItem> result = Program.INSTANCE.ITEMS_MANAGER.getItemById(itemId);
 
-        ShapedRecipe recipe = new ShapedRecipe(result);
+        if (!result.isPresent()) {
+            throw new IllegalArgumentException("Item for recipe: " + itemId + " not found");
+        }
+
+        result.get().getItem().setAmount(section.getInt("result.amount", 1));
+
+        ShapedRecipe recipe = new ShapedRecipe(result.get().getItem());
         recipe.shape(section.getStringList("shape").toArray(new String[0]));
 
         ConfigurationSection ingredientsSection = section.getConfigurationSection("ingredients");
