@@ -97,1229 +97,1229 @@
 # /!\ Il est nécessaire de mettre FullSetBoost que sur un seul item de l'ensemble.
 
 item:
-  - lame de l'infinie:
+  lame de l'infinie:
     id: "lame_de_l'infinie"
     material: DIAMOND_SWORD
     name: "&6Lame de l'infinie"
     lore:
-      - "&7Une lame qui revient dans votre main"
-      - "&7après votre mort."
+      "&7Une lame qui revient dans votre main"
+      "&7après votre mort."
 
     enchantments:
-      - SHARPNESS:5
-      - FIRE_ASPECT:2
-      - DURABILITY:3
+      SHARPNESS:5
+      FIRE_ASPECT:2
+      DURABILITY:3
 
     customAdds:
-      - "CANT_DROP"
-      - "GIVE_POTION;SPEED;2"
-      - "KEEP_ON_DEATH"
-      - "UNBREAKABLE"
+      "CANT_DROP"
+      "GIVE_POTION;SPEED;2"
+      "KEEP_ON_DEATH"
+      "UNBREAKABLE"
 
-  - casque de l'infinie:
+  casque de l'infinie:
     id: "casque_de_l'infinie"
     material: DIAMOND_HELMET
     name: "&6Casque de l'infinie"
     lore:
-      - "&7Un casque qui ne se perd pas"
+      "&7Un casque qui ne se perd pas"
 
     enchantments:
-      - PROTECTION_ENVIRONMENTAL:4
-      - DURABILITY:3
+      PROTECTION_ENVIRONMENTAL:4
+      DURABILITY:3
 
     customAdds:
-      - "CANT_DROP"
-      - "GIVE_POTION;SPEED;1;1"
-      - "KEEP_ON_DEATH"
+      "CANT_DROP"
+      "GIVE_POTION;SPEED;1;1"
+      "KEEP_ON_DEATH"
 
-  - bottes no falls:
+  bottes no falls:
     id: "bottes_no_falls"
     material: DIAMOND_BOOTS
     name: "&6Bottes No Falls"
     lore:
-      - "&7Des bottes qui vous empêchent de prendre des dégâts de chute"
+      "&7Des bottes qui vous empêchent de prendre des dégâts de chute"
 
     enchantments:
-      - PROTECTION_FALL:4
-      - DURABILITY:3
+      PROTECTION_FALL:4
+      DURABILITY:3
 
     customAdds:
-      - "CANT_DROP"
-      - "NO_FALL_DAMAGE"
-      - "KEEP_ON_DEATH"
+      "CANT_DROP"
+      "NO_FALL_DAMAGE"
+      "KEEP_ON_DEATH"
 
-  - plastron de tp:
+  plastron de tp:
     id: "plastron_de_tp"
     material: DIAMOND_CHESTPLATE
     name: "&6Plastron de TP"
     lore:
-      - "&7Un plastron qui vous téléporte"
-      - "&7lorsque vous mourrez."
+      "&7Un plastron qui vous téléporte"
+      "&7lorsque vous mourrez."
 
     enchantments:
-      - PROTECTION_ENVIRONMENTAL:4
-      - DURABILITY:3
+      PROTECTION_ENVIRONMENTAL:4
+      DURABILITY:3
 
     customAdds:
-      - "CANT_DROP"
-      - "DEATH_CHANCE_TP;50;60;5;10"
-      - "KEEP_ON_DEATH"
+      "CANT_DROP"
+      "DEATH_CHANCE_TP;50;60;5;10"
+      "KEEP_ON_DEATH"
 
-  - lame_voleuse_de_vie:
+  lame_voleuse_de_vie:
     id: "lame_voleuse_de_vie"
     material: DIAMOND_SWORD
     name: "&6Lame Voleuse de Vie"
     lore:
-      - "&7Une lame qui vole la vie"
-      - "&7de vos ennemis."
+      "&7Une lame qui vole la vie"
+      "&7de vos ennemis."
 
     enchantments:
-      - SHARPNESS:5
-      - FIRE_ASPECT:2
-      - DURABILITY:3
+      SHARPNESS:5
+      FIRE_ASPECT:2
+      DURABILITY:3
 
     customAdds:
-      - "STEAL_LIFE;10;10"  # 10% de chance de voler 10% de la vie
+      "STEAL_LIFE;10;10"  # 10% de chance de voler 10% de la vie
 
-  - épée_du_chasseur_de_têtes:
+  épée_du_chasseur_de_têtes:
     id: "épée_du_chasseur_de_têtes"
     material: DIAMOND_SWORD
     name: "&6Épée du Chasseur de Têtes"
     lore:
-      - "&7Cette épée permet de"
-      - "&7récupérer les têtes de vos ennemis."
+      "&7Cette épée permet de"
+      "&7récupérer les têtes de vos ennemis."
 
     enchantments:
-      - SHARPNESS:5
-      - DURABILITY:3
+      SHARPNESS:5
+      DURABILITY:3
 
     customAdds:
-      - "SPAWN_HEAD_ON_KILL"  # La tête du joueur tué est dropée
+      "SPAWN_HEAD_ON_KILL"  # La tête du joueur tué est dropée
 
-  - lame_des_ténèbres:
+  lame_des_ténèbres:
     id: "lame_des_ténèbres"
     material: DIAMOND_SWORD
     name: "&6Lame des Ténèbres"
     lore:
-      - "&7Une lame imprégnée de ténèbres"
-      - "&7qui empoisonne vos ennemis."
+      "&7Une lame imprégnée de ténèbres"
+      "&7qui empoisonne vos ennemis."
 
     enchantments:
-      - SHARPNESS:5
-      - DURABILITY:3
+      SHARPNESS:5
+      DURABILITY:3
 
     customAdds:
-      - "HIT_EFFECT;POISON;1;5;20"  # 20% de chance d'infliger Poison niveau 1 pendant 5 secondes
+      "HIT_EFFECT;POISON;1;5;20"  # 20% de chance d'infliger Poison niveau 1 pendant 5 secondes
 
-  - épée_du_sorcier:
+  épée_du_sorcier:
     id: "épée_du_sorcier"
     material: DIAMOND_SWORD
     name: "&6Épée du Sorcier"
     lore:
-      - "&7Une épée magique qui"
-      - "&7octroie des pouvoirs à son porteur."
+      "&7Une épée magique qui"
+      "&7octroie des pouvoirs à son porteur."
 
     enchantments:
-      - SHARPNESS:5
-      - DURABILITY:3
+      SHARPNESS:5
+      DURABILITY:3
 
     customAdds:
-      - "SELF_EFFECT;HEALTH_BOOST;2;10;15"  # 15% de chance d'obtenir un boost de santé niveau 2 pendant 10 secondes
+      "SELF_EFFECT;HEALTH_BOOST;2;10;15"  # 15% de chance d'obtenir un boost de santé niveau 2 pendant 10 secondes
 
-  - dague de vole:
+  dague de vole:
     id: "dague_de_vole"
     material: DIAMOND_SWORD
     name: "&6Dague de Vole"
     lore:
-      - "&7Une dague qui vole l'argent"
-      - "&7de vos ennemis."
+      "&7Une dague qui vole l'argent"
+      "&7de vos ennemis."
 
     enchantments:
-      - SHARPNESS:5
-      - DURABILITY:3
+      SHARPNESS:5
+      DURABILITY:3
 
     customAdds:
-      - "STEAL_MONEY;10;8000;10000"  # 10% de l'argent du joueur tapé est volé (entre 8000 et 10000)
+      "STEAL_MONEY;10;8000;10000"  # 10% de l'argent du joueur tapé est volé (entre 8000 et 10000)
 
-  - colonne obsi:
+  colonne obsi:
     id: "colonne_obsi"
     material: OBSIDIAN
     name: "&cBatis d'obsi"
     lore:
-      - "&6Crées une colonne d'obsi"
-      - "&6Jusqu'a la couche 256"
+      "&6Crées une colonne d'obsi"
+      "&6Jusqu'a la couche 256"
 
     enchantments:
-      - UNBREAKING:1
+      UNBREAKING:1
 
     customAdds:
-      - "BLOCK_COLUMN;OBSIDIAN;256"
+      "BLOCK_COLUMN;OBSIDIAN;256"
 
     consommables:
-      - "CONSUMABLE;5"
+      "CONSUMABLE;5"
 
-  - colonne sable:
+  colonne sable:
     id: "colonne_sand"
     material: SAND
     name: "&cBatis sable"
     lore:
-      - "&6Crées une colonne de sable"
-      - "&6Jusqu'a la couche 256"
+      "&6Crées une colonne de sable"
+      "&6Jusqu'a la couche 256"
 
     enchantments:
-      - UNBREAKING:1
+      UNBREAKING:1
 
     customAdds:
-      - "BLOCK_COLUMN;SAND;256"
+      "BLOCK_COLUMN;SAND;256"
 
     consommables:
-      - "CONSUMABLE;5"
+      "CONSUMABLE;5"
 
-  - casque invulnérable:
+  casque invulnérable:
     id: "casque_invulnerable"
-    material: GOLDEN_HELMET
+    material: GOLD_HELMET
     name: "casque invisible"
     lore:
-      - "&6Met ce casque pour être"
-      - "&6invisible au /near"
+      "&6Met ce casque pour être"
+      "&6invisible au /near"
 
     customAdds:
-      - "HIDE_PLAYER_NAME"
-      - "killer_command;/heal"
-      - "KILL_GIVE_POTION;SPEED;5;10"
+      "HIDE_PLAYER_NAME"
+      "killer_command;/heal"
+      "KILL_GIVE_POTION;SPEED;5;10"
       
-  - Espadon :
+  Espadon :
     id: "espadon"
     material: DIAMOND_SWORD
     name: "§4§l⚒ §c§lE§4§ls§c§lp§4§la§c§ld§4§lo§c§ln §4§lR§c§lo§4§lu§c§lg§4§le §c§l⚒"
     lore:
-      - "§7§l§m-------------------------"
-      - "§4§lRareté §f§l» §c§l✯✯✯✯✯ §f§l« §7§l#§4§lASSASSIN"
-      - ''
-      - '§3✸&k!! §bCollection &4&lRouge &3&k!!'
-      - ''
-      - "§f●§7 Cette arme de §chaut dignitaire §7est transmise"
-      - "§7de §cgénération §7en §cgénération§7, elle te permet"
-      - "§7de récupérer toute ta §cvie §7après chaque §ccrime§7."
-      - ''
-      - "§f●§7 Permet d'avoir un item qui reviendra dans"
-      - "§7ton inventaire lors de ta mort."
-      - ''
-      - '§f✸§c Propriétaire: §4{item_owner}'
-      - '§f✸§c Nombre de kills: §4{kills}'
-      - ''
-      - '§2✔ §dInfinie'
-      - '§2✔ §dIncassable'
-      - "§7§l§m-------------------------"
+      "§7§l§m-------------------------"
+      "§4§lRareté §f§l» §c§l✯✯✯✯✯ §f§l« §7§l#§4§lASSASSIN"
+      ''
+      '§3✸&k!! §bCollection &4&lRouge &3&k!!'
+      ''
+      "§f●§7 Cette arme de §chaut dignitaire §7est transmise"
+      "§7de §cgénération §7en §cgénération§7, elle te permet"
+      "§7de récupérer toute ta §cvie §7après chaque §ccrime§7."
+      ''
+      "§f●§7 Permet d'avoir un item qui reviendra dans"
+      "§7ton inventaire lors de ta mort."
+      ''
+      '§f✸§c Propriétaire: §4{item_owner}'
+      '§f✸§c Nombre de kills: §4{kills}'
+      ''
+      '§2✔ §dInfinie'
+      '§2✔ §dIncassable'
+      "§7§l§m-------------------------"
     enchantments:
-      - SHARPNESS:5
-      - FIRE_ASPECT:2
-      - DURABILITY:3
+      SHARPNESS:5
+      FIRE_ASPECT:2
+      DURABILITY:3
 
     customAdds:
-      - "CANT_DROP"
-      - "NO_DISCARD"
-      - "KEEP_ON_DEATH"
-      - "UNBREAKABLE"
+      "CANT_DROP"
+      "NO_DISCARD"
+      "KEEP_ON_DEATH"
+      "UNBREAKABLE"
 
-  - casque de l'infinie:
+  casque de l'infinie:
     id: "casque_de_l'infinie"
     material: DIAMOND_HELMET
     name: "&6Casque de l'infinie"
     lore:
-      - "&7Un casque qui ne se perd pas"
+      "&7Un casque qui ne se perd pas"
 
-  - Cupidonbow :
+  Cupidonbow :
     id: "Cupidonbow"
     material: BOW
     name: "&5&l☚ &d&lC&5&lu&d&lp&5&li&d&ld&5&lo&d&ln &5&l☛"
     lore:
-      - "§7§l§m-------------------------"
-      - "§5§lRareté §f§l» §d§l✯✯✯✯&f&l✯ &f§l«"
-      - ''
-      - "§f●§7 L'ancienne §dlégende §7raconte que votre"
-      - "§7 cible tombera §damoureuse §7de vous."
-      - ''
-      - '§f✸§d Propriétaire: §5{item_owner}'
-      - '§f✸&d Nombres d''âmes soeurs touchés : §4{arrows_shot}'
-      - '§f✸&d Derniers âmes soeurs touchés : §4{last_enemy_hit}'
-      - ''
-      - '§d✔ §6Infinie'
-      - '§d✔ §6Incassable'
-      - "§7§l§m-------------------------"
+      "§7§l§m-------------------------"
+      "§5§lRareté §f§l» §d§l✯✯✯✯&f&l✯ &f§l«"
+      ''
+      "§f●§7 L'ancienne §dlégende §7raconte que votre"
+      "§7 cible tombera §damoureuse §7de vous."
+      ''
+      '§f✸§d Propriétaire: §5{item_owner}'
+      '§f✸&d Nombres d''âmes soeurs touchés : §4{arrows_shot}'
+      '§f✸&d Derniers âmes soeurs touchés : §4{last_enemy_hit}'
+      ''
+      '§d✔ §6Infinie'
+      '§d✔ §6Incassable'
+      "§7§l§m-------------------------"
     enchantments:
-      - ARROW_DAMAGE:5
-      - DURABILITY:3
-      - ARROW_INFINITE:1
-      - ARROW_KNOCKBACK:2
+      ARROW_DAMAGE:5
+      DURABILITY:3
+      ARROW_INFINITE:1
+      ARROW_KNOCKBACK:2
 
     customAdds:
-      - "CANT_DROP"
-      - "NO_DISCARD"
-      - "KEEP_ON_DEATH"
-      - "UNBREAKABLE"
+      "CANT_DROP"
+      "NO_DISCARD"
+      "KEEP_ON_DEATH"
+      "UNBREAKABLE"
 
-  - Sword_vie :
+  Sword_vie :
     id: "lame_de_vie"
     material: DIAMOND_SWORD
     name: '&a§l❤§a§l §d§lL§d§la§a§lm&d&le&a&l §d§ld§a§le§d§l §d§lv§a§li§d§le §a§l❤§a§l'
     lore:
-      - '&a&l&m↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
-      - '&a&lR&d&la&a&lr&d&le&a&lt&d&lé &f&l» &a&l❤&d&l❤&a&l❤&d&l❤&a&l❤'
-      - ''
-      - "&f●&7 Avec cette épée, tu as &a5% de chance"
-      - "&cde voler 1❤ &dà ton ennemi."
-      - ''
-      - '§f✸§d Propriétaire: §5{item_owner}'
-      - '§f✸&d Nombres d''âmes soeurs touchés : §4{last_kill}'
-      - ''
-      - '§d✔ §6Infinie'
-      - '§d✔ §6Incassable'
-      - '&a&l&m↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
+      '&a&l&m↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
+      '&a&lR&d&la&a&lr&d&le&a&lt&d&lé &f&l» &a&l❤&d&l❤&a&l❤&d&l❤&a&l❤'
+      ''
+      "&f●&7 Avec cette épée, tu as &a5% de chance"
+      "&cde voler 1❤ &dà ton ennemi."
+      ''
+      '§f✸§d Propriétaire: §5{item_owner}'
+      '§f✸&d Nombres d''âmes soeurs touchés : §4{last_kill}'
+      ''
+      '§d✔ §6Infinie'
+      '§d✔ §6Incassable'
+      '&a&l&m↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
     enchantments:
-      - SHARPNESS:5
-      - FIRE_ASPECT:2
-      - DURABILITY:3
+      SHARPNESS:5
+      FIRE_ASPECT:2
+      DURABILITY:3
 
     customAdds:
-      - "CANT_DROP"
-      - "NO_DISCARD"
-      - "KEEP_ON_DEATH"
-      - "UNBREAKABLE"
-      - "STEAL_LIFE;10;10"
+      "CANT_DROP"
+      "NO_DISCARD"
+      "KEEP_ON_DEATH"
+      "UNBREAKABLE"
+      "STEAL_LIFE;10;10"
 
-  - Sword_foudre :
+  Sword_foudre :
     id: "lame_de_foudre"
     material: DIAMOND_SWORD
     name: "&e&l✴ &e&lLame électrique &e&l✴"
     lore:
-      - "&7&m-------------------------"
-      - "&6&lRareté &f» &e&l✯✯✯✯✯ &f« &e&l#&6&lMYSTIQUE"
-      - ''
-      - "&f●&7 &7Cette épée &6légendaire &7à était"
-      - "&7forgeée dans &eles éclairs &7des cieux"
-      - ''
-      - "&f●&7 &7Chaque coup porte &eun éclair"
-      - "&7de puissance, &6électrocutant &7les"
-      - "&7ennemis"
-      - ''
-      - '§f✸§d Propriétaire: §5{item_owner}'
-      - '§f✸&d Nombres de joueurs éléctrocuté : §4{electricado}'
-      - ''
-      - '§d✔ §6Infinie'
-      - '§d✔ §6Incassable'
-      - "&7&m-------------------------"
+      "&7&m-------------------------"
+      "&6&lRareté &f» &e&l✯✯✯✯✯ &f« &e&l#&6&lMYSTIQUE"
+      ''
+      "&f●&7 &7Cette épée &6légendaire &7à était"
+      "&7forgeée dans &eles éclairs &7des cieux"
+      ''
+      "&f●&7 &7Chaque coup porte &eun éclair"
+      "&7de puissance, &6électrocutant &7les"
+      "&7ennemis"
+      ''
+      '§f✸§d Propriétaire: §5{item_owner}'
+      '§f✸&d Nombres de joueurs éléctrocuté : §4{electricado}'
+      ''
+      '§d✔ §6Infinie'
+      '§d✔ §6Incassable'
+      "&7&m-------------------------"
     enchantments:
-      - SHARPNESS:5
-      - FIRE_ASPECT:2
-      - DURABILITY:3
+      SHARPNESS:5
+      FIRE_ASPECT:2
+      DURABILITY:3
 
     customAdds:
-      - "CANT_DROP"
-      - "NO_DISCARD"
-      - "KEEP_ON_DEATH"
-      - "UNBREAKABLE"
-      - "SPAWN_LIGHTNING;7"
+      "CANT_DROP"
+      "NO_DISCARD"
+      "KEEP_ON_DEATH"
+      "UNBREAKABLE"
+      "SPAWN_LIGHTNING;7"
 
-  - hache_power :
+  hache_power :
     id: "hache_de_power"
     material: DIAMOND_AXE
     name: '♛ §d§lM§5§la§d§lc§5§lh§d§le§5§lt§d§lt§5§le §d§l♛'
     lore:
-      - "&7&m-------------------------"
-      - '§5§lRareté §f§l» §d§l✯✯✯✯&f&l✯ §f§l«'
-      - ''
-      - '§f●§7 Pour t''aider à §dpiller §7des bases, cette'
-      - '§7épée retire §d7 §7de §dpower §7au joueur tué.'
-      - ''
-      - '§f✸§d Propriétaire: §5{item_owner}'
-      - '§f✸&d Nombres de power retirés : §4{power_retiré}'
-      - ''
-      - '§d✔ §6Se &eperds &6à votre mort'
-      - '§d✔ §6Incassable'
-      - "&7&m-------------------------"
+      "&7&m-------------------------"
+      '§5§lRareté §f§l» §d§l✯✯✯✯&f&l✯ §f§l«'
+      ''
+      '§f●§7 Pour t''aider à §dpiller §7des bases, cette'
+      '§7épée retire §d7 §7de §dpower §7au joueur tué.'
+      ''
+      '§f✸§d Propriétaire: §5{item_owner}'
+      '§f✸&d Nombres de power retirés : §4{power_retiré}'
+      ''
+      '§d✔ §6Se &eperds &6à votre mort'
+      '§d✔ §6Incassable'
+      "&7&m-------------------------"
     enchantments:
-      - SHARPNESS:5
-      - FIRE_ASPECT:2
-      - DURABILITY:3
+      SHARPNESS:5
+      FIRE_ASPECT:2
+      DURABILITY:3
 
     customAdds:
-      - "CANT_DROP"
-      - "NO_DISCARD"
-      - "UNBREAKABLE"
+      "CANT_DROP"
+      "NO_DISCARD"
+      "UNBREAKABLE"
 
-  - hache_tete :
+  hache_tete :
     id: "hache_tete"
     material: DIAMOND_AXE
     name: '§4§lD§c§lé§4§lc§c§la§c§l§4§lp§c§li§4§lt§c§le§4§lu§c§ls§4§le'
     lore:
-      - "&7&m-------------------------"
-      - '§c§lRareté §f§l» §c§l✯✯✯✯✯ §f§l« §4§lUltime '
-      - ''
-      - '§f●§7 Devient le pire §4cauchemar de tes ennemis'
-      - '§7Récupère la §4tête §7de tes §4adversaires §7a leur mort'
-      - ''
-      - '§f✸§4 Propriétaire: §5{item_owner}'
-      - '§f✸&4 Nombres de têtes tombés : §4{kills}'
-      - ''
-      - '§d✔ §6Infinie'
-      - '§d✔ §6Incassable'
-      - "&7&m-------------------------"
+      "&7&m-------------------------"
+      '§c§lRareté §f§l» §c§l✯✯✯✯✯ §f§l« §4§lUltime '
+      ''
+      '§f●§7 Devient le pire §4cauchemar de tes ennemis'
+      '§7Récupère la §4tête §7de tes §4adversaires §7a leur mort'
+      ''
+      '§f✸§4 Propriétaire: §5{item_owner}'
+      '§f✸&4 Nombres de têtes tombés : §4{kills}'
+      ''
+      '§d✔ §6Infinie'
+      '§d✔ §6Incassable'
+      "&7&m-------------------------"
     enchantments:
-      - SHARPNESS:6
-      - FIRE_ASPECT:2
-      - DURABILITY:4
+      SHARPNESS:6
+      FIRE_ASPECT:2
+      DURABILITY:4
 
     customAdds:
-      - "CANT_DROP"
-      - "NO_DISCARD"
-      - "KEEP_ON_DEATH"
-      - "UNBREAKABLE"
-      - "SPAWN_HEAD_ON_KILL"
+      "CANT_DROP"
+      "NO_DISCARD"
+      "KEEP_ON_DEATH"
+      "UNBREAKABLE"
+      "SPAWN_HEAD_ON_KILL"
 
-  - sword_eternel :
+  sword_eternel :
     id: "sword_eternel"
     material: DIAMOND_SWORD
     name: '&7&l☠ &8L&7&la&8m&7e &7E&8t&7e&8r&7n&8e&7l&8l&8e ☠'
     lore:
-      - '&7&l↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
-      - '&7&lR&8&la&7&lr&8&le&7&lt&8&lé &f&l» &7&l✯&8&l✯&7&l✯&8&l✯&7&l✯'
-      - ''
-      - "&f●&7 Cette lame possède un pouvoir"
-      - "&7maléfique, &ldrainant &7la vie de"
-      - "&7ses &lvictimes &7à chaque coup."
-      - ''
-      - '§8✸&7 Propriétaire : §5{item_owner}'
-      - '§8✸&7 Dernier joueur tué : §4{last_kill}'
-      - ''
-      - '§7✔ §8Infinie'
-      - '§7✔ §8Incassable'
-      - '&7&l↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
+      '&7&l↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
+      '&7&lR&8&la&7&lr&8&le&7&lt&8&lé &f&l» &7&l✯&8&l✯&7&l✯&8&l✯&7&l✯'
+      ''
+      "&f●&7 Cette lame possède un pouvoir"
+      "&7maléfique, &ldrainant &7la vie de"
+      "&7ses &lvictimes &7à chaque coup."
+      ''
+      '§8✸&7 Propriétaire : §5{item_owner}'
+      '§8✸&7 Dernier joueur tué : §4{last_kill}'
+      ''
+      '§7✔ §8Infinie'
+      '§7✔ §8Incassable'
+      '&7&l↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
     enchantments:
-      - SHARPNESS:5
-      - FIRE_ASPECT:2
-      - DURABILITY:3
+      SHARPNESS:5
+      FIRE_ASPECT:2
+      DURABILITY:3
 
     customAdds:
-      - "CANT_DROP"
-      - "NO_DISCARD"
-      - "KEEP_ON_DEATH"
-      - "UNBREAKABLE"
-      - "STEAL_LIFE;10;5"
+      "CANT_DROP"
+      "NO_DISCARD"
+      "KEEP_ON_DEATH"
+      "UNBREAKABLE"
+      "STEAL_LIFE;10;5"
 
-  - pioche_eternel :
+  pioche_eternel :
     id: "pioche_eternel"
     material: DIAMOND_PICKAXE
     name: '&8&l☠ &7P&8i&7o&8c&7h&8e &8M&7a&8u&7d&8i&7t&8e ☠'
     lore:
-      - '&7&l↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
-      - '&7&lR&8&la&7&lr&8&le&7&lt&8&lé &f&l» &7&l✯&8&l✯&7&l✯&8&l✯&7&l✯'
-      - ''
-      - "&f●&7 Cette pioche est imprégnée"
-      - "&7de magie noire, permettant"
-      - "&7de miner les ténèbres elles-mêmes."
-      - ''
-      - '§8✸&7 Propriétaire : §5{item_owner}'
-      - '§8✸&7 Blocks minés : §4{blocks_mined}'
-      - ''
-      - '§7✔ §8Infinie'
-      - '§7✔ §8Cassable'
-      - '&7&l↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
+      '&7&l↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
+      '&7&lR&8&la&7&lr&8&le&7&lt&8&lé &f&l» &7&l✯&8&l✯&7&l✯&8&l✯&7&l✯'
+      ''
+      "&f●&7 Cette pioche est imprégnée"
+      "&7de magie noire, permettant"
+      "&7de miner les ténèbres elles-mêmes."
+      ''
+      '§8✸&7 Propriétaire : §5{item_owner}'
+      '§8✸&7 Blocks minés : §4{blocks_mined}'
+      ''
+      '§7✔ §8Infinie'
+      '§7✔ §8Cassable'
+      '&7&l↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
     enchantments:
-      - DIG_SPEED:6
-      - LUCK:3
-      - DURABILITY:8
+      DIG_SPEED:6
+      LUCK:3
+      DURABILITY:8
 
     customAdds:
-      - "CANT_DROP"
-      - "NO_DISCARD"
-      - "KEEP_ON_DEATH"
+      "CANT_DROP"
+      "NO_DISCARD"
+      "KEEP_ON_DEATH"
 
-  - pioche_inepuisable :
+  pioche_inepuisable :
     id: "pioche_inepuisable"
     material: DIAMOND_PICKAXE
     name: '&8&l☠ &7P&8i&7o&8c&7h&8e &cInépuisable ☠'
     lore:
-      - '&7&l↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
-      - '&7&lR&8&la&7&lr&8&le&7&lt&8&lé &f&l» &7&l✯&8&l✯&7&l✯&8&l✯&7&l✯'
-      - ''
-      - "&f●&7 Cette pioche ne s'épuise pas"
-      - "&f●&7miné autant de blocs que vous pouvez"
-      - "&f●&7elle sera toujours aussi efficace."
-      - ''
-      - '§8✸&7 Propriétaire : §5{item_owner}'
-      - '§8✸&7 Blocks minés : §4{blocks_mined}'
-      - ''
-      - '§7✔ §8Infinie'
-      - '§7✔ §8Cassable'
-      - '&7&l↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
+      '&7&l↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
+      '&7&lR&8&la&7&lr&8&le&7&lt&8&lé &f&l» &7&l✯&8&l✯&7&l✯&8&l✯&7&l✯'
+      ''
+      "&f●&7 Cette pioche ne s'épuise pas"
+      "&f●&7miné autant de blocs que vous pouvez"
+      "&f●&7elle sera toujours aussi efficace."
+      ''
+      '§8✸&7 Propriétaire : §5{item_owner}'
+      '§8✸&7 Blocks minés : §4{blocks_mined}'
+      ''
+      '§7✔ §8Infinie'
+      '§7✔ §8Cassable'
+      '&7&l↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
     enchantments:
-      - DIG_SPEED:8
-      - LUCK:3
-      - DURABILITY:8
+      DIG_SPEED:8
+      LUCK:3
+      DURABILITY:8
 
     customAdds:
-      - "CANT_DROP"
-      - "NO_DISCARD"
-      - "KEEP_ON_DEATH"
-      - "UNBREAKABLE"
+      "CANT_DROP"
+      "NO_DISCARD"
+      "KEEP_ON_DEATH"
+      "UNBREAKABLE"
 
-  - hache_magique :
+  hache_magique :
     id: "hache_magique"
     material: DIAMOND_AXE
     name: '&6&l♠ &e&lH&6&la&e&lc&6&lh&e&le &e&lM&6&la&e&lg&6&li&e&lq&6&lu&e&le &6&l♠'
     lore:
-      - '&8&l&m═════════════════════════════════'
-      - '&6&lR&e&la&6&lr&e&le&6&lt&e&lé&6&l &7» &6&l♠&6&l♠&6&l♠&7&l♠&7&l♠'
-      - ''
-      - "&e●&7 Imprégnée d'énergie obscure,"
-      - "&7cette hache tranche à travers"
-      - '&7les ténèbres avec une facilité déconcertante.'
-      - ''
-      - '&8✸&6 Propriétaire: §5{item_owner}'
-      - '§8✸&6 Blocks Miné : §8{blocks_mined}'
-      - ''
-      - '&7✔ &6Se &eperds &6à votre mort'
-      - '§7✔ §6Incassable'
-      - '&8&l&m═════════════════════════════════'
+      '&8&l&m═════════════════════════════════'
+      '&6&lR&e&la&6&lr&e&le&6&lt&e&lé&6&l &7» &6&l♠&6&l♠&6&l♠&7&l♠&7&l♠'
+      ''
+      "&e●&7 Imprégnée d'énergie obscure,"
+      "&7cette hache tranche à travers"
+      '&7les ténèbres avec une facilité déconcertante.'
+      ''
+      '&8✸&6 Propriétaire: §5{item_owner}'
+      '§8✸&6 Blocks Miné : §8{blocks_mined}'
+      ''
+      '&7✔ &6Se &eperds &6à votre mort'
+      '§7✔ §6Incassable'
+      '&8&l&m═════════════════════════════════'
     enchantments:
-      - DIG_SPEED:8
-      - DURABILITY:8
+      DIG_SPEED:8
+      DURABILITY:8
 
     customAdds:
-      - "NO_DISCARD"
-      - "UNBREAKABLE"
+      "NO_DISCARD"
+      "UNBREAKABLE"
 
-  - casque_farm :
+  casque_farm :
     id: "casque_farm"
     material: LEATHER_HELMET
     name: '&e&l♠ &6&lC&e&lh&6&la&e&lp&6&le&e&la&6&lu &e&ld&6&le &e&lC&6&lo&e&lw&6&lB&e&lo&6&ly &e&l♠'
     lore:
-      - '&c&l&m↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
-      - '&6&lR&e&la&6&lr&e&le&6&lt&e&lé &f&l» &6&l✯&e&l✯&6&l✯&e&l✯&6&l✯'
-      - ''
-      - '&f●&7 Ce &echapeau &7proviendrait &7directement'
-      - '&7de l''un des anciens &eCowBoy &7du serveur.'
-      - ''
-      - '&f●&7 Cet item vous procure un &eeffet &7de &cforce &7lorsqu''il est utilisé'
-      - '&f●&7 Le full set vous procure un &eeffet &7d'' &cinvisibilité &7(même dans le near)'
-      - '&f●&7 et de &fNoFall &7!'
-      - ''
-      - '&8✸&6 Propriétaire: §5{item_owner}'
-      - ''
-      - '&7✔ &6Se &eperds &6à votre mort'
-      - '§7✔ §6Incassable'
-      - '&8&l&m═════════════════════════════════'
+      '&c&l&m↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
+      '&6&lR&e&la&6&lr&e&le&6&lt&e&lé &f&l» &6&l✯&e&l✯&6&l✯&e&l✯&6&l✯'
+      ''
+      '&f●&7 Ce &echapeau &7proviendrait &7directement'
+      '&7de l''un des anciens &eCowBoy &7du serveur.'
+      ''
+      '&f●&7 Cet item vous procure un &eeffet &7de &cforce &7lorsqu''il est utilisé'
+      '&f●&7 Le full set vous procure un &eeffet &7d'' &cinvisibilité &7(même dans le near)'
+      '&f●&7 et de &fNoFall &7!'
+      ''
+      '&8✸&6 Propriétaire: §5{item_owner}'
+      ''
+      '&7✔ &6Se &eperds &6à votre mort'
+      '§7✔ §6Incassable'
+      '&8&l&m═════════════════════════════════'
     enchantments:
-      - PROTECTION_ENVIRONMENTAL:4
-      - DURABILITY:4
+      PROTECTION_ENVIRONMENTAL:4
+      DURABILITY:4
 
     customAdds:
-      - "UNBREAKABLE"
-      - "GIVE_POTION;STRENGHT;0;999"
+      "UNBREAKABLE"
+      "GIVE_POTION;STRENGHT;0;999"
 
     fullSetRequirement:
-      - "plastron_farm"
-      - "jambiere_farm"
-      - "botte_farm"
+      "plastron_farm"
+      "jambiere_farm"
+      "botte_farm"
     
     fullSetCustomAdds:
-      - "NO_FALL_DAMAGE"
-      - "HIDE_PLAYER_NAME"
-      - "GIVE_POTION;INVISIBILITY;1;999"
+      "NO_FALL_DAMAGE"
+      "HIDE_PLAYER_NAME"
+      "GIVE_POTION;INVISIBILITY;1;999"
       
-  - plastron_farm :
+  plastron_farm :
     id: "plastron_farm"
     material: LEATHER_CHESTPLATE
     name: '&e&l♠ &6&lC&e&lh&6&le&e&lm&6&li&e&ls&6&le &e&ld&6&le &e&lC&6&lo&e&lw&6&lB&e&lo&6&ly &e&l♠'
     lore:
-      - '&c&l&m↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
-      - '&6&lR&e&la&6&lr&e&le&6&lt&e&lé &f&l» &6&l✯&e&l✯&6&l✯&e&l✯&6&l✯'
-      - ''
-      - '&f●&7 Ce &epantalon &7proviendrait &7directement'
-      - '&7de l''un des anciens &eCowBoy &7du serveur.'
-      - ''
-      - '&f●&7 Cet item vous procure un &eeffet &7de &6résistance au feu &7lorsqu''il est utilisé'
-      - '&f●&7 Le full set vous procure un &eeffet &7d'' &cinvisibilité (même dans le near)'
-      - '&f●&7 et de &fNoFall &7!'
-      - ''
-      - '&8✸&6 Propriétaire: §5{item_owner}'
-      - ''
-      - '&7✔ &6Se &eperds &6à votre mort'
-      - '§7✔ §6Incassable'
-      - '&8&l&m═════════════════════════════════'
+      '&c&l&m↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
+      '&6&lR&e&la&6&lr&e&le&6&lt&e&lé &f&l» &6&l✯&e&l✯&6&l✯&e&l✯&6&l✯'
+      ''
+      '&f●&7 Ce &epantalon &7proviendrait &7directement'
+      '&7de l''un des anciens &eCowBoy &7du serveur.'
+      ''
+      '&f●&7 Cet item vous procure un &eeffet &7de &6résistance au feu &7lorsqu''il est utilisé'
+      '&f●&7 Le full set vous procure un &eeffet &7d'' &cinvisibilité (même dans le near)'
+      '&f●&7 et de &fNoFall &7!'
+      ''
+      '&8✸&6 Propriétaire: §5{item_owner}'
+      ''
+      '&7✔ &6Se &eperds &6à votre mort'
+      '§7✔ §6Incassable'
+      '&8&l&m═════════════════════════════════'
     enchantments:
-      - PROTECTION_ENVIRONMENTAL:4
-      - DURABILITY:4
+      PROTECTION_ENVIRONMENTAL:4
+      DURABILITY:4
 
     customAdds:
-      - "UNBREAKABLE"
-      - "GIVE_POTION;FIRE_RESISTANCE;0;999"
+      "UNBREAKABLE"
+      "GIVE_POTION;FIRE_RESISTANCE;0;999"
 
-  - jambiere_farm :
+  jambiere_farm :
     id: "jambiere_farm"
     material: LEATHER_LEGGINGS
     name: '&e&l♠ &6&lP&e&la&6&ln&e&lt&6&la&e&l&el&6&lo&e&ln &6&ld&e&le &6&lC&e&lo&6&lw&e&lB&6&lo&e&ly &e&l♠'
     lore:
-      - '&c&l&m↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
-      - '&6&lR&e&la&6&lr&e&le&6&lt&e&lé &f&l» &6&l✯&e&l✯&6&l✯&e&l✯&6&l✯'
-      - ''
-      - '&f●&7 Cette &echemise &7proviendrait &7directement'
-      - '&7de l''un des anciens &eCowBoy &7du serveur.'
-      - ''
-      - '&f●&7 Cet item vous procure un &eeffet &7de &ehaste &7lorsqu''il est utilisé'
-      - '&f●&7 Le full set vous procure un &eeffet &7d'' &cinvisibilité (même dans le near)'
-      - '&f●&7 et de &fNoFall &7!'
-      - ''
-      - '&8✸&6 Propriétaire: §5{item_owner}'
-      - ''
-      - '&7✔ &6Se &eperds &6à votre mort'
-      - '§7✔ §6Incassable'
-      - '&8&l&m═════════════════════════════════'
+      '&c&l&m↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
+      '&6&lR&e&la&6&lr&e&le&6&lt&e&lé &f&l» &6&l✯&e&l✯&6&l✯&e&l✯&6&l✯'
+      ''
+      '&f●&7 Cette &echemise &7proviendrait &7directement'
+      '&7de l''un des anciens &eCowBoy &7du serveur.'
+      ''
+      '&f●&7 Cet item vous procure un &eeffet &7de &ehaste &7lorsqu''il est utilisé'
+      '&f●&7 Le full set vous procure un &eeffet &7d'' &cinvisibilité (même dans le near)'
+      '&f●&7 et de &fNoFall &7!'
+      ''
+      '&8✸&6 Propriétaire: §5{item_owner}'
+      ''
+      '&7✔ &6Se &eperds &6à votre mort'
+      '§7✔ §6Incassable'
+      '&8&l&m═════════════════════════════════'
     enchantments:
-      - PROTECTION_ENVIRONMENTAL:4
-      - DURABILITY:4
+      PROTECTION_ENVIRONMENTAL:4
+      DURABILITY:4
 
     customAdds:
-      - "UNBREAKABLE"
-      - "GIVE_POTION;HASTE;1;999"
+      "UNBREAKABLE"
+      "GIVE_POTION;HASTE;1;999"
 
-  - botte_farm :
+  botte_farm :
     id: "botte_farm"
     material: LEATHER_BOOTS
     name: '&e&l♠ &6&lB&eo&6&lt&e&lt&6&le&e&ls &6&ld&e&le &6&lC&e&lo&6&lw&e&lB&6&lo&e&ly &e&l♠'
     lore:
-      - '&c&l&m↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
-      - '&6&lR&e&la&6&lr&e&le&6&lt&e&lé &f&l» &6&l✯&e&l✯&6&l✯&e&l✯&6&l✯'
-      - ''
-      - '&f●&7 Ces &ebottes &7proviendrait &7directement'
-      - '&7de l''un des anciens &eCowBoy &7du serveur.'
-      - ''
-      - '&f●&7 Cet item vous procure un &eeffet &7de &bspeed &7lorsqu''il est utilisé'
-      - '&f●&7 Le full set vous procure un &eeffet &7d'' &cinvisibilité (même dans le near)'
-      - '&f●&7 et de &fNoFall &7!'
-      - ''
-      - '&8✸&6 Propriétaire : §5{item_owner}'
-      - '&8✸&6 Nombres de blocs parcourue : &5{blocks_travelled}'
-      - ''
-      - '&7✔ &6Se &eperds &6à votre mort'
-      - '§7✔ §6Incassable'
-      - '&8&l&m═════════════════════════════════'
+      '&c&l&m↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭↭'
+      '&6&lR&e&la&6&lr&e&le&6&lt&e&lé &f&l» &6&l✯&e&l✯&6&l✯&e&l✯&6&l✯'
+      ''
+      '&f●&7 Ces &ebottes &7proviendrait &7directement'
+      '&7de l''un des anciens &eCowBoy &7du serveur.'
+      ''
+      '&f●&7 Cet item vous procure un &eeffet &7de &bspeed &7lorsqu''il est utilisé'
+      '&f●&7 Le full set vous procure un &eeffet &7d'' &cinvisibilité (même dans le near)'
+      '&f●&7 et de &fNoFall &7!'
+      ''
+      '&8✸&6 Propriétaire : §5{item_owner}'
+      '&8✸&6 Nombres de blocs parcourue : &5{blocks_travelled}'
+      ''
+      '&7✔ &6Se &eperds &6à votre mort'
+      '§7✔ §6Incassable'
+      '&8&l&m═════════════════════════════════'
     enchantments:
-      - PROTECTION_ENVIRONMENTAL:4
-      - DURABILITY:4
+      PROTECTION_ENVIRONMENTAL:4
+      DURABILITY:4
 
     customAdds:
-      - "UNBREAKABLE"
-      - "GIVE_POTION;SPPED;1;999"
+      "UNBREAKABLE"
+      "GIVE_POTION;SPPED;1;999"
 
-  - sword_farming :
+  sword_farming :
     id: "sword_farming"
     material: DIAMOND_SWORD
     name: '&2&l☘ &a&lF&2&lar&a&2&lming &a&lS&2&lword &2&l☘'
     lore:
-      - '&2&l❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖'
-      - '&a&lR&2&la&a&lr&2&le&a&lt&2&lé&a&l &7» &2&l☘&a&l☘&2&l☘&a&l☘&2&l☘'
-      - ''
-      - "&a☘ &7Cette incroyable épée est parfaite,"
-      - "&7pour vos combats avec les monstres !"
-      - ''
-      - '&2✸&a Propriétaire: &7{item_owner}'
-      - '§2✸&a Mobs Tués: &7{mobs_killed}'
-      - '§2✸&a Dégats infligés: &7{damage_done}'
-      - ''
-      - '&7✔ &2Se &eperds &2à votre mort'
-      - '§7✔ §2Incassable'
-      - '&2&l❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖'
+      '&2&l❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖'
+      '&a&lR&2&la&a&lr&2&le&a&lt&2&lé&a&l &7» &2&l☘&a&l☘&2&l☘&a&l☘&2&l☘'
+      ''
+      "&a☘ &7Cette incroyable épée est parfaite,"
+      "&7pour vos combats avec les monstres !"
+      ''
+      '&2✸&a Propriétaire: &7{item_owner}'
+      '§2✸&a Mobs Tués: &7{mobs_killed}'
+      '§2✸&a Dégats infligés: &7{damage_done}'
+      ''
+      '&7✔ &2Se &eperds &2à votre mort'
+      '§7✔ §2Incassable'
+      '&2&l❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖'
     enchantments:
-      - DAMAGE_ARTHROPODS:10
-      - DURABILITY:5
-      - LOOT_BONUS_MOBS:10
-      - DAMAGE_UNDEAD:10
+      DAMAGE_ARTHROPODS:10
+      DURABILITY:5
+      LOOT_BONUS_MOBS:10
+      DAMAGE_UNDEAD:10
 
     customAdds:
-      - "NO_DISCARD"
-      - "UNBREAKABLE"
+      "NO_DISCARD"
+      "UNBREAKABLE"
 
-  - sword_chasseur :
+  sword_chasseur :
     id: "sword_chasseur"
     material: DIAMOND_SWORD
     name: '&e&l☄ &6&lEpée du Chasseur &e&l☄'
     lore:
-      - '&2&l❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖'
-      - '&6&lR&e&la&e&lr&6&le&e&lt&6&lé&e&l &7» &6&l☄&e&l☄&6&l☄&f&l☄&f&l☄'
-      - ''
-      - "&e&l✦ &7Une arme utilisée par les braves pour traquer les créatures."
-      - "&7Cette épée est imprégnée de la pure essence de la chasse."
-      - ''
-      - '&2✸&a Propriétaire: &7{item_owner}'
-      - '§2✸&a Dégats infligés: &7{damage_done}'
-      - ''
-      - '&7✔ &6Se &eperds &6à votre mort'
-      - '§7✔ §6Incassable'
-      - '&2&l❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖'
+      '&2&l❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖'
+      '&6&lR&e&la&e&lr&6&le&e&lt&6&lé&e&l &7» &6&l☄&e&l☄&6&l☄&f&l☄&f&l☄'
+      ''
+      "&e&l✦ &7Une arme utilisée par les braves pour traquer les créatures."
+      "&7Cette épée est imprégnée de la pure essence de la chasse."
+      ''
+      '&2✸&a Propriétaire: &7{item_owner}'
+      '§2✸&a Dégats infligés: &7{damage_done}'
+      ''
+      '&7✔ &6Se &eperds &6à votre mort'
+      '§7✔ §6Incassable'
+      '&2&l❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖'
     enchantments:
-      - DAMAGE_ARTHROPODS:7
-      - DURABILITY:3
-      - LOOT_BONUS_MOBS:7
-      - DAMAGE_UNDEAD:7
+      DAMAGE_ARTHROPODS:7
+      DURABILITY:3
+      LOOT_BONUS_MOBS:7
+      DAMAGE_UNDEAD:7
 
     customAdds:
-      - "NO_DISCARD"
-      - "UNBREAKABLE"
+      "NO_DISCARD"
+      "UNBREAKABLE"
 
-  - broyeuse :
+  broyeuse :
     id: "broyeuse"
     material: DIAMOND_SWORD
     name: '&4&l☠ &8&lBroyeuse à Monstres &4&l☠'
     lore:
-      - '&8&l❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖'
-      - '&8&lR&4&la&8&lr&4&le&8&lt&4&lé&8&l &7» &8&l☠&4&l☠&8&l☠&f&l☠&f&l☠'
-      - ''
-      - "&4&l✪ &7Une arme légendaire conçue pour réduire en pièces les monstres."
-      - "&7Son apparence seule suffit à glacer le sang des plus courageux."
-      - ''
-      - '&2✸&a Propriétaire: &7{item_owner}'
-      - '§2✸&a Dégats infligés: &7{damage_done}'
-      - ''
-      - '&7✔ &8Se &4perds &8à votre mort'
-      - '§7✔ §8Incassable'
-      - '&8&l❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖'
+      '&8&l❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖'
+      '&8&lR&4&la&8&lr&4&le&8&lt&4&lé&8&l &7» &8&l☠&4&l☠&8&l☠&f&l☠&f&l☠'
+      ''
+      "&4&l✪ &7Une arme légendaire conçue pour réduire en pièces les monstres."
+      "&7Son apparence seule suffit à glacer le sang des plus courageux."
+      ''
+      '&2✸&a Propriétaire: &7{item_owner}'
+      '§2✸&a Dégats infligés: &7{damage_done}'
+      ''
+      '&7✔ &8Se &4perds &8à votre mort'
+      '§7✔ §8Incassable'
+      '&8&l❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖'
     enchantments:
-      - DAMAGE_ARTHROPODS:5
-      - DURABILITY:3
-      - LOOT_BONUS_MOBS:3
-      - DAMAGE_UNDEAD:5
+      DAMAGE_ARTHROPODS:5
+      DURABILITY:3
+      LOOT_BONUS_MOBS:3
+      DAMAGE_UNDEAD:5
 
     customAdds:
-      - "NO_DISCARD"
-      - "UNBREAKABLE"
+      "NO_DISCARD"
+      "UNBREAKABLE"
 
-  - sword_ouest :
+  sword_ouest :
     id: "sword_ouest"
     material: DIAMOND_SWORD
     name: '&4&lLame de l''Ouest'
     lore:
-      - '&4&l❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂'
-      - '§4§lRareté §f§l» §c§l✯✯✯✯✯ §f§l«'
-      - ''
-      - "§3✸&k!! §bCollection de &4&ll''Ouest &3&k!!"
-      - ''
-      - "&c&l✪ &7Une lame forgée dans &cles flammes du combat."
-      - "&7Elle tranche l'air avec une brutalité inégalée."
-      - ''
-      - '§8✸&7 Propriétaire : §5{item_owner}'
-      - '§8✸&7 Dernier joueur tué : §4{last_kill}'
-      - ''
-      - '§7✔ §4Infinie'
-      - '§7✔ §4Incassable'
-      - '&4&l❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂'
+      '&4&l❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂'
+      '§4§lRareté §f§l» §c§l✯✯✯✯✯ §f§l«'
+      ''
+      "§3✸&k!! §bCollection de &4&ll''Ouest &3&k!!"
+      ''
+      "&c&l✪ &7Une lame forgée dans &cles flammes du combat."
+      "&7Elle tranche l'air avec une brutalité inégalée."
+      ''
+      '§8✸&7 Propriétaire : §5{item_owner}'
+      '§8✸&7 Dernier joueur tué : §4{last_kill}'
+      ''
+      '§7✔ §4Infinie'
+      '§7✔ §4Incassable'
+      '&4&l❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂'
     enchantments:
-      - SHARPNESS:5
-      - FIRE_ASPECT:2
-      - DURABILITY:3
+      SHARPNESS:5
+      FIRE_ASPECT:2
+      DURABILITY:3
 
     customAdds:
-      - "CANT_DROP"
-      - "NO_DISCARD"
-      - "KEEP_ON_DEATH"
-      - "UNBREAKABLE"
+      "CANT_DROP"
+      "NO_DISCARD"
+      "KEEP_ON_DEATH"
+      "UNBREAKABLE"
 
-  - arc_ouest :
+  arc_ouest :
     id: "arc_ouest"
     material: BOW
     name: '&4&lArc de l''Ouest'
     lore:
-      - '&4&l❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂'
-      - '§4§lRareté §f§l» §c§l✯✯✯✯✯ §f§l«'
-      - ''
-      - '§3✸&k!! §bCollection de &4&ll''Ouest &3&k!!'
-      - ''
-      - "&c&l✪ &7Un arc forgé dans les flammes du combat."
-      - "&7Il décoche ses flèches avec une précision mortelle."
-      - ''
-      - '&4✸&4 Propriétaire: §7{item_owner}'
-      - '§4✸&4 Joueurs vaincus: §7{arrows_shot}'
-      - ''
-      - '§d✔ §4Infinie'
-      - '§d✔ §4Incassable'
-      - '&4&l❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂'
+      '&4&l❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂'
+      '§4§lRareté §f§l» §c§l✯✯✯✯✯ §f§l«'
+      ''
+      '§3✸&k!! §bCollection de &4&ll''Ouest &3&k!!'
+      ''
+      "&c&l✪ &7Un arc forgé dans les flammes du combat."
+      "&7Il décoche ses flèches avec une précision mortelle."
+      ''
+      '&4✸&4 Propriétaire: §7{item_owner}'
+      '§4✸&4 Joueurs vaincus: §7{arrows_shot}'
+      ''
+      '§d✔ §4Infinie'
+      '§d✔ §4Incassable'
+      '&4&l❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂'
     enchantments:
-      - ARROW_DAMAGE:5
-      - DURABILITY:3
-      - ARROW_INFINITE:1
-      - ARROW_KNOCKBACK:2
+      ARROW_DAMAGE:5
+      DURABILITY:3
+      ARROW_INFINITE:1
+      ARROW_KNOCKBACK:2
       
     customAdds:
-      - "CANT_DROP"
-      - "NO_DISCARD"
-      - "KEEP_ON_DEATH"
-      - "UNBREAKABLE"
+      "CANT_DROP"
+      "NO_DISCARD"
+      "KEEP_ON_DEATH"
+      "UNBREAKABLE"
 
-  - sword_ouest :
+  sword_ouest :
     id: "sword_ouest"
     material: DIAMOND_SWORD
     name: '&4&lLame de l''Ouest'
     lore:
-      - '&5&l▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰'
-      - '&d&lRareté &f&l» &d&l✦✦✦✦✦ &f&l«'
-      - ''
-      - '&5▰ &7Cette épée renferme un pouvoir &dmystérieux.'
-      - "&7Lors de ta mort, il y a &5une chance &7que"
-      - '&7tu sois téléporté dans un rayon de &d5 à 10 blocs.'
-      - ''
-      - '§8✸&7 Cooldowns avant imortalité {imortalité_cd}'
-      - '§8✸&7 Propriétaire : §5{item_owner}'
-      - '§8✸&7 Dernier joueur tué : §4{kills}'
-      - ''
-      - '§7✔ §5Infinie'
-      - '§7✔ §5Incassable'
-      - '&5&l▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰'
+      '&5&l▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰'
+      '&d&lRareté &f&l» &d&l✦✦✦✦✦ &f&l«'
+      ''
+      '&5▰ &7Cette épée renferme un pouvoir &dmystérieux.'
+      "&7Lors de ta mort, il y a &5une chance &7que"
+      '&7tu sois téléporté dans un rayon de &d5 à 10 blocs.'
+      ''
+      '§8✸&7 Cooldowns avant imortalité {imortalité_cd}'
+      '§8✸&7 Propriétaire : §5{item_owner}'
+      '§8✸&7 Dernier joueur tué : §4{kills}'
+      ''
+      '§7✔ §5Infinie'
+      '§7✔ §5Incassable'
+      '&5&l▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰'
     enchantments:
-      - SHARPNESS:5
-      - FIRE_ASPECT:2
-      - DURABILITY:4
+      SHARPNESS:5
+      FIRE_ASPECT:2
+      DURABILITY:4
 
     customAdds:
-      - "CANT_DROP"
-      - "NO_DISCARD"
-      - "KEEP_ON_DEATH"
-      - "UNBREAKABLE"
-      - "DEATH_CHANCE_TP;15;300;1;10"
+      "CANT_DROP"
+      "NO_DISCARD"
+      "KEEP_ON_DEATH"
+      "UNBREAKABLE"
+      "DEATH_CHANCE_TP;15;300;1;10"
 
-  - bati_sand30 :
+  bati_sand30 :
     id: "bati_sand30"
     material: SAND
     name: "&4✱ §c§lBatisseuse à Sables &4✱"
     lore:
-      - '§8§m---------§7§m---------§8§m---------'
-      - '&e✯✯✯✯✯ &c&lLEGENDAIRE'
-      - ''
-      - '&fClic-droit §7sur le sol pour §fcréer'
-      - '§fun pilier §7qui monte §fjusqu''au ciel §7!'
-      - ''
-      - '§8✸&7 Propriétaire : §5{item_owner}'
-      - '§8✸&7 Durabilité : §4{uses}/{maxuses}'
-      - '§8§m---------§7§m---------§8§m---------'
+      '§8§m---------§7§m---------§8§m---------'
+      '&e✯✯✯✯✯ &c&lLEGENDAIRE'
+      ''
+      '&fClic-droit §7sur le sol pour §fcréer'
+      '§fun pilier §7qui monte §fjusqu''au ciel §7!'
+      ''
+      '§8✸&7 Propriétaire : §5{item_owner}'
+      '§8✸&7 Durabilité : §4{uses}/{maxuses}'
+      '§8§m---------§7§m---------§8§m---------'
     enchantments:
-      - DURABILITY:4
+      DURABILITY:4
 
     customAdds:
-      - "BLOCK_COLUMN;SAND;256"
-      - "CONSUMABLE;30"
+      "BLOCK_COLUMN;SAND;256"
+      "CONSUMABLE;30"
 
-  - bati_sand64 :
+  bati_sand64 :
     id: "bati_sand64"
     material: SAND
     name: "&4✱ §c§lBatisseuse à Sables &4✱"
     lore:
-      - '§8§m---------§7§m---------§8§m---------'
-      - '&e✯✯✯✯✯ &c&lLEGENDAIRE'
-      - ''
-      - '&fClic-droit §7sur le sol pour §fcréer'
-      - '§fun pilier §7qui monte §fjusqu''au ciel §7!'
-      - ''
-      - '§8✸&7 Propriétaire : §5{item_owner}'
-      - '§8✸&7 Durabilité : §4{uses}/{maxuses}'
-      - '§8§m---------§7§m---------§8§m---------'
+      '§8§m---------§7§m---------§8§m---------'
+      '&e✯✯✯✯✯ &c&lLEGENDAIRE'
+      ''
+      '&fClic-droit §7sur le sol pour §fcréer'
+      '§fun pilier §7qui monte §fjusqu''au ciel §7!'
+      ''
+      '§8✸&7 Propriétaire : §5{item_owner}'
+      '§8✸&7 Durabilité : §4{uses}/{maxuses}'
+      '§8§m---------§7§m---------§8§m---------'
     enchantments:
-      - DURABILITY:4
+      DURABILITY:4
 
     customAdds:
-      - "BLOCK_COLUMN;SAND;256"
-      - "CONSUMABLE;64"
+      "BLOCK_COLUMN;SAND;256"
+      "CONSUMABLE;64"
 
-  - bati_obsi30 :
+  bati_obsi30 :
     id: "bati_obsi30"
     material: OBSIDIAN
     name: "&4✱ §c§lBatisseuse à Obsidiennes &4✱"
     lore:
-      - '§8§m---------§7§m---------§8§m---------'
-      - '&e✯✯✯✯✯ &c&lLEGENDAIRE'
-      - ''
-      - '&fClic-droit §7sur le sol pour §fcréer'
-      - '§fun pilier §7qui monte §fjusqu''au ciel §7!'
-      - ''
-      - '§8✸&7 Propriétaire : §5{item_owner}'
-      - '§8✸&7 Durabilité : §4{uses}/{maxuses}'
-      - '§8§m---------§7§m---------§8§m---------'
+      '§8§m---------§7§m---------§8§m---------'
+      '&e✯✯✯✯✯ &c&lLEGENDAIRE'
+      ''
+      '&fClic-droit §7sur le sol pour §fcréer'
+      '§fun pilier §7qui monte §fjusqu''au ciel §7!'
+      ''
+      '§8✸&7 Propriétaire : §5{item_owner}'
+      '§8✸&7 Durabilité : §4{uses}/{maxuses}'
+      '§8§m---------§7§m---------§8§m---------'
     enchantments:
-      - DURABILITY:4
+      DURABILITY:4
 
     customAdds:
-      - "BLOCK_COLUMN;OBSIDIAN;256"
-      - "CONSUMABLE;30"
+      "BLOCK_COLUMN;OBSIDIAN;256"
+      "CONSUMABLE;30"
 
-  - bati_obsi64 :
+  bati_obsi64 :
     id: "bati_obsi64"
     material: OBSIDIAN
     name: "&4✱ §c§lBatisseuse à Obsidiennes &4✱"
     lore:
-      - '§8§m---------§7§m---------§8§m---------'
-      - '&e✯✯✯✯✯ &c&lLEGENDAIRE'
-      - ''
-      - '&fClic-droit §7sur le sol pour §fcréer'
-      - '§fun pilier §7qui monte §fjusqu''au ciel §7!'
-      - ''
-      - '§8✸&7 Propriétaire : §5{item_owner}'
-      - '§8✸&7 Durabilité : §4{uses}/{maxuses}'
-      - '§8§m---------§7§m---------§8§m---------'
+      '§8§m---------§7§m---------§8§m---------'
+      '&e✯✯✯✯✯ &c&lLEGENDAIRE'
+      ''
+      '&fClic-droit §7sur le sol pour §fcréer'
+      '§fun pilier §7qui monte §fjusqu''au ciel §7!'
+      ''
+      '§8✸&7 Propriétaire : §5{item_owner}'
+      '§8✸&7 Durabilité : §4{uses}/{maxuses}'
+      '§8§m---------§7§m---------§8§m---------'
     enchantments:
-      - DURABILITY:4
+      DURABILITY:4
 
     customAdds:
-      - "BLOCK_COLUMN;OBSIDIAN;256"
-      - "CONSUMABLE;64"
+      "BLOCK_COLUMN;OBSIDIAN;256"
+      "CONSUMABLE;64"
 
-  - bati_fer30 :
+  bati_fer30 :
     id: "bati_fer30"
     material: IRON_BLOCK
     name: "&4✱ §c§lBatisseuse à Blocs de Fers &4✱"
     lore:
-      - '§8§m---------§7§m---------§8§m---------'
-      - '&e✯✯✯✯✯ &c&lLEGENDAIRE'
-      - ''
-      - '&fClic-droit §7sur le sol pour §fcréer'
-      - '§fun pilier §7qui monte §fjusqu''au ciel §7!'
-      - ''
-      - '§8✸&7 Propriétaire : §5{item_owner}'
-      - '§8✸&7 Durabilité : §4{uses}/{maxuses}'
-      - '§8§m---------§7§m---------§8§m---------'
+      '§8§m---------§7§m---------§8§m---------'
+      '&e✯✯✯✯✯ &c&lLEGENDAIRE'
+      ''
+      '&fClic-droit §7sur le sol pour §fcréer'
+      '§fun pilier §7qui monte §fjusqu''au ciel §7!'
+      ''
+      '§8✸&7 Propriétaire : §5{item_owner}'
+      '§8✸&7 Durabilité : §4{uses}/{maxuses}'
+      '§8§m---------§7§m---------§8§m---------'
     enchantments:
-      - DURABILITY:4
+      DURABILITY:4
 
     customAdds:
-      - "BLOCK_COLUMN;IRON_BLOCK;256"
-      - "CONSUMABLE;30"
+      "BLOCK_COLUMN;IRON_BLOCK;256"
+      "CONSUMABLE;30"
 
-  - bati_fer64 :
+  bati_fer64 :
     id: "bati_fer64"
     material: IRON_BLOCK
     name: "&4✱ §c§lBatisseuse à Blocs de Fers &4✱"
     lore:
-      - '§8§m---------§7§m---------§8§m---------'
-      - '&e✯✯✯✯✯ &c&lLEGENDAIRE'
-      - ''
-      - '&fClic-droit §7sur le sol pour §fcréer'
-      - '§fun pilier §7qui monte §fjusqu''au ciel §7!'
-      - ''
-      - '§8✸&7 Propriétaire : §5{item_owner}'
-      - '§8✸&7 Durabilité : §4{uses}/{maxuses}'
-      - '§8§m---------§7§m---------§8§m---------'
+      '§8§m---------§7§m---------§8§m---------'
+      '&e✯✯✯✯✯ &c&lLEGENDAIRE'
+      ''
+      '&fClic-droit §7sur le sol pour §fcréer'
+      '§fun pilier §7qui monte §fjusqu''au ciel §7!'
+      ''
+      '§8✸&7 Propriétaire : §5{item_owner}'
+      '§8✸&7 Durabilité : §4{uses}/{maxuses}'
+      '§8§m---------§7§m---------§8§m---------'
     enchantments:
-      - DURABILITY:4
+      DURABILITY:4
 
     customAdds:
-      - "BLOCK_COLUMN;IRON_BLOCK;256"
-      - "CONSUMABLE;64"
+      "BLOCK_COLUMN;IRON_BLOCK;256"
+      "CONSUMABLE;64"
 
-  - bati_cobble64 :
+  bati_cobble64 :
     id: "bati_cobble64"
     material: COBBLESTONE
     name: "&4✱ §c§lBatisseuse à Cobblestones &4✱"
     lore:
-      - '§8§m---------§7§m---------§8§m---------'
-      - '&e✯✯✯✯✯ &c&lLEGENDAIRE'
-      - ''
-      - '&fClic-droit §7sur le sol pour §fcréer'
-      - '§fun pilier §7qui monte §fjusqu''au ciel §7!'
-      - ''
-      - '§8✸&7 Propriétaire : §5{item_owner}'
-      - '§8✸&7 Durabilité : §4{uses}/{maxuses}'
-      - '§8§m---------§7§m---------§8§m---------'
+      '§8§m---------§7§m---------§8§m---------'
+      '&e✯✯✯✯✯ &c&lLEGENDAIRE'
+      ''
+      '&fClic-droit §7sur le sol pour §fcréer'
+      '§fun pilier §7qui monte §fjusqu''au ciel §7!'
+      ''
+      '§8✸&7 Propriétaire : §5{item_owner}'
+      '§8✸&7 Durabilité : §4{uses}/{maxuses}'
+      '§8§m---------§7§m---------§8§m---------'
     enchantments:
-      - DURABILITY:4
+      DURABILITY:4
 
     customAdds:
-      - "BLOCK_COLUMN;COBBLESTONE;256"
-      - "CONSUMABLE;64"
+      "BLOCK_COLUMN;COBBLESTONE;256"
+      "CONSUMABLE;64"
 
-  - bati_cobble30 :
+  bati_cobble30 :
     id: "bati_cobble30"
     material: COBBLESTONE
     name: "&4✱ §c§lBatisseuse à Cobblestones &4✱"
     lore:
-      - '§8§m---------§7§m---------§8§m---------'
-      - '&e✯✯✯✯✯ &c&lLEGENDAIRE'
-      - ''
-      - '&fClic-droit §7sur le sol pour §fcréer'
-      - '§fun pilier §7qui monte §fjusqu''au ciel §7!'
-      - ''
-      - '§8✸&7 Propriétaire : §5{item_owner}'
-      - '§8✸&7 Durabilité : §4{uses}/{maxuses}'
-      - '§8§m---------§7§m---------§8§m---------'
+      '§8§m---------§7§m---------§8§m---------'
+      '&e✯✯✯✯✯ &c&lLEGENDAIRE'
+      ''
+      '&fClic-droit §7sur le sol pour §fcréer'
+      '§fun pilier §7qui monte §fjusqu''au ciel §7!'
+      ''
+      '§8✸&7 Propriétaire : §5{item_owner}'
+      '§8✸&7 Durabilité : §4{uses}/{maxuses}'
+      '§8§m---------§7§m---------§8§m---------'
     enchantments:
-      - DURABILITY:4
+      DURABILITY:4
 
     customAdds:
-      - "BLOCK_COLUMN;COBBLESTONE;256"
-      - "CONSUMABLE;30"
+      "BLOCK_COLUMN;COBBLESTONE;256"
+      "CONSUMABLE;30"
 
-  - hachebucheron :
+  hachebucheron :
     id: "hachebucheron"
     material: DIAMOND_AXE
     name: "&2&l✧ &6&lHache de Bûcheron &2&l✧"
     lore:
-      - '&6&l▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯'
-      - '&2&lRareté &f&l» &a&l✧✧✧✧✧ &f&l«'
-      - ''
-      - '&a&l✪ &7Utilisée par les bûcherons des forêts'
-      - "&7Elle coupe un arbre entier d'un seul coup."
-      - ''
-      - '§8✸&7 Propriétaire : §5{item_owner}'
-      - '§8✸&7 Nombres d''arbres abbatus : §4{trees_chopped}'
-      - ''
-      - '§7✔ §5Infinie'
-      - '§7✔ §5Cassable'
-      - '&6&l▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯'
+      '&6&l▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯'
+      '&2&lRareté &f&l» &a&l✧✧✧✧✧ &f&l«'
+      ''
+      '&a&l✪ &7Utilisée par les bûcherons des forêts'
+      "&7Elle coupe un arbre entier d'un seul coup."
+      ''
+      '§8✸&7 Propriétaire : §5{item_owner}'
+      '§8✸&7 Nombres d''arbres abbatus : §4{trees_chopped}'
+      ''
+      '§7✔ §5Infinie'
+      '§7✔ §5Cassable'
+      '&6&l▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯'
     enchantments:
-      - DIG_SPEED:6
-      - DURABILITY:4
+      DIG_SPEED:6
+      DURABILITY:4
 
     customAdds:
-      - "CANT_DROP"
-      - "NO_DISCARD"
-      - "KEEP_ON_DEATH"
-      - "TREE_FELLER"
+      "CANT_DROP"
+      "NO_DISCARD"
+      "KEEP_ON_DEATH"
+      "TREE_FELLER"
 
-  - plastroncombattant :
+  plastroncombattant :
     id: "plastroncombattant"
     material: DIAMOND_CHESTPLATE
     name: '&b&l✦ &6&lPlastron du Combattant &b&l✦'
     lore:
-      - '&7&l❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖'
-      - '&6&lRareté &f&l» &b&l✦✦✦✦✦ &f&l«'
-      - ''
-      - '&e&l✪ &7Équipement forgé pour les plus grands guerriers,'
-      - "&7Ce plastron augmente ta résistance au combat."
-      - ''
-      - '§8✸&6 Propriétaire : §e{item_owner}'
-      - '§8✸&6 Dégats encaissé : &e{hits_taken}'
-      - ''
-      - '§7✔ §5Infinie'
-      - '§7✔ §5Incassable'
-      - '&7&l❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖'
+      '&7&l❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖'
+      '&6&lRareté &f&l» &b&l✦✦✦✦✦ &f&l«'
+      ''
+      '&e&l✪ &7Équipement forgé pour les plus grands guerriers,'
+      "&7Ce plastron augmente ta résistance au combat."
+      ''
+      '§8✸&6 Propriétaire : §e{item_owner}'
+      '§8✸&6 Dégats encaissé : &e{hits_taken}'
+      ''
+      '§7✔ §5Infinie'
+      '§7✔ §5Incassable'
+      '&7&l❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖❖'
     enchantments:
-      - PROTECTION_ENVIRONMENTAL:4
-      - DURABILITY:4
+      PROTECTION_ENVIRONMENTAL:4
+      DURABILITY:4
 
     customAdds:
-      - "CANT_DROP"
-      - "NO_DISCARD"
-      - "KEEP_ON_DEATH"
-      - "UNBREAKABLE"
+      "CANT_DROP"
+      "NO_DISCARD"
+      "KEEP_ON_DEATH"
+      "UNBREAKABLE"
 
-  - orbespeed :
+  orbespeed :
     id: "orbe_speed"
     material: SUGAR
     name: "&4✱ §3§lOrbes de Speed &4✱"
     lore:
-      - '§8§m---------§7§m---------§8§m---------'
-      - '&e✯✯✯✯✯ &c&lLEGENDAIRE'
-      - ''
-      - '&fClic-droit §7pour bénéficier'
-      - '§7d''un effet de §3Speed 2 &fpendant 10 Minutes §7!'
-      - ''
-      - '§8✸&7 Propriétaire : §5{item_owner}'
-      - '§8✸&7 Durabilité : §4{uses}/{maxuses}'
-      - '§8§m---------§7§m---------§8§m---------'
+      '§8§m---------§7§m---------§8§m---------'
+      '&e✯✯✯✯✯ &c&lLEGENDAIRE'
+      ''
+      '&fClic-droit §7pour bénéficier'
+      '§7d''un effet de §3Speed 2 &fpendant 10 Minutes §7!'
+      ''
+      '§8✸&7 Propriétaire : §5{item_owner}'
+      '§8✸&7 Durabilité : §4{uses}/{maxuses}'
+      '§8§m---------§7§m---------§8§m---------'
     enchantments:
-      - DURABILITY:4
+      DURABILITY:4
 
     customAdds:
-      - "CONSUMABLE_GIVE_POTION;SPEED;1;600"
-      - "CONSUMABLE;3"
+      "CONSUMABLE_GIVE_POTION;SPEED;1;600"
+      "CONSUMABLE;3"
 
-  - orbefire :
+  orbefire :
     id: "orbe_fire"
     material: MAGMA_CREAM
     name: "&4✱ §6§lOrbes de Fire &4✱"
     lore:
-      - '§8§m---------§7§m---------§8§m---------'
-      - '&e✯✯✯✯✯ &c&lLEGENDAIRE'
-      - ''
-      - '&fClic-droit §7pour bénéficier'
-      - '§7d''un effet de §6Fire_Resistance &fpendant 10 Minutes §7!'
-      - ''
-      - '§8✸&7 Propriétaire : §5{item_owner}'
-      - '§8✸&7 Durabilité : §4{uses}/{maxuses}'
-      - '§8§m---------§7§m---------§8§m---------'
+      '§8§m---------§7§m---------§8§m---------'
+      '&e✯✯✯✯✯ &c&lLEGENDAIRE'
+      ''
+      '&fClic-droit §7pour bénéficier'
+      '§7d''un effet de §6Fire_Resistance &fpendant 10 Minutes §7!'
+      ''
+      '§8✸&7 Propriétaire : §5{item_owner}'
+      '§8✸&7 Durabilité : §4{uses}/{maxuses}'
+      '§8§m---------§7§m---------§8§m---------'
     enchantments:
-      - DURABILITY:4
+      DURABILITY:4
 
     customAdds:
-      - "CONSUMABLE_GIVE_POTION;FIRE_RESISTANCE;1;600"
-      - "CONSUMABLE;3"
+      "CONSUMABLE_GIVE_POTION;FIRE_RESISTANCE;1;600"
+      "CONSUMABLE;3"
 
-  - orbenofall :
+  orbenofall :
     id: "orbe_nofall"
     material: FEATHER
     name: "&4✱ §f§lOrbes de No Fall &4✱"
     lore:
-      - '§8§m---------§7§m---------§8§m---------'
-      - '&e✯✯✯✯✯ &c&lLEGENDAIRE'
-      - ''
-      - '&fClic-droit §7pour bénéficier'
-      - '§7d''un effet de §fNo Fall &fpendant 10 Minutes §7!'
-      - ''
-      - '§8✸&7 Propriétaire : §5{item_owner}'
-      - '§8✸&7 Durabilité : §4{uses}/{maxuses}'
-      - '§8§m---------§7§m---------§8§m---------'
+      '§8§m---------§7§m---------§8§m---------'
+      '&e✯✯✯✯✯ &c&lLEGENDAIRE'
+      ''
+      '&fClic-droit §7pour bénéficier'
+      '§7d''un effet de §fNo Fall &fpendant 10 Minutes §7!'
+      ''
+      '§8✸&7 Propriétaire : §5{item_owner}'
+      '§8✸&7 Durabilité : §4{uses}/{maxuses}'
+      '§8§m---------§7§m---------§8§m---------'
     enchantments:
-      - DURABILITY:4
+      DURABILITY:4
 
     customAdds:
-      - "CONSUMABLE_GIVE_POTION;NO_FALL;1;600"
-      - "CONSUMABLE;3"
+      "CONSUMABLE_GIVE_POTION;NO_FALL;1;600"
+      "CONSUMABLE;3"
 
-  - orbeforce :
+  orbeforce :
     id: "orbe_force"
     material: FEATHER
     name: "&4✱ §c§lOrbes de Force &4✱"
     lore:
-      - '§8§m---------§7§m---------§8§m---------'
-      - '&e✯✯✯✯✯ &c&lLEGENDAIRE'
-      - ''
-      - '&fClic-droit §7pour bénéficier'
-      - '§7d''un effet de §cForce &fpendant 10 Minutes §7!'
-      - ''
-      - '§8✸&7 Propriétaire : §5{item_owner}'
-      - '§8✸&7 Durabilité : §4{uses}/{maxuses}'
-      - '§8§m---------§7§m---------§8§m---------'
+      '§8§m---------§7§m---------§8§m---------'
+      '&e✯✯✯✯✯ &c&lLEGENDAIRE'
+      ''
+      '&fClic-droit §7pour bénéficier'
+      '§7d''un effet de §cForce &fpendant 10 Minutes §7!'
+      ''
+      '§8✸&7 Propriétaire : §5{item_owner}'
+      '§8✸&7 Durabilité : §4{uses}/{maxuses}'
+      '§8§m---------§7§m---------§8§m---------'
     enchantments:
-      - DURABILITY:4
+      DURABILITY:4
 
     customAdds:
-      - "CONSUMABLE_GIVE_POTION;STRENGHT;0;600"
-      - "CONSUMABLE;3"
+      "CONSUMABLE_GIVE_POTION;STRENGHT;0;600"
+      "CONSUMABLE;3"
 
-  - hammer3x3 :
+  hammer3x3 :
     id: "Hammer3x3"
     material: DIAMOND_PICKAXE
     name: "§b✢ §3§lHammer §b✢"
     lore:
-      - "§8§m-----------§7§m-----------§8§m-----------"
-      - "§e✯✯✯✯✯ §5§lLEGENDAIRE"
-      - ''
-      - "&3&l✪ §7Minez vos bases plus §frapidement §7grâce"
-      - "§7à cette §fpioche §7qui mine en §f3x3 §7!"
-      - ''
-      - '§8✸&7 Propriétaire : §3{item_owner}'
-      - '§8✸&7 Durabilité : §3§4{uses}/{maxuses}'
-      - ''
-      - '§7✔ §8Infinie'
-      - '§7✔ §8Cassable'
-      - "§8§m-----------§7§m-----------§8§m-----------"
+      "§8§m-----------§7§m-----------§8§m-----------"
+      "§e✯✯✯✯✯ §5§lLEGENDAIRE"
+      ''
+      "&3&l✪ §7Minez vos bases plus §frapidement §7grâce"
+      "§7à cette §fpioche §7qui mine en §f3x3 §7!"
+      ''
+      '§8✸&7 Propriétaire : §3{item_owner}'
+      '§8✸&7 Durabilité : §3§4{uses}/{maxuses}'
+      ''
+      '§7✔ §8Infinie'
+      '§7✔ §8Cassable'
+      "§8§m-----------§7§m-----------§8§m-----------"
     enchantments:
-      - DIG_SPEED:5
-      - DURABILITY:10
+      DIG_SPEED:5
+      DURABILITY:10
 
     customAdds:
-      - "MINE_AREA;3x3x3"
-      - "NO_DISCARD"
-      - "CONSUMABLE;1500"
+      "MINE_AREA;3x3x3"
+      "NO_DISCARD"
+      "CONSUMABLE;1500"
 
-  - hammer5x5 :
+  hammer5x5 :
     id: "Hammer5x5"
     material: DIAMOND_PICKAXE
     name: "§b✢ §3§lHammer §b✢"
     lore:
-      - "§8§m-----------§7§m-----------§8§m-----------"
-      - "§e✯✯✯✯✯ §5§lLEGENDAIRE"
-      - ''
-      - "&3&l✪ §7Minez vos bases plus §frapidement §7grâce"
-      - "§7à cette §fpioche §7qui mine en §f5x5 §7!"
-      - ''
-      - '§8✸&7 Propriétaire : §3{item_owner}'
-      - '§8✸&7 Durabilité : §3§4{uses}/{maxuses}'
-      - ''
-      - '§7✔ §8Se &eperd &8à la mort'
-      - '§7✔ §8Cassable'
-      - "§8§m-----------§7§m-----------§8§m-----------"
+      "§8§m-----------§7§m-----------§8§m-----------"
+      "§e✯✯✯✯✯ §5§lLEGENDAIRE"
+      ''
+      "&3&l✪ §7Minez vos bases plus §frapidement §7grâce"
+      "§7à cette §fpioche §7qui mine en §f5x5 §7!"
+      ''
+      '§8✸&7 Propriétaire : §3{item_owner}'
+      '§8✸&7 Durabilité : §3§4{uses}/{maxuses}'
+      ''
+      '§7✔ §8Se &eperd &8à la mort'
+      '§7✔ §8Cassable'
+      "§8§m-----------§7§m-----------§8§m-----------"
     enchantments:
-      - DIG_SPEED:5
-      - DURABILITY:10
+      DIG_SPEED:5
+      DURABILITY:10
 
     customAdds:
-      - "MINE_AREA;5x5x5"
-      - "NO_DISCARD"
-      - "CONSUMABLE;1000"
+      "MINE_AREA;5x5x5"
+      "NO_DISCARD"
+      "CONSUMABLE;1000"
 
 
-  - masque :
+  masque :
     id: "masqueglace"
-    material: PLAYER_HEAD
+    material: SKULL
     name: "&b✺ §3§lMasque de Glace &b✺"
     lore:
-      - '§3§m❄❄❄❄❄❄❄❄❄❄❄❄❄❄❄'
-      - '&b✯✯✯✯✯ &b&lGLACIAL'
-      - ''
-      - "&3&l✪ &7Ce §bmasque glacé §7t'offre un"
-      - '§7boost de vente au shop !'
-      - ''
-      - '§8✸&7 Propriétaire : §3{item_owner}'
-      - '§8✸&7 Multiplicateur : §3{shop_multiplicateur}'
-      - ''
-      - '§7✔ §8Se &eperd &8à la mort'
-      - '§7✔ §8Cassable'
-      - '§8§m❄❄❄❄❄❄❄❄❄❄❄❄❄❄❄'
+      '§3§m❄❄❄❄❄❄❄❄❄❄❄❄❄❄❄'
+      '&b✯✯✯✯✯ &b&lGLACIAL'
+      ''
+      "&3&l✪ &7Ce §bmasque glacé §7t'offre un"
+      '§7boost de vente au shop !'
+      ''
+      '§8✸&7 Propriétaire : §3{item_owner}'
+      '§8✸&7 Multiplicateur : §3{shop_multiplicateur}'
+      ''
+      '§7✔ §8Se &eperd &8à la mort'
+      '§7✔ §8Cassable'
+      '§8§m❄❄❄❄❄❄❄❄❄❄❄❄❄❄❄'
     enchantments:
-      - DURABILITY:10
+      DURABILITY:10
 
     customAdds:
-      - "CANT_DROP"
-      - "NO_DISCARD"
-      - "KEEP_ON_DEATH"
-      - "multiplicateur;1.35" #35% de vente en plus avec ce masque 
+      "CANT_DROP"
+      "NO_DISCARD"
+      "KEEP_ON_DEATH"
+      "multiplicateur;1.35" #35% de vente en plus avec ce masque 
 
-  - sceptre_tp:
+  sceptre_tp:
     id: "sceptretp"
     material: BLAZE_ROD
     name: "&d✺ §5§lSceptre de Téléportation &d✺"
     lore:
-      - '§5§m➤➤➤➤➤➤➤➤➤➤➤➤➤➤➤'
-      - '&d✯✯✯&f✯✯ &5&lRARE'
-      - ''
-      - "&5&l✪ &7Un sceptre qui te permet"
-      - '§7 de te téléporter au dernier joueur'
-      - '&7 que tu as attaqué dans un rayon de 10 blocs !'
-      - ''
-      - '§8✸&7 Propriétaire : &5{item_owner}'
-      - '§8✸&7 Durabilité : §5{uses}/{maxuses}'
-      - ''
-      - '§5§m➤➤➤➤➤➤➤➤➤➤➤➤➤➤➤'
+      '§5§m➤➤➤➤➤➤➤➤➤➤➤➤➤➤➤'
+      '&d✯✯✯&f✯✯ &5&lRARE'
+      ''
+      "&5&l✪ &7Un sceptre qui te permet"
+      '§7 de te téléporter au dernier joueur'
+      '&7 que tu as attaqué dans un rayon de 10 blocs !'
+      ''
+      '§8✸&7 Propriétaire : &5{item_owner}'
+      '§8✸&7 Durabilité : §5{uses}/{maxuses}'
+      ''
+      '§5§m➤➤➤➤➤➤➤➤➤➤➤➤➤➤➤'
     enchantments:
-      - DURABILITY:10
+      DURABILITY:10
 
     customAdds:
-      - "CANT_DROP"
-      - "NO_DISCARD"
-      - "KEEP_ON_DEATH"
-      - "TELEPORT_ON_ATTACK;10" # Se téléporte au dernier joueur attaqué lors de l'utilisation avec un rayon de 10 blocs
-      - "CONSUMABLE;5"
+      "CANT_DROP"
+      "NO_DISCARD"
+      "KEEP_ON_DEATH"
+      "TELEPORT_ON_ATTACK;10" # Se téléporte au dernier joueur attaqué lors de l'utilisation avec un rayon de 10 blocs
+      "CONSUMABLE;5"
 
-  - loupe:
+  loupe:
     id: "loupe"
     material: COMPASS
     name: "&7✺ &f&lLoupe &7✺"
     lore:
-      - '§8§m───────────────'
-      - '&e✯✯✯&f✯✯ &7&lRARE'
-      - ''
-      - "&e&l✪ '&7Utilise cette loupe pour"
-      - '&7examiner le contenu des coffres'
-      - '&7ennemis sans être détecté !'
-      - ''
-      - '§8✸&7 Propriétaire : &5{item_owner}'
-      - '§8✸&7 Durabilité : §5{uses}/{maxuses}'
-      - ''
-      - '§8§m───────────────'
+      '§8§m───────────────'
+      '&e✯✯✯&f✯✯ &7&lRARE'
+      ''
+      "&e&l✪ '&7Utilise cette loupe pour"
+      '&7examiner le contenu des coffres'
+      '&7ennemis sans être détecté !'
+      ''
+      '§8✸&7 Propriétaire : &5{item_owner}'
+      '§8✸&7 Durabilité : §5{uses}/{maxuses}'
+      ''
+      '§8§m───────────────'
     enchantments:
-      - DURABILITY:10
+      DURABILITY:10
 
     customAdds:
-      - "CANT_DROP"
-      - "NO_DISCARD"
-      - "KEEP_ON_DEATH"
-      - "VIEW_ON_CHEST"
-      - "CONSUMABLE;5"
+      "CANT_DROP"
+      "NO_DISCARD"
+      "KEEP_ON_DEATH"
+      "VIEW_ON_CHEST"
+      "CONSUMABLE;5"

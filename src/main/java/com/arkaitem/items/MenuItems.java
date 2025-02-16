@@ -18,7 +18,9 @@ public class MenuItems implements Listener {
     public void open(Player player) {
         Set<ItemStack> items = Program.INSTANCE.ITEMS_MANAGER.getAllItems();
 
-        Inventory menu = Bukkit.createInventory(null, items.size(), TITLE);
+        // Chests must have a size which is a multiple of 9
+        int inventorySize = ((items.size() + 8) / 9) * 9;
+        Inventory menu = Bukkit.createInventory(null, inventorySize, TITLE);
 
         int i = 0;
         for (ItemStack item : items) {

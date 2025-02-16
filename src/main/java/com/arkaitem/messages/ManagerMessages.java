@@ -27,7 +27,7 @@ public class ManagerMessages {
     }
 
     public String getMessage(String key, Map<String, String> placeholders) {
-        String message = messagesConfig.getString(key, "&cMessage introuvable: " + key);
+        String message = messagesConfig.getString("messages." + key, "&cMessage introuvable: " + key);
         if (placeholders != null) {
             for (Map.Entry<String, String> entry : placeholders.entrySet()) {
                 message = message.replace("{" + entry.getKey() + "}", entry.getValue());
