@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import javax.swing.text.html.Option;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -68,14 +67,7 @@ public class ManagerCustomItems {
     }
 
     public void addItem(String key, ItemStack item, Set<String> customAdds) {
-        Object itemObject = itemsConfig.get("item");
-
-        if (!(itemObject instanceof Map)) {
-            itemObject = new LinkedHashMap<String, Map<String, Object>>();
-            itemsConfig.set("item", itemObject);
-        }
-
-        Map<String, Map<String, Object>> itemsMap = (Map<String, Map<String, Object>>) itemObject;
+        Map<String, Map<String, Object>> itemsMap = (Map<String, Map<String, Object>>) itemsConfig.get("item");
 
         Map<String, Object> section = new LinkedHashMap<>();
         section.put("id", key);

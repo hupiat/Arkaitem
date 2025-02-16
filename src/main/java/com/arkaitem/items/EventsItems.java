@@ -417,25 +417,4 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
     }
-
-    private boolean hasCustomAdd(ItemStack item, String tag) {
-        for (String line : item.getItemMeta().getLore()) {
-            if (ChatColor.stripColor(line).contains(tag)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private String getCustomAddData(ItemStack item, String tag) {
-        ItemMeta meta = item.getItemMeta();
-        List<String> lore = meta.getLore();
-        for (String line : lore) {
-            String strippedLine = ChatColor.stripColor(line);
-            if (strippedLine.startsWith(tag + ";")) {
-                return strippedLine.substring(tag.length() + 1);
-            }
-        }
-        throw new IllegalArgumentException("No such tag: " + tag);
-    }
 }

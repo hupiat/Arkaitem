@@ -1,9 +1,13 @@
 package com.arkaitem.items;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -50,5 +54,26 @@ public interface ICustomAdds {
         }
 
         return customAdds;
+    }
+
+    default boolean hasCustomAdd(ItemStack item, String tag) {
+        for (String line : item.getItemMeta().getLore()) {
+            if (ChatColor.stripColor(line).contains(tag)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    default String getCustomAddData(ItemStack item, String tag) {
+        ItemMeta meta = item.getItemMeta();
+        List<String> lore = meta.getLore();
+        for (String line : lore) {
+            String strippedLine = ChatColor.stripColor(line);
+            if (strippedLine.startsWith(tag + ";")) {
+                return strippedLine.substring(tag.length() + 1);
+            }
+        }
+        throw new IllegalArgumentException("No such tag: " + tag);
     }
 }
