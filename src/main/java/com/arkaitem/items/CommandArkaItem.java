@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class CommandArkaItem implements CommandExecutor {
     private final ManagerCustomItems itemManager;
@@ -65,15 +66,16 @@ public class CommandArkaItem implements CommandExecutor {
             return true;
         }
 
-        ItemStack item = null;
-        if (item == null) {
+        Optional<CustomItem> item = Program.INSTANCE.ITEMS_MANAGER.getItemById(itemId);
+
+        if (!item.isPresent()) {
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("item_name", itemId);
             sender.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_not_found", placeholders));
             return true;
         }
 
-        target.getInventory().addItem(item);
+        target.getInventory().addItem(item.get().getItem());
 
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("item_name", itemId);

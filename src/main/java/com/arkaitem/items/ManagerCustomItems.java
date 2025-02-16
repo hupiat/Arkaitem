@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.swing.text.html.Option;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -44,13 +45,22 @@ public class ManagerCustomItems {
         }
     }
 
-    public Set<ItemStack> getAllItems() {
+    public Set<CustomItem> getAllItems() {
         return RegistryCustomItems.getItems();
     }
 
-    public Optional<ItemStack> getItemById(String id) {
-        for (ItemStack item : getAllItems()) {
-            if (item.getItemMeta().getDisplayName().equalsIgnoreCase(id)) {
+    public Optional<CustomItem> getItemById(String id) {
+        for (CustomItem item : getAllItems()) {
+            if (item.getId().equalsIgnoreCase(id)) {
+                return Optional.of(item);
+            }
+        }
+        return Optional.empty();
+    }
+
+    public Optional<CustomItem> getItemByDisplayName(String name) {
+        for (CustomItem item : getAllItems()) {
+            if (item.getItem().getItemMeta().getDisplayName().equalsIgnoreCase(name)) {
                 return Optional.of(item);
             }
         }

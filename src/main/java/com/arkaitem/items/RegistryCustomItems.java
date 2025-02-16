@@ -14,9 +14,9 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public abstract class RegistryCustomItems {
-    private static final Set<ItemStack> items = new HashSet<>();
+    private static final Set<CustomItem> items = new HashSet<>();
 
-    public static Set<ItemStack> getItems() {
+    public static Set<CustomItem> getItems() {
         return items;
     }
 
@@ -26,8 +26,9 @@ public abstract class RegistryCustomItems {
         if (itemsSection != null) {
             for (Object obj : itemsSection) {
                 try {
-                    ItemStack item = processItem(obj);
-                    items.add(item);
+                    Map<String, Object> data = (Map<String, Object>) obj;
+                    ItemStack item = processItem(data);
+                    items.add(new CustomItem((String) data.get("id"), item));
                 } catch (Exception e) {
                     Bukkit.getLogger().log(Level.SEVERE, "Failed to load items: ", e);
                 }
@@ -35,9 +36,7 @@ public abstract class RegistryCustomItems {
         }
     }
 
-    private static ItemStack processItem(Object itemObject) {
-        Map<String, Object> section = (Map<String, Object>) itemObject;
-
+    private static ItemStack processItem(Map<String, Object> section) {
         Material material = Material.valueOf(section.get("material").toString().toUpperCase());
 
         ItemStack item = new ItemStack(material);

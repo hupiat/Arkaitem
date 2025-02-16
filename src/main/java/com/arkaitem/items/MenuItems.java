@@ -9,6 +9,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Optional;
 import java.util.Set;
 
 public class MenuItems implements Listener {
@@ -16,15 +17,15 @@ public class MenuItems implements Listener {
     private static final String TITLE = "Choisis un item";
 
     public void open(Player player) {
-        Set<ItemStack> items = Program.INSTANCE.ITEMS_MANAGER.getAllItems();
+        Set<CustomItem> items = Program.INSTANCE.ITEMS_MANAGER.getAllItems();
 
         // Chests must have a size which is a multiple of 9
         int inventorySize = ((items.size() + 8) / 9) * 9;
         Inventory menu = Bukkit.createInventory(null, inventorySize, TITLE);
 
         int i = 0;
-        for (ItemStack item : items) {
-            menu.setItem(i, item);
+        for (CustomItem item : items) {
+            menu.setItem(i, item.getItem());
             i++;
         }
 
@@ -41,9 +42,15 @@ public class MenuItems implements Listener {
             ItemStack clickedItem = event.getCurrentItem();
 
             Player player = (Player) event.getWhoClicked();
-            String itemName = clickedItem.getType().name();
+            String itemName = clickedItem.getItemMeta().getDisplayName();
 
-            String command = "arkaitem give " + itemName + " " + player.getName();
+            Optional<CustomItem> item = Program.INSTANCE.ITEMS_MANAGER.getItemByDisplayName(itemName);
+
+            if (!item.isPresent()) {
+                throw new IllegalStateException("No custom item found with display name: " + itemName);
+            }
+
+            String command = "arkaitem give " + item.get().getId() + " " + player.getName();
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
         }
     }

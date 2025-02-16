@@ -61,7 +61,7 @@ recipe:
     ingredients:
       - DIAMOND
       - STICK
-      - PLAYER_HEAD
+      - SKULL
     shape:
       - " H "
       - " D "
