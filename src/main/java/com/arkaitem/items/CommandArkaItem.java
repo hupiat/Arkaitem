@@ -92,13 +92,16 @@ public class CommandArkaItem implements CommandExecutor {
             return true;
         }
         Player player = (Player) sender;
-        player.sendMessage(ChatColor.GREEN + "Le menu des items est en cours d'implémentation !");
+        MenuItems menu = new MenuItems();
+        menu.open(player);
         return true;
     }
 
     private boolean handleDisableCommand(CommandSender sender) {
         if (!pluginEnabled) {
             sender.sendMessage(ChatColor.RED + "Les fonctionnalités des items sont déjà désactivées.");
+        } else {
+            Program.INSTANCE.onDisable();
         }
         pluginEnabled = false;
         return true;
@@ -107,6 +110,8 @@ public class CommandArkaItem implements CommandExecutor {
     private boolean handleEnableCommand(CommandSender sender) {
         if (pluginEnabled) {
             sender.sendMessage(ChatColor.GREEN + "Les fonctionnalités des items sont déjà activées.");
+        } else {
+            Program.INSTANCE.onEnable();
         }
         pluginEnabled = true;
         return true;

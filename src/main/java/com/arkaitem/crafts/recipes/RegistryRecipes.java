@@ -19,7 +19,8 @@ public abstract class RegistryRecipes {
     }
 
     public static void processAllRecipes(FileConfiguration config) {
-        ConfigurationSection recipesSection = config.getConfigurationSection("recipes");
+        recipes.clear();
+        ConfigurationSection recipesSection = config.getConfigurationSection("recipe");
         if (recipesSection != null) {
             for (String key : recipesSection.getKeys(false)) {
                 try {
@@ -36,7 +37,7 @@ public abstract class RegistryRecipes {
     }
 
     static ShapedRecipe getRecipeFromFile(FileConfiguration config, String id) {
-        ConfigurationSection section = config.getConfigurationSection("recipes." + id);
+        ConfigurationSection section = config.getConfigurationSection("recipe." + id);
 
         ItemStack result = new ItemStack(Material.valueOf(section.getString("result.item")));
         result.setAmount(section.getInt("result.amount", 1));

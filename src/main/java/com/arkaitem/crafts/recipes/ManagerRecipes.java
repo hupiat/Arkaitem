@@ -2,6 +2,8 @@ package com.arkaitem.crafts.recipes;
 
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -30,9 +32,25 @@ public class ManagerRecipes {
         return recipeConfig;
     }
 
+    public void reloadRecipesConfig() {
+        this.recipeConfig.setDefaults(YamlConfiguration.loadConfiguration(recipeFile));
+    }
+
+    private void saveRecipeConfig() {
+        try {
+            recipeConfig.save(recipeFile);
+        } catch (IOException e) {
+            Bukkit.getLogger().log(Level.SEVERE, "Failed to save recipe config", e);
+        }
+    }
+
     public boolean isValidRecipe(Map<Integer, ItemStack> input) {
         for (String key : recipeConfig.getKeys(false)) {
-            List<Map<String, Object>> recipeList = getRecipe(key);
+            List<?> rawList = recipeConfig.getMapList(key);
+            List<Map<String, Object>> recipeList = rawList.stream()
+                    .filter(obj -> obj instanceof Map)
+                    .map(obj -> (Map<String, Object>) obj)
+                    .collect(Collectors.toList());
             if (compareRecipes(input, recipeList)) {
                 return true;
             }
@@ -40,9 +58,17 @@ public class ManagerRecipes {
         return false;
     }
 
-    public void addRecipe(String name, List<Map<String, Object>> recipe) {
-        recipeConfig.set(name, recipe);
+    public void addRecipe(String key, ItemStack result, List<String> shape, Set<String> ingredients) {
+        ConfigurationSection section = recipeConfig.createSection("recipe." + key);
+        section.set("result.item", result.getType().toString());
+        section.set("result.amount", result.getAmount());
+        section.set("shape", shape);
+
+        section.set("ingredients", ingredients);
+
         saveRecipeConfig();
+        reloadRecipesConfig();
+        RegistryRecipes.processAllRecipes(recipeConfig);
     }
 
     public Set<ShapedRecipe> getAllRecipes() {
@@ -67,22 +93,6 @@ public class ManagerRecipes {
             }
         }
         return true;
-    }
-
-    private List<Map<String, Object>> getRecipe(String name) {
-        List<?> rawList = recipeConfig.getMapList(name);
-        return rawList.stream()
-                .filter(obj -> obj instanceof Map)
-                .map(obj -> (Map<String, Object>) obj)
-                .collect(Collectors.toList());
-    }
-
-    private void saveRecipeConfig() {
-        try {
-            recipeConfig.save(recipeFile);
-        } catch (IOException e) {
-            Bukkit.getLogger().log(Level.SEVERE, "Failed to save recipe config", e);
-        }
     }
 }
 

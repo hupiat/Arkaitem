@@ -24,7 +24,8 @@ public abstract class RegistryCustomItems {
     }
 
     public static void processAllItems(FileConfiguration config) {
-        ConfigurationSection itemsSection = config.getConfigurationSection("items");
+        items.clear();
+        ConfigurationSection itemsSection = config.getConfigurationSection("item");
         if (itemsSection != null) {
             for (String key : itemsSection.getKeys(false)) {
                 try {
@@ -38,7 +39,7 @@ public abstract class RegistryCustomItems {
     }
 
     static ItemStack getItemFromFile(FileConfiguration config, String id) {
-        ConfigurationSection section = config.getConfigurationSection("items." + id);
+        ConfigurationSection section = config.getConfigurationSection("item." + id);
 
         Material material = Material.valueOf(section.getString("material"));
         ItemStack item = new ItemStack(material);

@@ -1,5 +1,6 @@
 package com.arkaitem.items;
 
+import com.arkaitem.crafts.recipes.RegistryRecipes;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -39,11 +40,11 @@ public class ManagerCustomItems {
         this.itemsConfig.setDefaults(YamlConfiguration.loadConfiguration(itemsFile));
     }
 
-    public void saveItemsConfig() {
+    private void saveItemsConfig() {
         try {
             itemsConfig.save(itemsFile);
         } catch (IOException e) {
-            Bukkit.getLogger().log(Level.SEVERE, "Failed to save items.yml: ", e);
+            Bukkit.getLogger().log(Level.SEVERE, "Failed to save items config", e);
         }
     }
 
@@ -60,7 +61,7 @@ public class ManagerCustomItems {
     }
 
     public void addItem(String key, ItemStack item, Set<String> customAdds) {
-        ConfigurationSection section = itemsConfig.createSection("items." + key);
+        ConfigurationSection section = itemsConfig.createSection("item." + key);
         section.set("material", item.getType().toString());
 
         ItemMeta meta = item.getItemMeta();
@@ -86,5 +87,7 @@ public class ManagerCustomItems {
         }
 
         saveItemsConfig();
+        reloadItemsConfig();
+        RegistryRecipes.processAllRecipes(itemsConfig);
     }
 }
