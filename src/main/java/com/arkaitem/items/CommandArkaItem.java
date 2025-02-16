@@ -1,6 +1,7 @@
 package com.arkaitem.items;
 
 import com.arkaitem.Program;
+import com.arkaitem.crafts.recipes.RegistryRecipes;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -114,6 +115,7 @@ public class CommandArkaItem implements CommandExecutor {
     private boolean handleReloadCommand(CommandSender sender) {
         itemManager.reloadItemsConfig();
         RegistryCustomItems.processAllItems(Program.INSTANCE.ITEMS_MANAGER.getItemsConfig());
+        RegistryRecipes.processAllRecipes(Program.INSTANCE.RECIPES_MANAGER.getRecipeConfig());
         sender.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("plugin_reload", null));
         return true;
     }

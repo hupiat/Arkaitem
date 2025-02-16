@@ -1,5 +1,7 @@
 package com.arkaitem;
 
+import com.arkaitem.crafts.recipes.ManagerRecipes;
+import com.arkaitem.crafts.recipes.RegistryRecipes;
 import com.arkaitem.items.CommandArkaItem;
 import com.arkaitem.items.EventsItems;
 import com.arkaitem.items.ManagerCustomItems;
@@ -10,8 +12,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Program extends JavaPlugin {
     public static Program INSTANCE;
 
-    public final ManagerCustomItems ITEMS_MANAGER = new ManagerCustomItems(Program.this);
+    public final ManagerCustomItems ITEMS_MANAGER = new ManagerCustomItems(this);
     public final ManagerMessages MESSAGES_MANAGER = new ManagerMessages(this);
+    public final ManagerRecipes RECIPES_MANAGER = new ManagerRecipes(this);
 
     public Program() {
         INSTANCE = this;
@@ -23,6 +26,7 @@ public class Program extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new EventsItems(), this);
 
         RegistryCustomItems.processAllItems(ITEMS_MANAGER.getItemsConfig());
+        RegistryRecipes.processAllRecipes(RECIPES_MANAGER.getRecipeConfig());
 
         getLogger().info(MESSAGES_MANAGER.getMessage("plugin_enabled", null));
     }

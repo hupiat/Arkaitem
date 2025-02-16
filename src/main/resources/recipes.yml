@@ -1,0 +1,121 @@
+recipes:
+  lame_de_l'infinie:
+    ingredients:
+      - DIAMOND
+      - STICK
+    shape:
+      - " D "
+      - " D "
+      - " S "
+    result:
+      item: "lame_de_l'infinie"
+      amount: 1
+
+  casque_de_l'infinie:
+    ingredients:
+      - DIAMOND
+    shape:
+      - "DDD"
+      - "D D"
+      - "   "
+    result:
+      item: "casque_de_l'infinie"
+      amount: 1
+
+  bottes_no_falls:
+    ingredients:
+      - DIAMOND
+    shape:
+      - "   "
+      - "D D"
+      - "D D"
+    result:
+      item: "bottes_no_falls"
+      amount: 1
+
+  plastron_de_tp:
+    ingredients:
+      - DIAMOND
+    shape:
+      - "D D"
+      - "DDD"
+      - "DDD"
+    result:
+      item: "plastron_de_tp"
+      amount: 1
+
+  lame_voleuse_de_vie:
+    ingredients:
+      - DIAMOND
+      - GOLD_INGOT
+      - STICK
+    shape:
+      - " G "
+      - " D "
+      - " S "
+    result:
+      item: "lame_voleuse_de_vie"
+      amount: 1
+
+  épée_du_chasseur_de_têtes:
+    ingredients:
+      - DIAMOND
+      - STICK
+      - PLAYER_HEAD
+    shape:
+      - " H "
+      - " D "
+      - " S "
+    result:
+      item: "épée_du_chasseur_de_têtes"
+      amount: 1
+
+  lame_des_ténèbres:
+    ingredients:
+      - DIAMOND
+      - OBSIDIAN
+      - STICK
+    shape:
+      - " O "
+      - " D "
+      - " S "
+    result:
+      item: "lame_des_ténèbres"
+      amount: 1
+
+  épée_du_sorcier:
+    ingredients:
+      - DIAMOND
+      - LAPIS_LAZULI
+      - STICK
+    shape:
+      - " L "
+      - " D "
+      - " S "
+    result:
+      item: "épée_du_sorcier"
+      amount: 1
+
+  dague_de_vole:
+    ingredients:
+      - IRON_INGOT
+      - STICK
+    shape:
+      - "   "
+      - " I "
+      - " S "
+    result:
+      item: "dague_de_vole"
+      amount: 1
+
+  colonne_obsi:
+    ingredients:
+      - OBSIDIAN
+      - STICK
+    shape:
+      - " O "
+      - " O "
+      - " S "
+    result:
+      item: "colonne_obsi"
+      amount: 1

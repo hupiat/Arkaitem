@@ -37,7 +37,7 @@ public abstract class RegistryCustomItems {
         }
     }
 
-    public static ItemStack getItemFromFile(FileConfiguration config, String id) {
+    static ItemStack getItemFromFile(FileConfiguration config, String id) {
         ConfigurationSection section = config.getConfigurationSection("items." + id);
 
         Material material = Material.valueOf(section.getString("material"));
