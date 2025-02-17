@@ -79,36 +79,25 @@ public class ManagerRecipes {
         String[] shape = recipe.getShape();
         Map<Character, ItemStack> ingredientMap = recipe.getIngredientMap();
 
-        int shapeSize = shape.length; // La shape est toujours carrée
+        int shapeSize = shape.length;
 
         ItemStack[][] inventoryMatrix = new ItemStack[gridSize][gridSize];
 
-        // Remplissage de la matrice d'inventaire avec NULL au lieu d'AIR
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {
                 int slotIndex = gridStartIndex + (row * 9) + col;
+                if (slotIndex > inventory.getSize()) {
+                    continue;
+                }
                 ItemStack item = inventory.getItem(slotIndex);
                 inventoryMatrix[row][col] = (item != null && item.getType() != Material.AIR) ? item : null;
             }
         }
 
-        // Debug : Affichage de la matrice d'inventaire
-        System.out.println("=== INVENTORY MATRIX ===");
-        for (int row = 0; row < gridSize; row++) {
-            for (int col = 0; col < gridSize; col++) {
-                System.out.print((inventoryMatrix[row][col] != null ? inventoryMatrix[row][col] : "EMPTY") + " | ");
-            }
-            System.out.println();
-        }
-
-        // Itération sur chaque position possible où la shape peut commencer
         for (int startRow = 0; startRow <= gridSize - shapeSize; startRow++) {
             for (int startCol = 0; startCol <= gridSize - shapeSize; startCol++) {
-                boolean match = true; // On suppose que ça matche
+                boolean match = true;
 
-                System.out.println("Testing shape placement at [" + startRow + "," + startCol + "]");
-
-                // Vérification de toute la shape à cette position
                 for (int row = 0; row < shapeSize; row++) {
                     for (int col = 0; col < shapeSize; col++) {
                         char ingredientChar = shape[row].charAt(col);
@@ -124,12 +113,8 @@ public class ManagerRecipes {
 
                         ItemStack current = inventoryMatrix[inventoryRow][inventoryCol];
 
-                        System.out.println("Comparing [" + inventoryRow + "," + inventoryCol + "]");
-                        System.out.println("Expected: " + (expected != null ? expected : "NONE"));
-                        System.out.println("Actual: " + (current != null ? current : "NONE"));
-
-                        // Vérification de la correspondance
-                        if (!ItemsUtils.areEquals(expected, current)) {
+                        if (!ItemsUtils.areEquals(expected, current,
+                                (exp, curr) -> curr.getAmount() >= exp.getAmount())) {
                             match = false;
                             break;
                         }
@@ -139,9 +124,7 @@ public class ManagerRecipes {
                     }
                 }
 
-                // Si on trouve un placement qui matche, on renvoie true
                 if (match) {
-                    System.out.println("MATCH FOUND at [" + startRow + "," + startCol + "]");
                     return true;
                 }
             }

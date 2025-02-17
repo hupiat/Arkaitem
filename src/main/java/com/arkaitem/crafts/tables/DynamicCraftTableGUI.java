@@ -60,8 +60,7 @@ public class DynamicCraftTableGUI implements InventoryHolder {
     }
 
     public int getGridStart(int gridSize) {
-        int totalRows = calculateInventorySize(gridSize) / 9;
-        int startRow = (totalRows - gridSize) / 2;
+        int startRow = (6 - gridSize) / 2;
         int startCol = (9 - gridSize) / 2;
         return startRow * 9 + startCol;
     }
