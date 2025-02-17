@@ -3,6 +3,7 @@ package com.arkaitem.crafts.tables;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -22,7 +23,7 @@ public class DynamicCraftTableGUI implements InventoryHolder {
         this.inventorySize = calculateInventorySize(gridSize);
         this.gridStartIndex = getGridStart(gridSize);
         this.resultSlot = getResultSlot(gridSize);
-        this.inventory = Bukkit.createInventory(this, inventorySize, "Table de Craft Dynamique");
+        this.inventory = Bukkit.createInventory(this, inventorySize, "Table de craft dynamique");
         setupGUI();
     }
 
@@ -35,12 +36,18 @@ public class DynamicCraftTableGUI implements InventoryHolder {
         player.openInventory(inventory);
     }
 
+    public int getGridSize() {
+        return gridSize;
+    }
+
     public void updateCraftResult(ItemStack result) {
         inventory.setItem(resultSlot, result != null ? result : new ItemStack(Material.BARRIER));
     }
 
-    public boolean isResultSlot(int slot) {
-        return slot == resultSlot;
+    public int getResultSlot(int gridSize) {
+        int resultRow = (gridStartIndex / 9) + (gridSize / 2);
+        int resultCol = (gridStartIndex % 9) + gridSize + 1;
+        return resultRow * 9 + resultCol;
     }
 
     public boolean isInGrid(int slot) {
@@ -52,28 +59,25 @@ public class DynamicCraftTableGUI implements InventoryHolder {
                 col >= gridStartCol && col < gridStartCol + gridSize;
     }
 
+    public int getGridStart(int gridSize) {
+        int totalRows = calculateInventorySize(gridSize) / 9;
+        int startRow = (totalRows - gridSize) / 2;
+        int startCol = (9 - gridSize) / 2;
+        return startRow * 9 + startCol;
+    }
+
     private void setupGUI() {
         for (int i = 0; i < inventorySize; i++) {
             if (i == resultSlot) {
-                inventory.setItem(i, new ItemStack(createCustomDisplayItem(Material.BARRIER, "Résultat")));
+                inventory.setItem(i, createCustomDisplayItem(Material.BARRIER, "Résultat"));
             } else if (!isInGrid(i)) {
-                inventory.setItem(i, new ItemStack(createCustomDisplayItem(Material.STAINED_GLASS_PANE, 1, (short) 15, "Indisponible")));
+                inventory.setItem(i, createCustomDisplayItem(Material.STAINED_GLASS_PANE, 1, (short) 15, "Indisponible"));
             }
         }
     }
 
     private int calculateInventorySize(int gridSize) {
         return Math.min(6 * 9, Math.max(3 * 9, (gridSize + 1) * 9));
-    }
-
-    private int getGridStart(int gridSize) {
-        return ((calculateInventorySize(gridSize) / 9 - gridSize) / 2) * 9 + (9 - gridSize) / 2;
-    }
-
-    private int getResultSlot(int gridSize) {
-        int lastRow = (gridStartIndex / 9) + gridSize;
-        int centerCol = gridStartIndex % 9 + (gridSize / 2);
-        return Math.min(lastRow * 9 + centerCol, inventorySize - 5);
     }
 
     private ItemStack createCustomDisplayItem(Material material, String displayName) {

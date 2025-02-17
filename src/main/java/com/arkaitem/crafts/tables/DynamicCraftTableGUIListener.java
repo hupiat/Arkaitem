@@ -1,6 +1,7 @@
 package com.arkaitem.crafts.tables;
 
 import com.arkaitem.Program;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -19,13 +20,13 @@ public class DynamicCraftTableGUIListener implements Listener {
 
         DynamicCraftTableGUI gui = (DynamicCraftTableGUI) event.getInventory().getHolder();
 
-        if (!gui.isInGrid(event.getSlot()) || gui.isResultSlot(event.getSlot())) {
+        if (!gui.isInGrid(event.getSlot()) || gui.getResultSlot(gui.getGridSize()) == event.getSlot()) {
             event.setCancelled(true);
             return;
         }
 
         for (ShapedRecipe recipe : Program.INSTANCE.RECIPES_MANAGER.getAllRecipes()) {
-            if (Program.INSTANCE.RECIPES_MANAGER.compareRecipes(event.getInventory(), recipe)) {
+            if (Program.INSTANCE.RECIPES_MANAGER.compareRecipes(recipe, event.getInventory(), gui.getGridSize(), gui.getGridStart(gui.getGridSize()))) {
                 gui.updateCraftResult(recipe.getResult());
             }
         }
