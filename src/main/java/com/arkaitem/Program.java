@@ -2,6 +2,8 @@ package com.arkaitem;
 
 import com.arkaitem.crafts.recipes.ManagerRecipes;
 import com.arkaitem.crafts.recipes.RegistryRecipes;
+import com.arkaitem.crafts.tables.CommandDynamicCraft;
+import com.arkaitem.crafts.tables.DynamicCraftTableGUIListener;
 import com.arkaitem.items.*;
 import com.arkaitem.messages.ManagerMessages;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,10 +24,12 @@ public class Program extends JavaPlugin {
     @Override
     public void onEnable() {
         if (!isRegistered) {
-            getCommand("arkaitem").setExecutor(new CommandArkaItem(ITEMS_MANAGER));
+            getCommand("arkaitem").setExecutor(new CommandArkaItem());
+            getCommand("arkaitemcraft").setExecutor(new CommandDynamicCraft());
 
             getServer().getPluginManager().registerEvents(new EventsItems(), this);
-            getServer().getPluginManager().registerEvents(new MenuItems(), this);
+            getServer().getPluginManager().registerEvents(new MenuItemsGUIListener(), this);
+            getServer().getPluginManager().registerEvents(new DynamicCraftTableGUIListener(), this);
 
             isRegistered = true;
         }

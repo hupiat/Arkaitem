@@ -57,6 +57,10 @@ public interface ICustomAdds {
     }
 
     default boolean hasCustomAdd(ItemStack item, String tag) {
+        if (item == null || item.getItemMeta() == null || !item.getItemMeta().hasLore()) {
+            return false;
+        }
+
         for (String line : item.getItemMeta().getLore()) {
             if (ChatColor.stripColor(line).contains(tag)) {
                 return true;

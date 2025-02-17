@@ -1,10 +1,12 @@
 package com.arkaitem.crafts.recipes;
 
 
+import com.arkaitem.items.ItemsUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -43,20 +45,6 @@ public class ManagerRecipes {
         }
     }
 
-    public boolean isValidRecipe(Map<Integer, ItemStack> input) {
-        for (String key : recipeConfig.getKeys(false)) {
-            List<?> rawList = recipeConfig.getMapList(key);
-            List<Map<String, Object>> recipeList = rawList.stream()
-                    .filter(obj -> obj instanceof Map)
-                    .map(obj -> (Map<String, Object>) obj)
-                    .collect(Collectors.toList());
-            if (compareRecipes(input, recipeList)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public void addRecipe(String key, ItemStack result, List<String> shape, Set<String> ingredients) {
         ConfigurationSection section = recipeConfig.createSection("recipes." + key);
 
@@ -90,15 +78,27 @@ public class ManagerRecipes {
         return Optional.empty();
     }
 
-    private boolean compareRecipes(Map<Integer, ItemStack> input, List<Map<String, Object>> recipe) {
-        if (input.size() != recipe.size()) return false;
-        for (int i = 0; i < input.size(); i++) {
-            ItemStack item = input.get(i);
-            Map<String, Object> recipeItem = recipe.get(i);
-            if (item == null || !item.getType().toString().equals(recipeItem.get("material"))) {
-                return false;
+    public boolean compareRecipes(Inventory inventory, ShapedRecipe recipe, int startSlot) {
+        String[] shape = recipe.getShape();
+        System.out.println(shape);
+        Map<Character, ItemStack> ingredientMap = recipe.getIngredientMap();
+
+        for (int row = 0; row < shape.length; row++) {
+            String line = shape[row];
+            for (int col = 0; col < line.length(); col++) {
+                char symbol = line.charAt(col);
+                int slot = startSlot + row * 9 + col;
+
+                ItemStack expected = ingredientMap.get(symbol);
+                ItemStack actual = inventory.getItem(slot);
+
+
+                if (!ItemsUtils.areEqualsWithAmount(expected, actual)) {
+                    return false;
+                }
             }
         }
+
         return true;
     }
 }

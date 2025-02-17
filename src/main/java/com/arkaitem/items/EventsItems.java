@@ -32,13 +32,16 @@ public class EventsItems implements Listener, ICustomAdds {
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent event) {
         ItemStack item = event.getItemDrop().getItemStack();
-        if (hasCustomAdd(item, CANT_DROP)) {
-            event.setCancelled(true);
-            event.getPlayer().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cannot_drop", null));
-        } else {
-            Map<String, String> placeholders = new HashMap<>();
-            placeholders.put("item_name", item.getItemMeta().getDisplayName());
-            event.getPlayer().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_dropped", placeholders));
+
+        if (event.getPlayer() != null) {
+            if (hasCustomAdd(item, CANT_DROP)) {
+                event.setCancelled(true);
+                event.getPlayer().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cannot_drop", null));
+            } else {
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("item_name", item.getItemMeta().getDisplayName());
+                event.getPlayer().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_dropped", placeholders));
+            }
         }
     }
 
@@ -56,7 +59,9 @@ public class EventsItems implements Listener, ICustomAdds {
 
     @EventHandler
     public void onItemDamage(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player)) return;
+        if (!(event.getDamager() instanceof Player)) {
+            return;
+        }
         Player player = (Player) event.getDamager();
         ItemStack item = player.getInventory().getItemInHand();
 
@@ -69,7 +74,9 @@ public class EventsItems implements Listener, ICustomAdds {
 
     @EventHandler
     public void onEntityDamage(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player)) return;
+        if (!(event.getDamager() instanceof Player)) {
+            return;
+        }
         Player player = (Player) event.getDamager();
         ItemStack item = player.getInventory().getItemInHand();
 
@@ -219,7 +226,9 @@ public class EventsItems implements Listener, ICustomAdds {
 
     @EventHandler
     public void onBlockColumnUse(PlayerInteractEvent event) {
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItemInHand();
 
@@ -397,6 +406,10 @@ public class EventsItems implements Listener, ICustomAdds {
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         Entity entity = event.getEntity();
+        if (!(entity.getLastDamageCause() instanceof EntityDamageByEntityEvent)) {
+            return;
+        }
+
         EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) entity.getLastDamageCause();
         Player player = (Player) damageEvent.getDamager();
         ItemStack item = player.getInventory().getItemInHand();

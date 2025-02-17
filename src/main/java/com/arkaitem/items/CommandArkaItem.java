@@ -14,18 +14,13 @@ import java.util.Map;
 import java.util.Optional;
 
 public class CommandArkaItem implements CommandExecutor {
-    private final ManagerCustomItems itemManager;
     private boolean pluginEnabled = true;
-
-    public CommandArkaItem(ManagerCustomItems itemManager) {
-        this.itemManager = itemManager;
-    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
             sender.sendMessage(ChatColor.RED + "Utilisation : /arkaitem <give/menu/enable/disable/reload>");
-            return true;
+            return false;
         }
         switch (args[0].toLowerCase()) {
             case "give":
@@ -40,7 +35,7 @@ public class CommandArkaItem implements CommandExecutor {
                 return handleReloadCommand(sender);
             default:
                 sender.sendMessage(ChatColor.RED + "Commande inconnue. Utilisez /arkaitem <give/menu/enable/disable/reload>");
-                return true;
+                return false;
         }
     }
 
@@ -51,8 +46,8 @@ public class CommandArkaItem implements CommandExecutor {
         }
 
         if (args.length < 3) {
-            sender.sendMessage(ChatColor.RED + "Usage : /arkaitem give <NomDeItem> <Pseudo>");
-            return true;
+            sender.sendMessage(ChatColor.RED + "Usage : /arkaitem give <nom_item> <pseudo>");
+            return false;
         }
 
         String itemId = args[1];
@@ -62,7 +57,7 @@ public class CommandArkaItem implements CommandExecutor {
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("player", args[2]);
             sender.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("player_not_found", placeholders));
-            return true;
+            return false;
         }
 
         Optional<CustomItem> item = Program.INSTANCE.ITEMS_MANAGER.getItemById(itemId);
@@ -71,7 +66,7 @@ public class CommandArkaItem implements CommandExecutor {
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("item_name", itemId);
             sender.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_not_found", placeholders));
-            return true;
+            return false;
         }
 
         target.getInventory().addItem(item.get().getItem());
@@ -90,10 +85,10 @@ public class CommandArkaItem implements CommandExecutor {
 
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "Seuls les joueurs peuvent ouvrir le menu.");
-            return true;
+            return false;
         }
         Player player = (Player) sender;
-        MenuItems menu = new MenuItems();
+        MenuItemsGUI menu = new MenuItemsGUI();
         menu.open(player);
         return true;
     }
@@ -119,7 +114,7 @@ public class CommandArkaItem implements CommandExecutor {
     }
 
     private boolean handleReloadCommand(CommandSender sender) {
-        itemManager.reloadItemsConfig();
+        Program.INSTANCE.ITEMS_MANAGER.reloadItemsConfig();
         RegistryCustomItems.processAllItems(Program.INSTANCE.ITEMS_MANAGER.getItemsConfig());
         RegistryRecipes.processAllRecipes(Program.INSTANCE.RECIPES_MANAGER.getRecipeConfig());
         sender.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("plugin_reload", null));

@@ -9,6 +9,10 @@ commands:
     description: Commande principale pour gérer les items custom
     usage: /arkaitem <give/menu/enable/disable/reload>
     permission: arkaitem.admin
+  arkaitemcraft:
+    description: Commande de gestion des crafts customs
+    usage: /arkaitem <open/add/remove>
+    permission: arkaitem.admin
 permissions:
   arkaitem.admin:
     default: op

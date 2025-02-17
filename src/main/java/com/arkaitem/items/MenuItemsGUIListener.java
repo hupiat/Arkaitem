@@ -10,33 +10,14 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Optional;
-import java.util.Set;
 
-public class MenuItems implements Listener {
-
-    private static final String TITLE = "Choisis un item";
-
-    public void open(Player player) {
-        Set<CustomItem> items = Program.INSTANCE.ITEMS_MANAGER.getAllItems();
-
-        // Chests must have a size which is a multiple of 9
-        int inventorySize = ((items.size() + 8) / 9) * 9;
-        Inventory menu = Bukkit.createInventory(null, inventorySize, TITLE);
-
-        int i = 0;
-        for (CustomItem item : items) {
-            menu.setItem(i, item.getItem());
-            i++;
-        }
-
-        player.openInventory(menu);
-    }
+public class MenuItemsGUIListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         Inventory inventory = event.getInventory();
 
-        if (inventory.getTitle().equalsIgnoreCase(TITLE)) {
+        if (inventory.getTitle().equalsIgnoreCase(MenuItemsGUI.TITLE)) {
             event.setCancelled(true);
 
             ItemStack clickedItem = event.getCurrentItem();
