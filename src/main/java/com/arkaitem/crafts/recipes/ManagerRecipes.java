@@ -58,12 +58,20 @@ public class ManagerRecipes {
     }
 
     public void addRecipe(String key, ItemStack result, List<String> shape, Set<String> ingredients) {
-        ConfigurationSection section = recipeConfig.createSection("recipe." + key);
-        section.set("result.item", result.getType().toString());
-        section.set("result.amount", result.getAmount());
+        ConfigurationSection section = recipeConfig.createSection("recipes." + key);
+
+        ConfigurationSection resultSection = section.createSection("output");
+        resultSection.set("item", result.getType().toString());
+        resultSection.set("amount", result.getAmount());
+
         section.set("shape", shape);
 
-        section.set("ingredients", ingredients);
+        ConfigurationSection ingredientsSection = section.createSection("ingredients");
+        for (String ingredient : ingredients) {
+            char symbol = ingredient.charAt(0);
+            String materialName = ingredient.substring(2).trim();
+            ingredientsSection.set(String.valueOf(symbol), materialName);
+        }
 
         saveRecipeConfig();
         reloadRecipesConfig();

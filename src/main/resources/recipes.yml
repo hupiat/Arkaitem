@@ -1,121 +1,107 @@
-recipe:
-  lame_de_l'infinie:
+recipes:
+  lame_de_l_infinie:
+    grid_size: 3x3
     ingredients:
-      - DIAMOND
-      - STICK
-    shape:
-      - " D "
-      - " D "
-      - " S "
-    result:
-      item: "lame_de_l'infinie"
+      "1,0": "DIAMOND"
+      "1,1": "DIAMOND"
+      "1,2": "STICK"
+    output:
+      item: "lame_de_l_infinie"
       amount: 1
 
-  casque_de_l'infinie:
+  casque_de_l_infinie:
+    grid_size: 3x3
     ingredients:
-      - DIAMOND
-    shape:
-      - "DDD"
-      - "D D"
-      - "   "
-    result:
-      item: "casque_de_l'infinie"
+      "0,0": "DIAMOND"
+      "1,0": "DIAMOND"
+      "2,0": "DIAMOND"
+      "0,1": "DIAMOND"
+      "2,1": "DIAMOND"
+    output:
+      item: "casque_de_l_infinie"
       amount: 1
 
   bottes_no_falls:
+    grid_size: 3x3
     ingredients:
-      - DIAMOND
-    shape:
-      - "   "
-      - "D D"
-      - "D D"
-    result:
+      "0,1": "DIAMOND"
+      "2,1": "DIAMOND"
+      "0,2": "DIAMOND"
+      "2,2": "DIAMOND"
+    output:
       item: "bottes_no_falls"
       amount: 1
 
   plastron_de_tp:
+    grid_size: 3x3
     ingredients:
-      - DIAMOND
-    shape:
-      - "D D"
-      - "DDD"
-      - "DDD"
-    result:
+      "0,0": "DIAMOND"
+      "2,0": "DIAMOND"
+      "0,1": "DIAMOND"
+      "1,1": "DIAMOND"
+      "2,1": "DIAMOND"
+      "0,2": "DIAMOND"
+      "1,2": "DIAMOND"
+      "2,2": "DIAMOND"
+    output:
       item: "plastron_de_tp"
       amount: 1
 
   lame_voleuse_de_vie:
+    grid_size: 3x3
     ingredients:
-      - DIAMOND
-      - GOLD_INGOT
-      - STICK
-    shape:
-      - " G "
-      - " D "
-      - " S "
-    result:
+      "1,0": "GOLD_INGOT"
+      "1,1": "DIAMOND"
+      "1,2": "STICK"
+    output:
       item: "lame_voleuse_de_vie"
       amount: 1
 
-  épée_du_chasseur_de_têtes:
+  epee_du_chasseur_de_tetes:
+    grid_size: 3x3
     ingredients:
-      - DIAMOND
-      - STICK
-      - SKULL
-    shape:
-      - " H "
-      - " D "
-      - " S "
-    result:
-      item: "épée_du_chasseur_de_têtes"
+      "1,0": "SKULL"
+      "1,1": "DIAMOND"
+      "1,2": "STICK"
+    output:
+      item: "epee_du_chasseur_de_tetes"
       amount: 1
 
-  lame_des_ténèbres:
+  lame_des_tenebres:
+    grid_size: 3x3
     ingredients:
-      - DIAMOND
-      - OBSIDIAN
-      - STICK
-    shape:
-      - " O "
-      - " D "
-      - " S "
-    result:
-      item: "lame_des_ténèbres"
+      "1,0": "OBSIDIAN"
+      "1,1": "DIAMOND"
+      "1,2": "STICK"
+    output:
+      item: "lame_des_tenebres"
       amount: 1
 
-  épée_du_sorcier:
+  epee_du_sorcier:
+    grid_size: 3x3
     ingredients:
-      - DIAMOND
-      - LAPIS_LAZULI
-      - STICK
-    shape:
-      - " L "
-      - " D "
-      - " S "
-    result:
-      item: "épée_du_sorcier"
+      "1,0": "LAPIS_LAZULI"
+      "1,1": "DIAMOND"
+      "1,2": "STICK"
+    output:
+      item: "epee_du_sorcier"
       amount: 1
 
   dague_de_vole:
+    grid_size: 3x3
     ingredients:
-      - IRON_INGOT
-      - STICK
-    shape:
-      - "   "
-      - " I "
-      - " S "
-    result:
+      "1,1": "IRON_INGOT"
+      "1,2": "STICK"
+    output:
       item: "dague_de_vole"
       amount: 1
 
   colonne_obsi:
+    grid_size: 3x3
     ingredients:
-      - OBSIDIAN
-      - STICK
-    shape:
-      - " O "
-      - " O "
-      - " S "
-    result:
+      "1,0": "OBSIDIAN"
+      "1,1": "OBSIDIAN"
+      "1,2": "STICK"
+    output:
       item: "colonne_obsi"
       amount: 1

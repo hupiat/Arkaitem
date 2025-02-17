@@ -6,9 +6,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
@@ -39,26 +41,46 @@ public abstract class RegistryRecipes {
     }
 
     static ShapedRecipe getRecipeFromFile(FileConfiguration config, String id) {
-        ConfigurationSection section = config.getConfigurationSection("recipe." + id);
+        ConfigurationSection section = config.getConfigurationSection("recipes." + id);
+        if (section == null) {
+            throw new IllegalArgumentException("Recipe not found: " + id);
+        }
 
-        String itemId = section.getString("result.item");
+        String itemId = section.getString("output.item");
         Optional<CustomItem> result = Program.INSTANCE.ITEMS_MANAGER.getItemById(itemId);
 
         if (!result.isPresent()) {
             throw new IllegalArgumentException("Item for recipe: " + itemId + " not found");
         }
 
-        result.get().getItem().setAmount(section.getInt("result.amount", 1));
+        ItemStack resultItem = result.get().getItem();
+        resultItem.setAmount(section.getInt("output.amount", 1));
 
-        ShapedRecipe recipe = new ShapedRecipe(result.get().getItem());
-        recipe.shape(section.getStringList("shape").toArray(new String[0]));
+        String gridSize = section.getString("grid_size", "3x3");
+        String[] dimensions = gridSize.split("x");
+        int width = Integer.parseInt(dimensions[0]);
+        int height = Integer.parseInt(dimensions[1]);
+
+        ShapedRecipe recipe = new ShapedRecipe(resultItem);
+
+        List<String> shapeList = section.getStringList("shape");
+        if (shapeList.size() != height) {
+            throw new IllegalArgumentException("Invalid shape size for: " + id);
+        }
+
+        String[] shape = shapeList.toArray(new String[0]);
+        recipe.shape(shape);
 
         ConfigurationSection ingredientsSection = section.getConfigurationSection("ingredients");
-        if (ingredientsSection != null) {
-            for (String key : ingredientsSection.getKeys(false)) {
-                recipe.setIngredient(key.charAt(0), Material.valueOf(ingredientsSection.getString(key)));
-            }
+        if (ingredientsSection == null) {
+            throw new IllegalArgumentException("Ingredients section missing for: " + id);
         }
+
+        for (String key : ingredientsSection.getKeys(false)) {
+            Material material = Material.valueOf(ingredientsSection.getString(key));
+            recipe.setIngredient(key.charAt(0), material);
+        }
+
         return recipe;
     }
 }
