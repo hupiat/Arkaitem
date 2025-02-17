@@ -41,7 +41,7 @@ public abstract class RegistryRecipes {
     }
 
     static ShapedRecipe getRecipeFromFile(FileConfiguration config, String id) {
-        ConfigurationSection section = config.getConfigurationSection("recipes." + id);
+        ConfigurationSection section = config.getConfigurationSection("recipe." + id);
         if (section == null) {
             throw new IllegalArgumentException("Recipe not found: " + id);
         }

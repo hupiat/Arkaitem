@@ -46,7 +46,7 @@ public class ManagerRecipes {
     }
 
     public void addRecipe(String key, ItemStack result, List<String> shape, Set<String> ingredients) {
-        ConfigurationSection section = recipeConfig.createSection("recipes." + key);
+        ConfigurationSection section = recipeConfig.createSection("recipe." + key);
 
         ConfigurationSection resultSection = section.createSection("output");
         resultSection.set("item", result.getType().toString());
@@ -78,28 +78,43 @@ public class ManagerRecipes {
         return Optional.empty();
     }
 
-    public boolean compareRecipes(Inventory inventory, ShapedRecipe recipe, int startSlot) {
+    public boolean compareRecipes(Inventory inventory, ShapedRecipe recipe) {
         String[] shape = recipe.getShape();
-        System.out.println(shape);
         Map<Character, ItemStack> ingredientMap = recipe.getIngredientMap();
 
-        for (int row = 0; row < shape.length; row++) {
-            String line = shape[row];
-            for (int col = 0; col < line.length(); col++) {
-                char symbol = line.charAt(col);
-                int slot = startSlot + row * 9 + col;
+        int gridWidth = shape[0].length();
+        int gridHeight = shape.length;
 
-                ItemStack expected = ingredientMap.get(symbol);
-                ItemStack actual = inventory.getItem(slot);
+        for (int startRow = 0; startRow <= 3 - gridHeight; startRow++) {
+            for (int startCol = 0; startCol <= 3 - gridWidth; startCol++) {
+                boolean matches = true;
 
+                for (int row = 0; row < gridHeight; row++) {
+                    String line = shape[row];
+                    for (int col = 0; col < gridWidth; col++) {
+                        char symbol = line.charAt(col);
+                        int slot = (startRow * 9) + (startCol + col) + (row * 9);
 
-                if (!ItemsUtils.areEqualsWithAmount(expected, actual)) {
-                    return false;
+                        ItemStack expected = ingredientMap.get(symbol);
+                        ItemStack actual = inventory.getItem(slot);
+
+                        if (!ItemsUtils.areEqualsWithAmount(expected, actual)) {
+                            matches = false;
+                            break;
+                        }
+                    }
+                    if (!matches) {
+                        break;
+                    }
+                }
+
+                if (matches) {
+                    return true;
                 }
             }
         }
 
-        return true;
+        return false;
     }
 }
 

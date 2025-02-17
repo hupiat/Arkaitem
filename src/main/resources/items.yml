@@ -97,8 +97,8 @@
 # /!\ Il est nécessaire de mettre FullSetBoost que sur un seul item de l'ensemble.
 
 item:
-  - lame de l'infinie:
-    id: "lame_de_l'infinie"
+  - lame_de_l_infinie:
+    id: "lame_de_l_infinie"
     material: DIAMOND_SWORD
     name: "&6Lame de l'infinie"
     lore:
@@ -116,8 +116,8 @@ item:
       - "KEEP_ON_DEATH"
       - "UNBREAKABLE"
 
-  - casque de l'infinie:
-    id: "casque_de_l'infinie"
+  - casque_de_l_infinie:
+    id: "casque_de_l_infinie"
     material: DIAMOND_HELMET
     name: "&6Casque de l'infinie"
     lore:
@@ -132,7 +132,7 @@ item:
       - "GIVE_POTION;SPEED;1;1"
       - "KEEP_ON_DEATH"
 
-  - bottes no falls:
+  - bottes_no_falls:
     id: "bottes_no_falls"
     material: DIAMOND_BOOTS
     name: "&6Bottes No Falls"
@@ -148,7 +148,7 @@ item:
       - "NO_FALL_DAMAGE"
       - "KEEP_ON_DEATH"
 
-  - plastron de tp:
+  - plastron_de_tp:
     id: "plastron_de_tp"
     material: DIAMOND_CHESTPLATE
     name: "&6Plastron de TP"
@@ -181,8 +181,8 @@ item:
     customAdds:
       - "STEAL_LIFE;10;10"  # 10% de chance de voler 10% de la vie
 
-  - épée_du_chasseur_de_têtes:
-    id: "épée_du_chasseur_de_têtes"
+  - epee_du_chasseur_de_tetes:
+    id: "epee_du_chasseur_de_tetes"
     material: DIAMOND_SWORD
     name: "&6Épée du Chasseur de Têtes"
     lore:
@@ -196,8 +196,8 @@ item:
     customAdds:
       - "SPAWN_HEAD_ON_KILL"  # La tête du joueur tué est dropée
 
-  - lame_des_ténèbres:
-    id: "lame_des_ténèbres"
+  - lame_des_tenebres:
+    id: "lame_des_tenebres"
     material: DIAMOND_SWORD
     name: "&6Lame des Ténèbres"
     lore:
@@ -211,8 +211,8 @@ item:
     customAdds:
       - "HIT_EFFECT;POISON;1;5;20"  # 20% de chance d'infliger Poison niveau 1 pendant 5 secondes
 
-  - épée_du_sorcier:
-    id: "épée_du_sorcier"
+  - epee_du_sorcier:
+    id: "epee_du_sorcier"
     material: DIAMOND_SWORD
     name: "&6Épée du Sorcier"
     lore:
@@ -226,7 +226,7 @@ item:
     customAdds:
       - "SELF_EFFECT;HEALTH_BOOST;2;10;15"  # 15% de chance d'obtenir un boost de santé niveau 2 pendant 10 secondes
 
-  - dague de vole:
+  - dague_de_vole:
     id: "dague_de_vole"
     material: DIAMOND_SWORD
     name: "&6Dague de Vole"
@@ -241,7 +241,7 @@ item:
     customAdds:
       - "STEAL_MONEY;10;8000;10000"  # 10% de l'argent du joueur tapé est volé (entre 8000 et 10000)
 
-  - colonne obsi:
+  - colonne_obsi:
     id: "colonne_obsi"
     material: OBSIDIAN
     name: "&cBatis d'obsi"
@@ -258,7 +258,7 @@ item:
     consommables:
       - "CONSUMABLE;5"
 
-  - colonne sable:
+  - colonne_sable:
     id: "colonne_sand"
     material: SAND
     name: "&cBatis sable"
@@ -275,7 +275,7 @@ item:
     consommables:
       - "CONSUMABLE;5"
 
-  - casque invulnérable:
+  - casque_invulnérable:
     id: "casque_invulnerable"
     material: GOLD_HELMET
     name: "casque_invisible"
@@ -287,7 +287,7 @@ item:
       - "HIDE_PLAYER_NAME"
       - "killer_command;/heal"
       - "KILL_GIVE_POTION;SPEED;5;10"
-      
+
   - Espadon :
     id: "espadon"
     material: DIAMOND_SWORD
@@ -322,8 +322,8 @@ item:
       - "KEEP_ON_DEATH"
       - "UNBREAKABLE"
 
-  - casque de l'infinie:
-    id: "casque_de_l'infinie"
+  - casque_de_l_infinie:
+    id: "casque_de_l_infinie"
     material: DIAMOND_HELMET
     name: "&6Casque de l'infinie"
     lore:
@@ -622,12 +622,12 @@ item:
       - "plastron_farm"
       - "jambiere_farm"
       - "botte_farm"
-    
+
     fullSetCustomAdds:
       - "NO_FALL_DAMAGE"
       - "HIDE_PLAYER_NAME"
       - "GIVE_POTION;INVISIBILITY;1;999"
-      
+
   - plastron_farm :
     id: "plastron_farm"
     material: LEATHER_CHESTPLATE
@@ -849,7 +849,7 @@ item:
       - DURABILITY:3
       - ARROW_INFINITE:1
       - ARROW_KNOCKBACK:2
-      
+
     customAdds:
       - "CANT_DROP"
       - "NO_DISCARD"
@@ -1273,7 +1273,7 @@ item:
       - "multiplicateur;1.35" #35% de vente en plus avec ce masque 
 
   - sceptre_tp:
-    id: "sceptretp"
+    id: "sceptre_tp"
     material: BLAZE_ROD
     name: "&d✺ §5§lSceptre de Téléportation &d✺"
     lore:

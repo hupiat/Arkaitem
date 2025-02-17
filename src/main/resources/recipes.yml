@@ -1,107 +1,244 @@
-recipes:
-  lame_de_l_infinie:
+recipe:
+  bati_cobble30:
     grid_size: 3x3
     ingredients:
-      "1,0": "DIAMOND"
-      "1,1": "DIAMOND"
-      "1,2": "STICK"
+      X: COBBLESTONE
     output:
-      item: "lame_de_l_infinie"
       amount: 1
-
-  casque_de_l_infinie:
+      item: bati_cobble30
+    shape:
+      - ' X '
+      - ' X '
+      - ' X '
+  bati_cobble64:
     grid_size: 3x3
     ingredients:
-      "0,0": "DIAMOND"
-      "1,0": "DIAMOND"
-      "2,0": "DIAMOND"
-      "0,1": "DIAMOND"
-      "2,1": "DIAMOND"
+      X: COBBLESTONE
     output:
-      item: "casque_de_l_infinie"
       amount: 1
-
+      item: bati_cobble64
+    shape:
+      - ' X '
+      - ' X '
+      - ' X '
+  bati_obsi30:
+    grid_size: 3x3
+    ingredients:
+      X: OBSIDIAN
+    output:
+      amount: 1
+      item: bati_obsi30
+    shape:
+      - ' X '
+      - ' X '
+      - ' X '
+  bati_obsi64:
+    grid_size: 3x3
+    ingredients:
+      X: OBSIDIAN
+    output:
+      amount: 1
+      item: bati_obsi64
+    shape:
+      - ' X '
+      - ' X '
+      - ' X '
+  bati_sand30:
+    grid_size: 3x3
+    ingredients:
+      X: SAND
+    output:
+      amount: 1
+      item: bati_sand30
+    shape:
+      - ' X '
+      - ' X '
+      - ' X '
+  bati_sand64:
+    grid_size: 3x3
+    ingredients:
+      X: SAND
+    output:
+      amount: 1
+      item: bati_sand64
+    shape:
+      - ' X '
+      - ' X '
+      - ' X '
   bottes_no_falls:
     grid_size: 3x3
     ingredients:
-      "0,1": "DIAMOND"
-      "2,1": "DIAMOND"
-      "0,2": "DIAMOND"
-      "2,2": "DIAMOND"
+      X: DIAMOND
     output:
-      item: "bottes_no_falls"
       amount: 1
-
-  plastron_de_tp:
+      item: bottes_no_falls
+    shape:
+      - '   '
+      - X X
+      - X X
+  casque_de_l_infinie:
     grid_size: 3x3
     ingredients:
-      "0,0": "DIAMOND"
-      "2,0": "DIAMOND"
-      "0,1": "DIAMOND"
-      "1,1": "DIAMOND"
-      "2,1": "DIAMOND"
-      "0,2": "DIAMOND"
-      "1,2": "DIAMOND"
-      "2,2": "DIAMOND"
+      X: DIAMOND
     output:
-      item: "plastron_de_tp"
       amount: 1
-
-  lame_voleuse_de_vie:
-    grid_size: 3x3
-    ingredients:
-      "1,0": "GOLD_INGOT"
-      "1,1": "DIAMOND"
-      "1,2": "STICK"
-    output:
-      item: "lame_voleuse_de_vie"
-      amount: 1
-
-  epee_du_chasseur_de_tetes:
-    grid_size: 3x3
-    ingredients:
-      "1,0": "SKULL"
-      "1,1": "DIAMOND"
-      "1,2": "STICK"
-    output:
-      item: "epee_du_chasseur_de_tetes"
-      amount: 1
-
-  lame_des_tenebres:
-    grid_size: 3x3
-    ingredients:
-      "1,0": "OBSIDIAN"
-      "1,1": "DIAMOND"
-      "1,2": "STICK"
-    output:
-      item: "lame_des_tenebres"
-      amount: 1
-
-  epee_du_sorcier:
-    grid_size: 3x3
-    ingredients:
-      "1,0": "LAPIS_LAZULI"
-      "1,1": "DIAMOND"
-      "1,2": "STICK"
-    output:
-      item: "epee_du_sorcier"
-      amount: 1
-
-  dague_de_vole:
-    grid_size: 3x3
-    ingredients:
-      "1,1": "IRON_INGOT"
-      "1,2": "STICK"
-    output:
-      item: "dague_de_vole"
-      amount: 1
-
+      item: casque_de_l_infinie
+    shape:
+      - XXX
+      - X X
+      - '   '
   colonne_obsi:
     grid_size: 3x3
     ingredients:
-      "1,0": "OBSIDIAN"
-      "1,1": "OBSIDIAN"
-      "1,2": "STICK"
+      X: OBSIDIAN
+      Y: STICK
     output:
-      item: "colonne_obsi"
       amount: 1
+      item: colonne_obsi
+    shape:
+      - ' X '
+      - ' X '
+      - ' Y '
+  dague_de_vole:
+    grid_size: 3x3
+    ingredients:
+      X: IRON_INGOT
+      Y: STICK
+    output:
+      amount: 1
+      item: dague_de_vole
+    shape:
+      - '   '
+      - ' X '
+      - ' Y '
+  epee_du_chasseur_de_tetes:
+    grid_size: 3x3
+    ingredients:
+      X: SKULL
+      Y: STICK
+    output:
+      amount: 1
+      item: epee_du_chasseur_de_tetes
+    shape:
+      - ' X '
+      - ' X '
+      - ' Y '
+  epee_du_sorcier:
+    grid_size: 3x3
+    ingredients:
+      X: INK_SACK
+      Y: STICK
+    output:
+      amount: 1
+      item: epee_du_sorcier
+    shape:
+      - ' X '
+      - ' X '
+      - ' Y '
+  hachebucheron:
+    grid_size: 3x3
+    ingredients:
+      X: DIAMOND
+      Y: STICK
+    output:
+      amount: 1
+      item: hachebucheron
+    shape:
+      - XXX
+      - 'XY '
+      - ' Y '
+  hammer3x3:
+    grid_size: 3x3
+    ingredients:
+      X: DIAMOND_BLOCK
+      Y: STICK
+    output:
+      amount: 1
+      item: hammer3x3
+    shape:
+      - XXX
+      - XYX
+      - ' Y '
+  hammer5x5:
+    grid_size: 3x3
+    ingredients:
+      X: IRON_BLOCK
+      Y: STICK
+    output:
+      amount: 1
+      item: hammer5x5
+    shape:
+      - XXX
+      - XYX
+      - ' Y '
+  lame_de_l_infinie:
+    grid_size: 3x3
+    ingredients:
+      X: DIAMOND
+      Y: STICK
+    output:
+      amount: 1
+      item: lame_de_l_infinie
+    shape:
+      - ' X '
+      - ' X '
+      - ' Y '
+  lame_des_tenebres:
+    grid_size: 3x3
+    ingredients:
+      X: OBSIDIAN
+      Y: STICK
+    output:
+      amount: 1
+      item: lame_des_tenebres
+    shape:
+      - ' X '
+      - ' X '
+      - ' Y '
+  lame_voleuse_de_vie:
+    grid_size: 3x3
+    ingredients:
+      X: GOLD_INGOT
+      Y: STICK
+    output:
+      amount: 1
+      item: lame_voleuse_de_vie
+    shape:
+      - ' X '
+      - ' X '
+      - ' Y '
+  loupe:
+    grid_size: 3x3
+    ingredients:
+      X: GLASS
+      Y: STICK
+    output:
+      amount: 1
+      item: loupe
+    shape:
+      - ' X '
+      - ' X '
+      - ' Y '
+  plastron_de_tp:
+    grid_size: 3x3
+    ingredients:
+      X: DIAMOND
+    output:
+      amount: 1
+      item: plastron_de_tp
+    shape:
+      - X X
+      - XXX
+      - XXX
+  sceptre_tp:
+    grid_size: 3x3
+    ingredients:
+      X: ENDER_PEARL
+      Y: BLAZE_ROD
+    output:
+      amount: 1
+      item: sceptre_tp
+    shape:
+      - ' X '
+      - ' Y '
+      - ' Y '
