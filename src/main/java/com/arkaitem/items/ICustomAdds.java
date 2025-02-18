@@ -59,6 +59,10 @@ public interface ICustomAdds {
     }
 
     default boolean hasCustomAdd(ItemStack item, String tag) {
+        if (item == null) {
+            return false;
+        }
+
         CustomItem customItem = null;
         for (CustomItem custom : Program.INSTANCE.ITEMS_MANAGER.getAllItems()) {
             if (item.isSimilar(custom.getItem())) {
@@ -67,7 +71,7 @@ public interface ICustomAdds {
             }
         }
 
-        if (item == null || customItem == null) {
+        if (customItem == null) {
             return false;
         }
 
@@ -80,6 +84,10 @@ public interface ICustomAdds {
     }
 
     default String getCustomAddData(ItemStack item, String tag) {
+        if (item == null) {
+            throw new IllegalArgumentException("item is null");
+        }
+
         CustomItem customItem = null;
         for (CustomItem custom : Program.INSTANCE.ITEMS_MANAGER.getAllItems()) {
             if (item.isSimilar(custom.getItem())) {
@@ -87,7 +95,7 @@ public interface ICustomAdds {
                 break;
             }
         }
-        if (item == null || customItem == null) {
+        if (customItem == null) {
             throw new IllegalArgumentException("item is null");
         }
         ItemMeta meta = customItem.getItem().getItemMeta();
