@@ -1,5 +1,6 @@
 package com.arkaitem.items;
 
+import com.arkaitem.Program;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
@@ -8,6 +9,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -57,11 +59,19 @@ public interface ICustomAdds {
     }
 
     default boolean hasCustomAdd(ItemStack item, String tag) {
-        if (item == null || item.getItemMeta() == null || !item.getItemMeta().hasLore()) {
+        CustomItem customItem = null;
+        for (CustomItem custom : Program.INSTANCE.ITEMS_MANAGER.getAllItems()) {
+            if (item.isSimilar(custom.getItem())) {
+                customItem = custom;
+                break;
+            }
+        }
+
+        if (item == null || customItem == null) {
             return false;
         }
 
-        for (String line : item.getItemMeta().getLore()) {
+        for (String line : customItem.getItem().getItemMeta().getLore()) {
             if (ChatColor.stripColor(line).contains(tag)) {
                 return true;
             }
@@ -70,12 +80,22 @@ public interface ICustomAdds {
     }
 
     default String getCustomAddData(ItemStack item, String tag) {
-        ItemMeta meta = item.getItemMeta();
+        CustomItem customItem = null;
+        for (CustomItem custom : Program.INSTANCE.ITEMS_MANAGER.getAllItems()) {
+            if (item.isSimilar(custom.getItem())) {
+                customItem = custom;
+                break;
+            }
+        }
+        if (item == null || customItem == null) {
+            throw new IllegalArgumentException("item is null");
+        }
+        ItemMeta meta = customItem.getItem().getItemMeta();
         List<String> lore = meta.getLore();
         for (String line : lore) {
             String strippedLine = ChatColor.stripColor(line);
-            if (strippedLine.startsWith(tag + ";")) {
-                return strippedLine.substring(tag.length() + 1);
+            if (strippedLine.contains(tag + ";")) {
+                return strippedLine.substring(strippedLine.indexOf(tag + ";") + tag.length() + 1).trim();
             }
         }
         throw new IllegalArgumentException("No such tag: " + tag);

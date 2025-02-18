@@ -78,6 +78,7 @@ public abstract class RegistryCustomItems {
                 lore.add(ChatColor.DARK_GRAY + "[HIDDEN] " + customAdd);
             }
         }
+        meta.setLore(lore);
 
         item.setItemMeta(meta);
         return item;

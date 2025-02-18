@@ -38,7 +38,14 @@ public class CommandDynamicCraft implements CommandExecutor {
             player.sendMessage(ChatColor.RED + "Usage : /arkaitemcraft open <taille>");
             return false;
         }
-        int size = Integer.parseInt(args[1]);
+
+        int size = -1;
+        try {
+            size = Integer.parseInt(args[1]);
+        } catch (Exception ignored) {
+            player.sendMessage(ChatColor.RED + "Usage : /arkaitemcraft open <taille>");
+            return false;
+        }
 
         if (size < 3) {
             player.sendMessage(ChatColor.RED + "La taille doit être au moins de 3 !");

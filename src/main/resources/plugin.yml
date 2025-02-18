@@ -6,7 +6,7 @@ main: com.arkaitem.Program
 api-version: 1.8.8
 commands:
   arkaitem:
-    description: Commande principale pour gérer les items custom
+    description: Commande principale pour gérer les items customs
     usage: /arkaitem <give/menu/enable/disable/reload>
     permission: arkaitem.admin
   arkaitemcraft:
