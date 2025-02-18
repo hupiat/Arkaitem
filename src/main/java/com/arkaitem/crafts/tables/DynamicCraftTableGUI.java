@@ -1,17 +1,18 @@
 package com.arkaitem.crafts.tables;
 
+import com.arkaitem.items.ItemsUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Collections;
 
 public class DynamicCraftTableGUI implements InventoryHolder {
+    private static final Material RESULT_SLOT_MATERIAL = Material.BARRIER;
+
     private final Inventory inventory;
     private final int gridSize;
     private final int inventorySize;
@@ -41,7 +42,11 @@ public class DynamicCraftTableGUI implements InventoryHolder {
     }
 
     public void updateCraftResult(ItemStack result) {
-        inventory.setItem(resultSlot, result != null ? result : new ItemStack(Material.BARRIER));
+        inventory.setItem(resultSlot, result != null ? result : new ItemStack(RESULT_SLOT_MATERIAL));
+    }
+
+    public boolean hasResult() {
+        return !ItemsUtils.areEquals(inventory.getItem(resultSlot), new ItemStack(RESULT_SLOT_MATERIAL));
     }
 
     public int getResultSlot(int gridSize) {
@@ -68,7 +73,7 @@ public class DynamicCraftTableGUI implements InventoryHolder {
     private void setupGUI() {
         for (int i = 0; i < inventorySize; i++) {
             if (i == resultSlot) {
-                inventory.setItem(i, createCustomDisplayItem(Material.BARRIER, "Résultat"));
+                inventory.setItem(i, createCustomDisplayItem(RESULT_SLOT_MATERIAL, "Résultat"));
             } else if (!isInGrid(i)) {
                 inventory.setItem(i, createCustomDisplayItem(Material.STAINED_GLASS_PANE, 1, (short) 15, "Indisponible"));
             }

@@ -68,11 +68,14 @@ public class ManagerRecipes {
     }
 
     public Optional<ShapedRecipe> getRecipeByName(String id) {
-        ShapedRecipe recipe = RegistryRecipes.getRecipeFromFile(recipeConfig, id);
-        if (getAllRecipes().contains(recipe)) {
-            return Optional.of(recipe);
+        ShapedRecipe recipe;
+        try {
+            recipe = RegistryRecipes.getRecipeFromFile(recipeConfig, id);
+        } catch (Exception e) {
+            Bukkit.getLogger().log(Level.SEVERE, "Failed to load recipe " + id, e);
+            return Optional.empty();
         }
-        return Optional.empty();
+        return Optional.of(recipe);
     }
 
     public boolean compareRecipes(ShapedRecipe recipe, Inventory inventory, int gridSize, int gridStartIndex) {
