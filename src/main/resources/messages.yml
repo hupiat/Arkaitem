@@ -37,6 +37,10 @@ messages:
   no_inventory_space: "&cVous n'avez pas assez de place dans votre inventaire."
   durability_exceeded: "&cCet item n'a plus assez de durabilité pour cette action."
 
+  # Craft
+  craft_success: "Vous avez réussi à craft {item_name} !"
+  craft_failure: "Le craft de {item_name} à échoué"
+
   # Traductions des customs adds
   CANT_DROP: "Impossible à drop"
   TREE_FELLER: "Abattage d'arbres"

@@ -77,7 +77,19 @@ public abstract class RegistryRecipes {
         }
 
         for (String key : ingredientsSection.getKeys(false)) {
-            Material material = Material.valueOf(ingredientsSection.getString(key));
+            Material material = null;
+            try {
+                material = Material.valueOf(ingredientsSection.getString(key));
+            } catch (Exception ignored) {
+                Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemById(ingredientsSection.getString(key));
+                if (customItem.isPresent()) {
+                    material = customItem.get().getItem().getType();
+                }
+            }
+            if (material == null) {
+                throw new IllegalArgumentException("Invalid material for: " + id);
+            }
+
             recipe.setIngredient(key.charAt(0), material);
         }
 

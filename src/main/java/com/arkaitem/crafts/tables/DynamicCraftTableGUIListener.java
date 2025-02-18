@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -35,15 +36,20 @@ public class DynamicCraftTableGUIListener implements Listener {
         }
 
         if (gui.getResultSlot(gui.getGridSize()) == event.getSlot() && gui.hasResult()) {
+            Map<String, String> placeholders = new HashMap<>();
             ItemStack result = gui.getInventory().getItem(event.getSlot());
+            placeholders.put("item_name", result.getItemMeta().getDisplayName());
+
 
             Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByDisplayName(result.getItemMeta().getDisplayName());
             if (!customItem.isPresent()) {
+                event.getWhoClicked().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("craft_failure", placeholders));
                 throw new IllegalStateException("Custom item not found: " + result.getItemMeta().getDisplayName());
             }
 
             Optional<ShapedRecipe> customRecipe = Program.INSTANCE.RECIPES_MANAGER.getRecipeByName(customItem.get().getId());
             if (!customRecipe.isPresent()) {
+                event.getWhoClicked().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("craft_failure", placeholders));
                 throw new IllegalStateException("Custom recipe not found: " + customItem.get().getId());
             }
 
@@ -74,6 +80,7 @@ public class DynamicCraftTableGUIListener implements Listener {
                         }
                     }
                 }
+                event.getWhoClicked().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("craft_success", placeholders));
             }, 2L);
         }
 
