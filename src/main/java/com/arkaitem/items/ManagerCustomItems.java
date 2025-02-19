@@ -66,6 +66,15 @@ public class ManagerCustomItems {
         return Optional.empty();
     }
 
+    public Optional<CustomItem> getItemByItemStack(ItemStack itemStack) {
+        for (CustomItem item : getAllItems()) {
+            if (item.getItem().isSimilar(itemStack)) {
+                return Optional.of(item);
+            }
+        }
+        return Optional.empty();
+    }
+
     public void addItem(String key, ItemStack item, Set<String> customAdds) {
         Map<String, Map<String, Object>> itemsMap = (Map<String, Map<String, Object>>) itemsConfig.get("item");
 

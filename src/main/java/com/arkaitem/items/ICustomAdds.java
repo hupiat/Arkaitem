@@ -60,22 +60,16 @@ public interface ICustomAdds {
 
     default boolean hasCustomAdd(ItemStack item, String tag) {
         if (item == null) {
-            return false;
+            throw new IllegalArgumentException("Item cannot be null");
         }
 
-        CustomItem customItem = null;
-        for (CustomItem custom : Program.INSTANCE.ITEMS_MANAGER.getAllItems()) {
-            if (item.isSimilar(custom.getItem())) {
-                customItem = custom;
-                break;
-            }
+        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(item);
+
+        if (!customItem.isPresent()) {
+            throw new IllegalArgumentException("Custom cannot be found");
         }
 
-        if (customItem == null) {
-            return false;
-        }
-
-        for (String line : customItem.getItem().getItemMeta().getLore()) {
+        for (String line : customItem.get().getItem().getItemMeta().getLore()) {
             if (ChatColor.stripColor(line).contains(tag)) {
                 return true;
             }
@@ -88,17 +82,13 @@ public interface ICustomAdds {
             throw new IllegalArgumentException("item is null");
         }
 
-        CustomItem customItem = null;
-        for (CustomItem custom : Program.INSTANCE.ITEMS_MANAGER.getAllItems()) {
-            if (item.isSimilar(custom.getItem())) {
-                customItem = custom;
-                break;
-            }
+        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(item);
+
+        if (!customItem.isPresent()) {
+            throw new IllegalArgumentException("custom item not found");
         }
-        if (customItem == null) {
-            throw new IllegalArgumentException("item is null");
-        }
-        ItemMeta meta = customItem.getItem().getItemMeta();
+
+        ItemMeta meta = customItem.get().getItem().getItemMeta();
         List<String> lore = meta.getLore();
         for (String line : lore) {
             String strippedLine = ChatColor.stripColor(line);

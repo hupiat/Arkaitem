@@ -31,28 +31,43 @@ public class EventsItems implements Listener, ICustomAdds {
 
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent event) {
-        ItemStack item = event.getItemDrop().getItemStack();
+        ItemStack itemEvent = event.getItemDrop().getItemStack();
+        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
-        if (event.getPlayer() != null) {
-            if (hasCustomAdd(item, CANT_DROP)) {
-                event.setCancelled(true);
-                event.getPlayer().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cannot_drop", null));
-            } else {
-                Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("item_name", item.getItemMeta().getDisplayName());
-                event.getPlayer().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_dropped", placeholders));
-            }
+        if (!customItem.isPresent()) {
+            throw new IllegalStateException("custom item could not be found");
+        }
+
+        if (event.getPlayer() == null) {
+            return;
+        }
+
+
+        if (hasCustomAdd(customItem.get().getItem(), CANT_DROP)) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cannot_drop", null));
+        } else {
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("item_name", customItem.get().getItem().getItemMeta().getDisplayName());
+            event.getPlayer().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_dropped", placeholders));
         }
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         Inventory inventory = event.getInventory();
-        ItemStack item = event.getCurrentItem();
+        ItemStack itemEvent = event.getCurrentItem();
 
-        if (hasCustomAdd(item, NO_DISCARD)) {
+        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
+
+        if (!customItem.isPresent()) {
+            throw new IllegalStateException("custom item could not be found");
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), NO_DISCARD)) {
             if (inventory.getName().trim().equalsIgnoreCase("poubelle")) {
                 event.setCancelled(true);
+                event.getWhoClicked().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cannot_drop", null));
             }
         }
     }
@@ -62,10 +77,18 @@ public class EventsItems implements Listener, ICustomAdds {
         if (!(event.getDamager() instanceof Player)) {
             return;
         }
-        Player player = (Player) event.getDamager();
-        ItemStack item = player.getInventory().getItemInHand();
 
-        if (hasCustomAdd(item, UNBREAKABLE)) {
+        Player player = (Player) event.getDamager();
+
+        ItemStack itemEvent = player.getInventory().getItemInHand();
+
+        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
+
+        if (!customItem.isPresent()) {
+            throw new IllegalStateException("custom item could not be found");
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), UNBREAKABLE)) {
             event.setCancelled(true);
             player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_unbreakable", null));
         }
@@ -78,10 +101,16 @@ public class EventsItems implements Listener, ICustomAdds {
             return;
         }
         Player player = (Player) event.getDamager();
-        ItemStack item = player.getInventory().getItemInHand();
+        ItemStack itemEvent = player.getInventory().getItemInHand();
 
-        if (hasCustomAdd(item, STEAL_MONEY)) {
-            String[] values = getCustomAddData(item, STEAL_MONEY).split(";");
+        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
+
+        if (!customItem.isPresent()) {
+            throw new IllegalStateException("custom item could not be found");
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), STEAL_MONEY)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), STEAL_MONEY).split(";");
             if (values.length == 3 && event.getEntity() instanceof Player) {
                 int chance = Integer.parseInt(values[0]);
                 int minAmount = Integer.parseInt(values[1]);
@@ -101,8 +130,8 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (hasCustomAdd(item, SELF_EFFECT)) {
-            String[] values = getCustomAddData(item, SELF_EFFECT).split(";");
+        if (hasCustomAdd(customItem.get().getItem(), SELF_EFFECT)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), SELF_EFFECT).split(";");
             if (values.length == 4) {
                 PotionEffectType effectType = PotionEffectType.getByName(values[0]);
                 int level = Integer.parseInt(values[1]);
@@ -115,8 +144,8 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (hasCustomAdd(item, HIT_EFFECT)) {
-            String[] values = getCustomAddData(item, HIT_EFFECT).split(";");
+        if (hasCustomAdd(customItem.get().getItem(), HIT_EFFECT)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), HIT_EFFECT).split(";");
             if (values.length == 4) {
                 PotionEffectType effectType = PotionEffectType.getByName(values[0]);
                 int level = Integer.parseInt(values[1]);
@@ -136,8 +165,8 @@ public class EventsItems implements Listener, ICustomAdds {
         }
 
         if (event.getDamager() instanceof Player) {
-            if (hasCustomAdd(item, EXECUTE_COMMAND_ON_KILL)) {
-                String[] commands = getCustomAddData(item, EXECUTE_COMMAND_ON_KILL).split(";");
+            if (hasCustomAdd(customItem.get().getItem(), EXECUTE_COMMAND_ON_KILL)) {
+                String[] commands = getCustomAddData(customItem.get().getItem(), EXECUTE_COMMAND_ON_KILL).split(";");
                 if (commands.length == 2) {
                     String killerCommand = commands[0].replace("{player}", player.getName()).replace("{victim}", event.getEntity().getName());
                     String victimCommand = commands[1].replace("{player}", player.getName()).replace("{victim}", event.getEntity().getName());
@@ -155,8 +184,8 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (hasCustomAdd(item, TELEPORT_ON_ATTACK)) {
-            String[] values = getCustomAddData(item, TELEPORT_ON_ATTACK).split(";");
+        if (hasCustomAdd(customItem.get().getItem(), TELEPORT_ON_ATTACK)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), TELEPORT_ON_ATTACK).split(";");
             int radius = Integer.parseInt(values[0]);
             Location targetLocation = event.getEntity().getLocation().add(
                     new Random().nextInt(radius * 2) - radius,
@@ -177,7 +206,7 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (hasCustomAdd(item, STEAL_LIFE)) {
+        if (hasCustomAdd(customItem.get().getItem(), STEAL_LIFE)) {
             double stolenHealth = event.getDamage() * 0.1;
             event.setDamage(event.getDamage() * 1.1);
             player.setHealth(Math.min(player.getMaxHealth(), player.getHealth() + stolenHealth));
@@ -187,7 +216,7 @@ public class EventsItems implements Listener, ICustomAdds {
             player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_health_stolen", placeholders));
         }
 
-        if (hasCustomAdd(item, SPAWN_LIGHTNING)) {
+        if (hasCustomAdd(customItem.get().getItem(), SPAWN_LIGHTNING)) {
             event.getEntity().getWorld().strikeLightning(event.getEntity().getLocation());
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("target", event.getEntity().getName());
@@ -198,10 +227,16 @@ public class EventsItems implements Listener, ICustomAdds {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        ItemStack item = player.getInventory().getItemInHand();
+        ItemStack itemEvent = player.getInventory().getItemInHand();
 
-        if (hasCustomAdd(item, MULTIPLICATEUR)) {
-            String[] values = getCustomAddData(item, MULTIPLICATEUR).split(";");
+        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
+
+        if (!customItem.isPresent()) {
+            throw new IllegalStateException("custom item could not be found");
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), MULTIPLICATEUR)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), MULTIPLICATEUR).split(";");
             if (values.length == 1) {
                 double multiplier = Double.parseDouble(values[0]);
                 // TODO: Integrate Vault
@@ -214,9 +249,16 @@ public class EventsItems implements Listener, ICustomAdds {
 
     @EventHandler
     public void onItemConsume(PlayerItemConsumeEvent event) {
-        ItemStack item = event.getItem();
-        if (hasCustomAdd(item, CONSUMABLE_GIVE_POTION)) {
-            String[] values = getCustomAddData(item, CONSUMABLE_GIVE_POTION).split(";");
+        ItemStack itemEvent = event.getItem();
+
+        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
+
+        if (!customItem.isPresent()) {
+            throw new IllegalStateException("custom item could not be found");
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_GIVE_POTION)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), CONSUMABLE_GIVE_POTION).split(";");
             PotionEffectType effect = PotionEffectType.getByName(values[0]);
             int level = Integer.parseInt(values[1]);
             int duration = Integer.parseInt(values[2]);
@@ -256,9 +298,15 @@ public class EventsItems implements Listener, ICustomAdds {
     @EventHandler
     public void onItemUse(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        ItemStack item = player.getInventory().getItemInHand();
+        ItemStack itemEvent = player.getInventory().getItemInHand();
 
-        if (hasCustomAdd(item, VIEW_ON_CHEST)) {
+        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
+
+        if (!customItem.isPresent()) {
+            throw new IllegalStateException("custom item could not be found");
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), VIEW_ON_CHEST)) {
             Block block = event.getClickedBlock();
             if (block != null && block.getState() instanceof Chest) {
                 Chest chest = (Chest) block.getState();
@@ -266,39 +314,39 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (hasCustomAdd(item, CONSUMABLE)) {
-            int uses = Integer.parseInt(getCustomAddData(item, CONSUMABLE)) - 1;
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE)) {
+            int uses = Integer.parseInt(getCustomAddData(customItem.get().getItem(), CONSUMABLE)) - 1;
             if (uses <= 0) {
-                player.getInventory().remove(item);
+                player.getInventory().remove(customItem.get().getItem());
             } else {
-                ItemMeta meta = item.getItemMeta();
+                ItemMeta meta = customItem.get().getItem().getItemMeta();
                 List<String> lore = meta.getLore();
                 lore.replaceAll(line -> line.contains(CONSUMABLE + ";") ? CONSUMABLE + ";" + uses : line);
                 meta.setLore(lore);
-                item.setItemMeta(meta);
+                customItem.get().getItem().setItemMeta(meta);
             }
         }
 
-        if (hasCustomAdd(item, CONSUMABLE_USE_COMMAND)) {
-            String command = getCustomAddData(item, CONSUMABLE_USE_COMMAND).replace("{player}", player.getName());
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_USE_COMMAND)) {
+            String command = getCustomAddData(customItem.get().getItem(), CONSUMABLE_USE_COMMAND).replace("{player}", player.getName());
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
         }
 
-        if (hasCustomAdd(item, GIVE_POTION)) {
-            String[] values = getCustomAddData(item, GIVE_POTION).split(";");
+        if (hasCustomAdd(customItem.get().getItem(), GIVE_POTION)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), GIVE_POTION).split(";");
             PotionEffectType effect = PotionEffectType.getByName(values[0]);
             int level = Integer.parseInt(values[1]);
             int duration = Integer.parseInt(values[2]);
             player.addPotionEffect(new PotionEffect(effect, duration * 20, level));
         }
 
-        if (hasCustomAdd(item, HIDE_PLAYER_NAME)) {
+        if (hasCustomAdd(customItem.get().getItem(), HIDE_PLAYER_NAME)) {
             player.setPlayerListName("");
             player.setDisplayName("");
         }
 
-        if (hasCustomAdd(item, MINE_AREA)) {
-            int radius = Integer.parseInt(getCustomAddData(item, MINE_AREA));
+        if (hasCustomAdd(customItem.get().getItem(), MINE_AREA)) {
+            int radius = Integer.parseInt(getCustomAddData(customItem.get().getItem(), MINE_AREA));
             Location loc = player.getLocation();
             World world = player.getWorld();
 
@@ -314,7 +362,7 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (hasCustomAdd(item, SELL_CHEST_CONTENTS)) {
+        if (hasCustomAdd(customItem.get().getItem(), SELL_CHEST_CONTENTS)) {
             // TODO : integrate Vault
             Block block = event.getClickedBlock();
             if (block != null && block.getState() instanceof Chest) {
@@ -341,10 +389,17 @@ public class EventsItems implements Listener, ICustomAdds {
     @EventHandler
     public void onBlockBreak(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        ItemStack item = player.getInventory().getItemInHand();
+        ItemStack itemEvent = player.getInventory().getItemInHand();
+
+        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
+
+        if (!customItem.isPresent()) {
+            throw new IllegalStateException("custom item could not be found");
+        }
+
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Block block = event.getClickedBlock();
-            if (block != null && hasCustomAdd(item, TREE_FELLER)) {
+            if (block != null && hasCustomAdd(customItem.get().getItem(), TREE_FELLER)) {
                 if (block.getType() == Material.LOG || block.getType() == Material.LOG_2) {
                     Queue<Block> blocksToCheck = new LinkedList<>();
                     blocksToCheck.add(block);
@@ -372,13 +427,20 @@ public class EventsItems implements Listener, ICustomAdds {
 
         event.getDrops().removeIf(item -> hasCustomAdd(item, KEEP_ON_DEATH));
 
-        for (ItemStack item : player.getInventory().getContents()) {
-            if (hasCustomAdd(item, KEEP_ON_DEATH)) {
-                player.getInventory().addItem(item);
+        for (ItemStack itemEvent : player.getInventory().getContents()) {
+
+            Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
+
+            if (!customItem.isPresent()) {
+                throw new IllegalStateException("custom item could not be found");
             }
 
-            if (hasCustomAdd(item, DEATH_CHANCE_TP)) {
-                String[] values = getCustomAddData(item, DEATH_CHANCE_TP).split(";");
+            if (hasCustomAdd(customItem.get().getItem(), KEEP_ON_DEATH)) {
+                player.getInventory().addItem(customItem.get().getItem());
+            }
+
+            if (hasCustomAdd(customItem.get().getItem(), DEATH_CHANCE_TP)) {
+                String[] values = getCustomAddData(customItem.get().getItem(), DEATH_CHANCE_TP).split(";");
                 int chance = Integer.parseInt(values[0]);
                 int radius = Integer.parseInt(values[3]);
 
@@ -412,15 +474,23 @@ public class EventsItems implements Listener, ICustomAdds {
 
         EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) entity.getLastDamageCause();
         Player player = (Player) damageEvent.getDamager();
-        ItemStack item = player.getInventory().getItemInHand();
-        if (hasCustomAdd(item, KILL_GIVE_POTION)) {
-            String[] values = getCustomAddData(item, KILL_GIVE_POTION).split(";");
+        ItemStack itemEvent = player.getInventory().getItemInHand();
+
+        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
+
+        if (!customItem.isPresent()) {
+            throw new IllegalStateException("custom item could not be found");
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), KILL_GIVE_POTION)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), KILL_GIVE_POTION).split(";");
             PotionEffectType effect = PotionEffectType.getByName(values[0]);
             int level = Integer.parseInt(values[1]);
             int duration = Integer.parseInt(values[2]);
             player.addPotionEffect(new PotionEffect(effect, duration * 20, level));
         }
-        if (hasCustomAdd(item, SPAWN_HEAD_ON_KILL)) {
+
+        if (hasCustomAdd(customItem.get().getItem(), SPAWN_HEAD_ON_KILL)) {
             if (event.getEntity() instanceof Player) {
                 ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
                 event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), skull);
