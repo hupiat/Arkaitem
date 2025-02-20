@@ -20,6 +20,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -484,9 +485,12 @@ public class EventsItems implements Listener, ICustomAdds {
         }
     }
 
+    private final Map<UUID, List<ItemStack>> itemsToRestore = new HashMap<>();
+
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
+        List<ItemStack> savedItems = new ArrayList<>();
 
         event.getDrops().removeIf(itemEvent -> {
             Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
@@ -495,45 +499,76 @@ public class EventsItems implements Listener, ICustomAdds {
                 return false;
             }
 
-            return hasCustomAdd(customItem.get().getItem(), KEEP_ON_DEATH);
+            if (hasCustomAdd(customItem.get().getItem(), KEEP_ON_DEATH)) {
+                savedItems.add(customItem.get().getItem().clone());
+                return true;
+            }
+            return false;
         });
 
-        for (ItemStack itemEvent : player.getInventory().getContents()) {
+        if (!savedItems.isEmpty()) {
+            itemsToRestore.put(player.getUniqueId(), savedItems);
+        }
+    }
 
-            Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
+        UUID playerId = player.getUniqueId();
 
-            if (!customItem.isPresent()) {
-                return;
+        Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
+            if (itemsToRestore.containsKey(playerId)) {
+                for (ItemStack item : itemsToRestore.get(playerId)) {
+                    player.getInventory().addItem(item);
+                }
+                itemsToRestore.remove(playerId);
+                player.sendMessage("§aTes objets ont été conservés après la mort !");
             }
 
-            if (hasCustomAdd(customItem.get().getItem(), KEEP_ON_DEATH)) {
-                player.getInventory().addItem(customItem.get().getItem());
-            }
+            for (ItemStack itemEvent : player.getInventory().getContents()) {
+                Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
-            if (hasCustomAdd(customItem.get().getItem(), DEATH_CHANCE_TP)) {
-                String[] values = getCustomAddData(customItem.get().getItem(), DEATH_CHANCE_TP).split(";");
-                int chance = Integer.parseInt(values[0]);
-                int radius = Integer.parseInt(values[3]);
+                if (!customItem.isPresent()) {
+                    continue;
+                }
 
-                if (new Random().nextInt(100) < chance) {
-                    Location currentLocation = player.getLocation();
-                    Location randomLocation;
+                if (hasCustomAdd(customItem.get().getItem(), DEATH_CHANCE_TP)) {
+                    String[] values = getCustomAddData(customItem.get().getItem(), DEATH_CHANCE_TP).split(";");
 
-                    Block groundBlock, aboveBlock;
-                    do {
-                        int offsetX = new Random().nextInt(radius * 2) - radius;
-                        int offsetZ = new Random().nextInt(radius * 2) - radius;
-                        randomLocation = currentLocation.clone().add(offsetX, 0, offsetZ);
+                    if (values.length == 4) {
+                        int chance = Integer.parseInt(values[0]);
+                        int radius = Integer.parseInt(values[1]);
+                        int attempts = Integer.parseInt(values[2]);
+                        int delay = Integer.parseInt(values[3]);
 
-                        groundBlock = randomLocation.getBlock();
-                        aboveBlock = groundBlock.getRelative(BlockFace.UP);
-                    } while (!groundBlock.getType().isSolid() || !aboveBlock.isEmpty());
+                        if (new Random().nextInt(100) < chance) {
+                            Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
+                                int attemptsDone = Math.max(100, attempts);
+                                Location originalLocation = player.getLocation();
+                                Location newLocation = null;
+                                while (attemptsDone > 0) {
+                                    int xOffset = new Random().nextInt(radius * 2 + 1) - radius;
+                                    int zOffset = new Random().nextInt(radius * 2 + 1) - radius;
+                                    newLocation = originalLocation.clone().add(xOffset, 0, zOffset);
 
-                    player.teleport(randomLocation);
-                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("teleport_on_death", null));
+                                    Block groundBlock = newLocation.getWorld().getBlockAt(newLocation.getBlockX(), newLocation.getBlockY() - 1, newLocation.getBlockZ());
+                                    Block feetBlock = newLocation.getWorld().getBlockAt(newLocation.getBlockX(), newLocation.getBlockY(), newLocation.getBlockZ());
+                                    Block headBlock = newLocation.getWorld().getBlockAt(newLocation.getBlockX(), newLocation.getBlockY() + 1, newLocation.getBlockZ());
+
+                                    if (groundBlock.getType().isSolid() && feetBlock.getType() == Material.AIR && headBlock.getType() == Material.AIR) {
+                                        player.teleport(newLocation);
+                                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("teleport_on_death", null));
+                                        return;
+                                    }
+
+                                    attemptsDone--;
+                                }
+                            }, delay);
+                        }
+                    }
                 }
             }
-        }
+        }, 5L);
     }
 
     @EventHandler
