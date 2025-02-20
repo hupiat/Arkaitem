@@ -81,6 +81,7 @@ public abstract class RegistryCustomItems {
         meta.setLore(lore);
 
         item.setItemMeta(meta);
-        return item;
+
+        return ItemsUtils.setUniqueID(item);
     }
 }

@@ -35,7 +35,7 @@ public class EventsItems implements Listener, ICustomAdds {
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
         if (!customItem.isPresent()) {
-            throw new IllegalStateException("custom item could not be found");
+            return;
         }
 
         if (event.getPlayer() == null) {
@@ -61,7 +61,7 @@ public class EventsItems implements Listener, ICustomAdds {
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
         if (!customItem.isPresent()) {
-            throw new IllegalStateException("custom item could not be found");
+            return;
         }
 
         if (hasCustomAdd(customItem.get().getItem(), NO_DISCARD)) {
@@ -85,11 +85,11 @@ public class EventsItems implements Listener, ICustomAdds {
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
         if (!customItem.isPresent()) {
-            throw new IllegalStateException("custom item could not be found");
+            return;
         }
 
         if (hasCustomAdd(customItem.get().getItem(), UNBREAKABLE)) {
-            event.setCancelled(true);
+            itemEvent.setDurability((short) 0);
             player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_unbreakable", null));
         }
     }
@@ -106,7 +106,7 @@ public class EventsItems implements Listener, ICustomAdds {
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
         if (!customItem.isPresent()) {
-            throw new IllegalStateException("custom item could not be found");
+            return;
         }
 
         if (hasCustomAdd(customItem.get().getItem(), STEAL_MONEY)) {
@@ -187,16 +187,39 @@ public class EventsItems implements Listener, ICustomAdds {
         if (hasCustomAdd(customItem.get().getItem(), TELEPORT_ON_ATTACK)) {
             String[] values = getCustomAddData(customItem.get().getItem(), TELEPORT_ON_ATTACK).split(";");
             int radius = Integer.parseInt(values[0]);
-            Location targetLocation = event.getEntity().getLocation().add(
-                    new Random().nextInt(radius * 2) - radius,
-                    0,
-                    new Random().nextInt(radius * 2) - radius
-            );
-            player.teleport(targetLocation);
+            Random random = new Random();
+            Location targetLocation;
+            int attempts = 100;
 
-            Map<String, String> placeholders = new HashMap<>();
-            placeholders.put("target", targetLocation.toString());
-            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation", placeholders));
+            do {
+                int xOffset = random.nextInt(radius * 2 + 1) - radius;
+                int zOffset = random.nextInt(radius * 2 + 1) - radius;
+                targetLocation = event.getEntity().getLocation().clone().add(xOffset, 0, zOffset);
+
+                while (targetLocation.getBlockY() < targetLocation.getWorld().getMaxHeight() - 1 &&
+                        !(targetLocation.getBlock().getType() == Material.AIR ||
+                                targetLocation.getBlock().getType() == Material.WATER ||
+                                targetLocation.getBlock().getType() == Material.LAVA)) {
+                    targetLocation.add(0, 1, 0);
+                }
+
+                Material feet = targetLocation.getBlock().getType();
+                Material head = targetLocation.clone().add(0, 1, 0).getBlock().getType();
+                Material ground = targetLocation.clone().add(0, -1, 0).getBlock().getType();
+
+                if ((feet == Material.AIR || feet == Material.WATER || feet == Material.LAVA) &&
+                        (head == Material.AIR) &&
+                        (ground.isSolid())) {
+                    player.teleport(targetLocation);
+
+                    Map<String, String> placeholders = new HashMap<>();
+                    placeholders.put("target", targetLocation.getBlockX() + ", " + targetLocation.getBlockY() + ", " + targetLocation.getBlockZ());
+                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation", placeholders));
+                    return;
+                }
+
+                attempts--;
+            } while (attempts > 0);
         }
 
         for (ItemStack inventoryItem : player.getInventory().getArmorContents()) {
@@ -232,7 +255,7 @@ public class EventsItems implements Listener, ICustomAdds {
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
         if (!customItem.isPresent()) {
-            throw new IllegalStateException("custom item could not be found");
+            return;
         }
 
         if (hasCustomAdd(customItem.get().getItem(), MULTIPLICATEUR)) {
@@ -254,7 +277,7 @@ public class EventsItems implements Listener, ICustomAdds {
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
         if (!customItem.isPresent()) {
-            throw new IllegalStateException("custom item could not be found");
+            return;
         }
 
         if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_GIVE_POTION)) {
@@ -271,11 +294,19 @@ public class EventsItems implements Listener, ICustomAdds {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
-        Player player = event.getPlayer();
-        ItemStack item = player.getInventory().getItemInHand();
 
-        if (hasCustomAdd(item, BLOCK_COLUMN)) {
-            String[] values = getCustomAddData(item, BLOCK_COLUMN).split(";");
+        Player player = event.getPlayer();
+        ItemStack eventItem = player.getInventory().getItemInHand();
+
+        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(eventItem);
+
+        if (!customItem.isPresent()) {
+            return;
+        }
+
+
+        if (hasCustomAdd(customItem.get().getItem(), BLOCK_COLUMN)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), BLOCK_COLUMN).split(";");
             Material blockMaterial = Material.getMaterial(values[0].toUpperCase());
             int length = Integer.parseInt(values[1]);
 
@@ -303,7 +334,7 @@ public class EventsItems implements Listener, ICustomAdds {
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
         if (!customItem.isPresent()) {
-            throw new IllegalStateException("custom item could not be found");
+            return;
         }
 
         if (hasCustomAdd(customItem.get().getItem(), VIEW_ON_CHEST)) {
@@ -394,7 +425,7 @@ public class EventsItems implements Listener, ICustomAdds {
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
         if (!customItem.isPresent()) {
-            throw new IllegalStateException("custom item could not be found");
+            return;
         }
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -432,7 +463,7 @@ public class EventsItems implements Listener, ICustomAdds {
             Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
             if (!customItem.isPresent()) {
-                throw new IllegalStateException("custom item could not be found");
+                return;
             }
 
             if (hasCustomAdd(customItem.get().getItem(), KEEP_ON_DEATH)) {
@@ -479,7 +510,7 @@ public class EventsItems implements Listener, ICustomAdds {
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
         if (!customItem.isPresent()) {
-            throw new IllegalStateException("custom item could not be found");
+            return;
         }
 
         if (hasCustomAdd(customItem.get().getItem(), KILL_GIVE_POTION)) {

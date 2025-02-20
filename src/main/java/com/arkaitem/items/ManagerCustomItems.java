@@ -15,10 +15,17 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class ManagerCustomItems {
-    private final FileConfiguration itemsConfig;
-    private final File itemsFile;
+    private final JavaPlugin plugin;
+
+    private FileConfiguration itemsConfig;
+    private File itemsFile;
 
     public ManagerCustomItems(JavaPlugin plugin) {
+        this.plugin = plugin;
+        loadItems();
+    }
+
+    public void loadItems() {
         this.itemsFile = new File(plugin.getDataFolder(), "items.yml");
 
         if (!itemsFile.exists()) {
@@ -33,7 +40,7 @@ public class ManagerCustomItems {
     }
 
     public void reloadItemsConfig() {
-        this.itemsConfig.setDefaults(YamlConfiguration.loadConfiguration(itemsFile));
+        loadItems();
     }
 
     private void saveItemsConfig() {
@@ -68,7 +75,7 @@ public class ManagerCustomItems {
 
     public Optional<CustomItem> getItemByItemStack(ItemStack itemStack) {
         for (CustomItem item : getAllItems()) {
-            if (item.getItem().isSimilar(itemStack)) {
+            if (ItemsUtils.areEquals(itemStack, item.getItem())) {
                 return Optional.of(item);
             }
         }
@@ -108,6 +115,6 @@ public class ManagerCustomItems {
 
         saveItemsConfig();
         reloadItemsConfig();
-        RegistryRecipes.processAllRecipes(itemsConfig);
+        RegistryCustomItems.processAllItems(itemsConfig);
     }
 }

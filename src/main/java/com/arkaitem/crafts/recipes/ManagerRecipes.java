@@ -18,10 +18,17 @@ import java.util.*;
 import java.util.logging.Level;
 
 public class ManagerRecipes {
-    private final File recipeFile;
-    private final FileConfiguration recipeConfig;
+    private final JavaPlugin plugin;
+
+    private File recipeFile;
+    private FileConfiguration recipeConfig;
 
     public ManagerRecipes(JavaPlugin plugin) {
+        this.plugin = plugin;
+        loadRecipes();
+    }
+
+    public void loadRecipes() {
         this.recipeFile = new File(plugin.getDataFolder(), "recipes.yml");
         this.recipeConfig = YamlConfiguration.loadConfiguration(recipeFile);
     }
@@ -31,7 +38,7 @@ public class ManagerRecipes {
     }
 
     public void reloadRecipesConfig() {
-        this.recipeConfig.setDefaults(YamlConfiguration.loadConfiguration(recipeFile));
+        loadRecipes();
     }
 
     private void saveRecipeConfig() {

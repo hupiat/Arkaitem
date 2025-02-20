@@ -66,7 +66,7 @@ public interface ICustomAdds {
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(item);
 
         if (!customItem.isPresent()) {
-            throw new IllegalArgumentException("Custom cannot be found");
+            throw new IllegalArgumentException("Custom item cannot be found");
         }
 
         for (String line : customItem.get().getItem().getItemMeta().getLore()) {

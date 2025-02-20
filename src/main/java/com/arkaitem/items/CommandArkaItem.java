@@ -46,6 +46,7 @@ public class CommandArkaItem implements CommandExecutor {
         }
 
         if (args.length < 3) {
+
             sender.sendMessage(ChatColor.RED + "Usage : /arkaitem give <nom_item> <pseudo>");
             return false;
         }
@@ -115,6 +116,8 @@ public class CommandArkaItem implements CommandExecutor {
 
     private boolean handleReloadCommand(CommandSender sender) {
         Program.INSTANCE.ITEMS_MANAGER.reloadItemsConfig();
+        Program.INSTANCE.RECIPES_MANAGER.reloadRecipesConfig();
+        Program.INSTANCE.MESSAGES_MANAGER.reloadMessages();
         RegistryCustomItems.processAllItems(Program.INSTANCE.ITEMS_MANAGER.getItemsConfig());
         RegistryRecipes.processAllRecipes(Program.INSTANCE.RECIPES_MANAGER.getRecipeConfig());
         sender.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("plugin_reload", null));
