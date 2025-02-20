@@ -7,6 +7,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -68,6 +69,22 @@ public class EventsItems implements Listener, ICustomAdds {
             if (inventory.getName().trim().equalsIgnoreCase("poubelle")) {
                 event.setCancelled(true);
                 event.getWhoClicked().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cannot_drop", null));
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player) event.getEntity();
+
+        for (ItemStack inventoryItem : player.getInventory().getArmorContents()) {
+            if (hasCustomAdd(inventoryItem, NO_FALL_DAMAGE) && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+                event.setCancelled(true);
+                break;
             }
         }
     }
@@ -153,8 +170,8 @@ public class EventsItems implements Listener, ICustomAdds {
                 int chance = Integer.parseInt(values[3]);
 
                 if (new Random().nextInt(100) < chance) {
-                    if (event.getEntity() instanceof Player) {
-                        ((Player) event.getEntity()).addPotionEffect(new PotionEffect(effectType, duration, level));
+                    if (event.getEntity() instanceof LivingEntity) {
+                        ((LivingEntity) event.getEntity()).addPotionEffect(new PotionEffect(effectType, duration, level));
                         Map<String, String> placeholders = new HashMap<>();
                         placeholders.put("effect", effectType.getName());
                         placeholders.put("target", event.getEntity().getName());
@@ -222,21 +239,17 @@ public class EventsItems implements Listener, ICustomAdds {
             } while (attempts > 0);
         }
 
-        for (ItemStack inventoryItem : player.getInventory().getArmorContents()) {
-            if (hasCustomAdd(inventoryItem, NO_FALL_DAMAGE) && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
-                event.setCancelled(true);
-                break;
-            }
-        }
-
         if (hasCustomAdd(customItem.get().getItem(), STEAL_LIFE)) {
-            double stolenHealth = event.getDamage() * 0.1;
-            event.setDamage(event.getDamage() * 1.1);
-            player.setHealth(Math.min(player.getMaxHealth(), player.getHealth() + stolenHealth));
-            Map<String, String> placeholders = new HashMap<>();
-            placeholders.put("health", String.valueOf(stolenHealth));
-            placeholders.put("target", event.getEntity().getName());
-            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_health_stolen", placeholders));
+            String[] values = getCustomAddData(customItem.get().getItem(), STEAL_LIFE).split(";");
+            if (values.length == 2) {
+                double stolenHealth = event.getDamage() * (Double.parseDouble(values[0]) / 100);
+                event.setDamage(event.getDamage() * (1 + stolenHealth));
+                player.setHealth(Math.min(player.getMaxHealth(), player.getHealth() + stolenHealth));
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("health", String.valueOf(stolenHealth));
+                placeholders.put("target", event.getEntity().getName());
+                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_health_stolen", placeholders));
+            }
         }
 
         if (hasCustomAdd(customItem.get().getItem(), SPAWN_LIGHTNING)) {
@@ -387,23 +400,6 @@ public class EventsItems implements Listener, ICustomAdds {
             player.setDisplayName("");
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), MINE_AREA)) {
-            int radius = Integer.parseInt(getCustomAddData(customItem.get().getItem(), MINE_AREA));
-            Location loc = player.getLocation();
-            World world = player.getWorld();
-
-            for (int x = -radius; x <= radius; x++) {
-                for (int y = -radius; y <= radius; y++) {
-                    for (int z = -radius; z <= radius; z++) {
-                        Block block = world.getBlockAt(loc.getBlockX() + x, loc.getBlockY() + y, loc.getBlockZ() + z);
-                        if (block.getType() != Material.AIR) {
-                            block.breakNaturally();
-                        }
-                    }
-                }
-            }
-        }
-
         if (hasCustomAdd(customItem.get().getItem(), SELL_CHEST_CONTENTS)) {
             // TODO : integrate Vault
             Block block = event.getClickedBlock();
@@ -440,6 +436,7 @@ public class EventsItems implements Listener, ICustomAdds {
         }
 
         Block block = event.getClickedBlock();
+
         if (block != null && hasCustomAdd(customItem.get().getItem(), TREE_FELLER)) {
             if (block.getType() == Material.LOG || block.getType() == Material.LOG_2) {
                 Queue<Block> blocksToCheck = new LinkedList<>();
@@ -459,13 +456,47 @@ public class EventsItems implements Listener, ICustomAdds {
                 player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_tree_cut", null));
             }
         }
+
+        if (block != null && hasCustomAdd(customItem.get().getItem(), MINE_AREA)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), MINE_AREA).split("x");
+
+            if (values.length == 3) {
+                int radiusX = Integer.parseInt(values[0]) / 2;
+                int radiusY = Integer.parseInt(values[1]) / 2;
+                int radiusZ = Integer.parseInt(values[2]) / 2;
+
+                Location loc = player.getLocation();
+                World world = player.getWorld();
+
+                for (int x = -radiusX; x <= radiusX; x++) {
+                    for (int y = -radiusY; y <= radiusY; y++) {
+                        for (int z = -radiusZ; z <= radiusZ; z++) {
+                            Block blockToBreak = world.getBlockAt(loc.getBlockX() + x, loc.getBlockY() + y, loc.getBlockZ() + z);
+                            if (blockToBreak.getType() != Material.AIR) {
+                                blockToBreak.breakNaturally();
+                            }
+                        }
+                    }
+                }
+
+                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_hammer_used", null));
+            }
+        }
     }
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
 
-        event.getDrops().removeIf(item -> hasCustomAdd(item, KEEP_ON_DEATH));
+        event.getDrops().removeIf(itemEvent -> {
+            Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
+
+            if (!customItem.isPresent()) {
+                return false;
+            }
+
+            return hasCustomAdd(customItem.get().getItem(), KEEP_ON_DEATH);
+        });
 
         for (ItemStack itemEvent : player.getInventory().getContents()) {
 

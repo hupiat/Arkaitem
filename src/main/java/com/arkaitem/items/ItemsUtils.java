@@ -62,6 +62,10 @@ public abstract class ItemsUtils {
 
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
 
+        if (nmsStack == null) {
+            return null;
+        }
+
         NBTTagCompound tag = nmsStack.getTag();
         return (tag != null && tag.hasKey(NBT_TAG_ID_KEY)) ? tag.getString(NBT_TAG_ID_KEY) : null;
     }

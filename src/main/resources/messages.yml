@@ -21,7 +21,8 @@ messages:
   item_effect_applied: "&aVous avez appliqué {effect} à {target}."
   item_no_pvp_near: "&cAucun ennemi à portée pour utiliser cet item."
   item_sell_chest: "&aVous avez vendu le contenu du coffre pour ${amount} pièces."
-  
+  item_hammer_used: "&aVous avez cassé plusieurs blocs à l'aide d'un marteau !"
+
   # Masques de farm
   farm_mask_bonus: "&aVous avez reçu un bonus de {bonus}% sur vos ventes."
   
@@ -68,3 +69,4 @@ messages:
   EXECUTE_COMMAND_ON_KILL: "Exécuteur de commande au kill"
   HIDE_PLAYER_NAME: "Cacher le pseudo du joueur"
   MULTIPLICATEUR: "Bonus de ventes"
+  LAS_HAMMER: "Marteau"
