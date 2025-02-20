@@ -79,9 +79,8 @@ public abstract class RegistryCustomItems {
             }
         }
         meta.setLore(lore);
-
         item.setItemMeta(meta);
 
-        return ItemsUtils.setUniqueID(item);
+        return ItemsUtils.setUniqueID(item, section.get("id").toString());
     }
 }

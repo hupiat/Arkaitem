@@ -285,7 +285,7 @@ item:
 
     customAdds:
       - "HIDE_PLAYER_NAME"
-      - "killer_command;/heal"
+      - "KILLER_COMMAND;/heal"
       - "KILL_GIVE_POTION;SPEED;5;10"
 
   - Espadon :

@@ -15,19 +15,19 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class EventsItems implements Listener, ICustomAdds {
 
@@ -62,16 +62,31 @@ public class EventsItems implements Listener, ICustomAdds {
 
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
-        if (!customItem.isPresent()) {
-            return;
-        }
-
-        if (hasCustomAdd(customItem.get().getItem(), NO_DISCARD)) {
-            if (inventory.getName().trim().equalsIgnoreCase("poubelle")) {
-                event.setCancelled(true);
-                event.getWhoClicked().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cannot_drop", null));
+        if (customItem.isPresent()) {
+            if (hasCustomAdd(customItem.get().getItem(), NO_DISCARD)) {
+                if (inventory.getName().trim().equalsIgnoreCase("poubelle")) {
+                    event.setCancelled(true);
+                    event.getWhoClicked().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cannot_drop", null));
+                }
             }
         }
+
+        Player player = (Player) event.getWhoClicked();
+
+        for (ItemStack itemEventInLoop : player.getInventory().getArmorContents()) {
+            Optional<CustomItem> customItemInLoop = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEventInLoop);
+
+            if (!customItemInLoop.isPresent()) {
+                continue;
+            }
+
+            if (hasCustomAdd(customItemInLoop.get().getItem(), HIDE_PLAYER_NAME)) {
+                applyNameHiding(player);
+                return;
+            }
+        }
+
+        removeNameHiding(player);
     }
 
     @EventHandler
@@ -177,26 +192,6 @@ public class EventsItems implements Listener, ICustomAdds {
                         placeholders.put("effect", effectType.getName());
                         placeholders.put("target", event.getEntity().getName());
                         player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_effect_applied", placeholders));
-                    }
-                }
-            }
-        }
-
-        if (event.getDamager() instanceof Player) {
-            if (hasCustomAdd(customItem.get().getItem(), EXECUTE_COMMAND_ON_KILL)) {
-                String[] commands = getCustomAddData(customItem.get().getItem(), EXECUTE_COMMAND_ON_KILL).split(";");
-                if (commands.length == 2) {
-                    String killerCommand = commands[0].replace("{player}", player.getName()).replace("{victim}", event.getEntity().getName());
-                    String victimCommand = commands[1].replace("{player}", player.getName()).replace("{victim}", event.getEntity().getName());
-
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), killerCommand);
-                    Map<String, String> placeholders = new HashMap<>();
-                    placeholders.put("command", killerCommand);
-                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("kill_command_executed", placeholders));
-                    if (event.getEntity() instanceof Player) {
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), victimCommand);
-                        placeholders.put("command", victimCommand);
-                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("victim_command_executed", placeholders));
                     }
                 }
             }
@@ -394,11 +389,6 @@ public class EventsItems implements Listener, ICustomAdds {
             int level = Integer.parseInt(values[1]);
             int duration = Integer.parseInt(values[2]);
             player.addPotionEffect(new PotionEffect(effect, duration * 20, level));
-        }
-
-        if (hasCustomAdd(customItem.get().getItem(), HIDE_PLAYER_NAME)) {
-            player.setPlayerListName("");
-            player.setDisplayName("");
         }
 
         if (hasCustomAdd(customItem.get().getItem(), SELL_CHEST_CONTENTS)) {
@@ -604,6 +594,74 @@ public class EventsItems implements Listener, ICustomAdds {
                 placeholders.put("victim", entity.getName());
                 player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("head_dropped", placeholders));
             }
+        }
+
+        for (ItemStack itemEventInLoop : player.getInventory().getArmorContents()) {
+
+            Optional<CustomItem> customItemInLoop = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEventInLoop);
+
+            if (!customItemInLoop.isPresent()) {
+                continue;
+            }
+
+            if (hasCustomAdd(customItemInLoop.get().getItem(), KILLER_COMMAND)) {
+                String[] commands = getCustomAddData(customItemInLoop.get().getItem(), KILLER_COMMAND).split(";");
+
+                if (commands.length == 1) {
+                    String command = commands[0];
+
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+                    Map<String, String> placeholders = new HashMap<>();
+                    placeholders.put("command", command);
+                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("kill_command_executed", placeholders));
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+
+        for (ItemStack itemEvent : player.getInventory().getArmorContents()) {
+            Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
+
+            if (!customItem.isPresent()) {
+                continue;
+            }
+
+            if (hasCustomAdd(customItem.get().getItem(), HIDE_PLAYER_NAME)) {
+                applyNameHiding(player);
+                return;
+            }
+        }
+    }
+
+    private static final String TEAM_HIDDEN_PLAYERS = "hidden_players";
+    private void applyNameHiding(Player player) {
+        player.setPlayerListName("");
+
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        Team team = scoreboard.getTeam(TEAM_HIDDEN_PLAYERS);
+
+        if (team == null) {
+            team = scoreboard.registerNewTeam(TEAM_HIDDEN_PLAYERS);
+            team.setPrefix("§7");
+            team.setSuffix("");
+        }
+
+        team.addPlayer(player);
+        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_hide_name", null));
+    }
+
+    private void removeNameHiding(Player player) {
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        Team team = scoreboard.getTeam(TEAM_HIDDEN_PLAYERS);
+
+        if (team != null && team.hasPlayer(player)) {
+            team.removePlayer(player);
+            player.setPlayerListName(player.getName());
+            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_hide_name_end", null));
         }
     }
 }

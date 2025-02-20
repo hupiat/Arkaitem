@@ -39,7 +39,7 @@ public abstract class ItemsUtils {
 
     private static final String NBT_TAG_ID_KEY = "ARKAITEM_ID";
 
-    public static ItemStack setUniqueID(ItemStack item) {
+    public static ItemStack setUniqueID(ItemStack item, String id) {
         if (item == null) {
             return new ItemStack(Material.AIR);
         }
@@ -48,7 +48,7 @@ public abstract class ItemsUtils {
 
         NBTTagCompound tag = (nmsStack.hasTag()) ? nmsStack.getTag() : new NBTTagCompound();
         if (!tag.hasKey(NBT_TAG_ID_KEY)) {
-            tag.setString(NBT_TAG_ID_KEY, item.getItemMeta().getDisplayName());
+            tag.setString(NBT_TAG_ID_KEY, id);
             nmsStack.setTag(tag);
         }
 
