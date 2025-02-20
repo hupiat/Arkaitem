@@ -338,7 +338,12 @@ public class EventsItems implements Listener, ICustomAdds {
         }
 
         if (hasCustomAdd(customItem.get().getItem(), VIEW_ON_CHEST)) {
-            Block block = event.getClickedBlock();
+            Set<Material> transparent = new HashSet<>();
+            transparent.add(Material.AIR);
+            transparent.add(Material.GLASS);
+            transparent.add(Material.WATER);
+            transparent.add(Material.LAVA);
+            Block block = player.getTargetBlock(transparent, 100);
             if (block != null && block.getState() instanceof Chest) {
                 Chest chest = (Chest) block.getState();
                 player.openInventory(chest.getInventory());
@@ -348,7 +353,13 @@ public class EventsItems implements Listener, ICustomAdds {
         if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE)) {
             int uses = Integer.parseInt(getCustomAddData(customItem.get().getItem(), CONSUMABLE)) - 1;
             if (uses <= 0) {
-                player.getInventory().remove(customItem.get().getItem());
+                for (int i = 0; i < player.getInventory().getSize(); i++) {
+                    ItemStack inventoryItem = player.getInventory().getItem(i);
+                    if (inventoryItem != null && ItemsUtils.areEquals(inventoryItem, customItem.get().getItem())) {
+                        player.getInventory().setItem(i, null);
+                        break;
+                    }
+                }
             } else {
                 ItemMeta meta = customItem.get().getItem().getItemMeta();
                 List<String> lore = meta.getLore();
@@ -428,26 +439,24 @@ public class EventsItems implements Listener, ICustomAdds {
             return;
         }
 
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            Block block = event.getClickedBlock();
-            if (block != null && hasCustomAdd(customItem.get().getItem(), TREE_FELLER)) {
-                if (block.getType() == Material.LOG || block.getType() == Material.LOG_2) {
-                    Queue<Block> blocksToCheck = new LinkedList<>();
-                    blocksToCheck.add(block);
-                    while (!blocksToCheck.isEmpty()) {
-                        Block current = blocksToCheck.poll();
-                        if (current.getType() == Material.LOG || current.getType() == Material.LOG_2) {
-                            current.breakNaturally();
-                            for (BlockFace face : BlockFace.values()) {
-                                Block adjacent = current.getRelative(face);
-                                if (adjacent.getType() == Material.LOG || adjacent.getType() == Material.LOG_2) {
-                                    blocksToCheck.add(adjacent);
-                                }
+        Block block = event.getClickedBlock();
+        if (block != null && hasCustomAdd(customItem.get().getItem(), TREE_FELLER)) {
+            if (block.getType() == Material.LOG || block.getType() == Material.LOG_2) {
+                Queue<Block> blocksToCheck = new LinkedList<>();
+                blocksToCheck.add(block);
+                while (!blocksToCheck.isEmpty()) {
+                    Block current = blocksToCheck.poll();
+                    if (current.getType() == Material.LOG || current.getType() == Material.LOG_2) {
+                        current.breakNaturally();
+                        for (BlockFace face : BlockFace.values()) {
+                            Block adjacent = current.getRelative(face);
+                            if (adjacent.getType() == Material.LOG || adjacent.getType() == Material.LOG_2) {
+                                blocksToCheck.add(adjacent);
                             }
                         }
                     }
-                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_tree_cut", null));
                 }
+                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_tree_cut", null));
             }
         }
     }

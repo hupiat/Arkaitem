@@ -40,6 +40,10 @@ public abstract class ItemsUtils {
     private static final String NBT_TAG_ID_KEY = "ARKAITEM_ID";
 
     public static ItemStack setUniqueID(ItemStack item) {
+        if (item == null) {
+            return new ItemStack(Material.AIR);
+        }
+
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
 
         NBTTagCompound tag = (nmsStack.hasTag()) ? nmsStack.getTag() : new NBTTagCompound();
@@ -52,6 +56,10 @@ public abstract class ItemsUtils {
     }
 
     public static String getUniqueID(ItemStack item) {
+        if (item == null) {
+            return null;
+        }
+
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
 
         NBTTagCompound tag = nmsStack.getTag();
