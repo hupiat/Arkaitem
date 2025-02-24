@@ -21,6 +21,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
@@ -581,6 +582,14 @@ public class EventsItems implements Listener, ICustomAdds {
         if (hasCustomAdd(customItem.get().getItem(), SPAWN_HEAD_ON_KILL)) {
             if (event.getEntity() instanceof Player) {
                 ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+                SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+
+                if (skullMeta != null) {
+                    skullMeta.setOwner(event.getEntity().getName());
+                    skullMeta.setDisplayName(ChatColor.GOLD + "Tête de " + event.getEntity().getName());
+                    skull.setItemMeta(skullMeta);
+                }
+
                 event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), skull);
                 Map<String, String> placeholders = new HashMap<>();
                 placeholders.put("victim", entity.getName());
