@@ -125,7 +125,6 @@ public class EventsItems implements Listener, ICustomAdds {
             Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
                 itemEvent.setDurability((short) 0);
             }, 1L);
-            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_unbreakable", null));
         }
     }
 
@@ -471,8 +470,6 @@ public class EventsItems implements Listener, ICustomAdds {
                         }
                     }
                 }
-
-                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_hammer_used", null));
             }
         }
     }
