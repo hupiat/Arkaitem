@@ -122,7 +122,9 @@ public class EventsItems implements Listener, ICustomAdds {
         }
 
         if (hasCustomAdd(customItem.get().getItem(), UNBREAKABLE)) {
-            itemEvent.setDurability((short) 0);
+            Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
+                itemEvent.setDurability((short) 0);
+            }, 1L);
             player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_unbreakable", null));
         }
     }
