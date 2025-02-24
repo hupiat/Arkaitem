@@ -478,14 +478,23 @@ public class EventsItems implements Listener, ICustomAdds {
         if (block != null && hasCustomAdd(customItem.get().getItem(), TREE_FELLER)) {
             if (block.getType() == Material.LOG || block.getType() == Material.LOG_2) {
                 Queue<Block> blocksToCheck = new LinkedList<>();
+                Set<Block> checkedBlocks = new HashSet<>();
                 blocksToCheck.add(block);
+
                 while (!blocksToCheck.isEmpty()) {
                     Block current = blocksToCheck.poll();
-                    if (current.getType() == Material.LOG || current.getType() == Material.LOG_2) {
+
+                    if ((current.getType() == Material.LOG || current.getType() == Material.LOG_2) && !checkedBlocks.contains(current)) {
+                        checkedBlocks.add(current); // Marque ce bloc comme traité
                         current.breakNaturally();
-                        for (BlockFace face : BlockFace.values()) {
+
+                        for (BlockFace face : new BlockFace[]{
+                                BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH,
+                                BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH_EAST, BlockFace.NORTH_WEST,
+                                BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST
+                        }) {
                             Block adjacent = current.getRelative(face);
-                            if (adjacent.getType() == Material.LOG || adjacent.getType() == Material.LOG_2) {
+                            if (!checkedBlocks.contains(adjacent) && (adjacent.getType() == Material.LOG || adjacent.getType() == Material.LOG_2)) {
                                 blocksToCheck.add(adjacent);
                             }
                         }
