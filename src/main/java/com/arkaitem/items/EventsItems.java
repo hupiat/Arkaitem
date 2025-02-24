@@ -26,6 +26,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+import org.bukkit.util.Vector;
 
 import java.util.*;
 
@@ -363,11 +364,31 @@ public class EventsItems implements Listener, ICustomAdds {
             Material blockMaterial = Material.getMaterial(values[0].toUpperCase());
             int length = Integer.parseInt(values[1]);
 
-            Location baseLocation = event.getClickedBlock().getLocation().add(0, 1, 0);
+            Location baseLocation = event.getClickedBlock().getLocation();
             World world = baseLocation.getWorld();
 
+            Vector direction = event.getPlayer().getLocation().getDirection().normalize().multiply(-1);
+            double x = direction.getX();
+            double y = direction.getY();
+            double z = direction.getZ();
+
+            // Lower is more sensitive
+            double sensitivityThreshold = 0.4;
+
+            BlockFace placementDirection;
+
+            if (Math.abs(y) > sensitivityThreshold) {
+                placementDirection = (y > 0) ? BlockFace.UP : BlockFace.DOWN;
+            } else if (Math.abs(x) > Math.abs(z)) {
+                placementDirection = (x > 0) ? BlockFace.EAST : BlockFace.WEST;
+            } else {
+                placementDirection = (z > 0) ? BlockFace.SOUTH : BlockFace.NORTH;
+            }
+
             for (int i = 0; i < length; i++) {
-                Block block = world.getBlockAt(baseLocation.add(0, 1, 0));
+                baseLocation = baseLocation.getBlock().getRelative(placementDirection).getLocation();
+                Block block = world.getBlockAt(baseLocation);
+
                 if (block.getType() == Material.AIR) {
                     block.setType(blockMaterial);
                 } else {
@@ -485,7 +506,7 @@ public class EventsItems implements Listener, ICustomAdds {
                     Block current = blocksToCheck.poll();
 
                     if ((current.getType() == Material.LOG || current.getType() == Material.LOG_2) && !checkedBlocks.contains(current)) {
-                        checkedBlocks.add(current); // Marque ce bloc comme traité
+                        checkedBlocks.add(current);
                         current.breakNaturally();
 
                         for (BlockFace face : new BlockFace[]{
