@@ -75,7 +75,7 @@ public abstract class RegistryCustomItems {
             Object customAddsObject = section.get("customAdds");
             List<String> customAdds = (List<String>) customAddsObject;
             for (String customAdd : customAdds) {
-                lore.add(ChatColor.DARK_GRAY + "[HIDDEN] " + customAdd);
+                lore.add(ChatColor.BLACK + "[HIDDEN] " + customAdd);
             }
         }
         meta.setLore(lore);

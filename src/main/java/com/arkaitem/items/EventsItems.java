@@ -57,6 +57,11 @@ public class EventsItems implements Listener, ICustomAdds {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
+        if (event.getView().getTitle().equals(VIEW_ON_CHEST_TITLE)) {
+            event.setCancelled(true);
+            return;
+        }
+
         Inventory inventory = event.getInventory();
         ItemStack itemEvent = event.getCurrentItem();
 
@@ -374,6 +379,7 @@ public class EventsItems implements Listener, ICustomAdds {
         }
     }
 
+    public static final String VIEW_ON_CHEST_TITLE = "Vue du coffre";
     @EventHandler
     public void onItemUse(PlayerInteractEvent event) {
         Player player = event.getPlayer();
@@ -394,7 +400,9 @@ public class EventsItems implements Listener, ICustomAdds {
             Block block = player.getTargetBlock(transparent, 100);
             if (block != null && block.getState() instanceof Chest) {
                 Chest chest = (Chest) block.getState();
-                player.openInventory(chest.getInventory());
+                Inventory viewOnlyInventory = Bukkit.createInventory(null, chest.getInventory().getSize(), VIEW_ON_CHEST_TITLE);
+                viewOnlyInventory.setContents(chest.getInventory().getContents());
+                player.openInventory(viewOnlyInventory);
             }
         }
 
