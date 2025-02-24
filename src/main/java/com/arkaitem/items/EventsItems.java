@@ -26,9 +26,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import javax.swing.text.html.Option;
 import java.util.*;
-import java.util.function.Function;
 
 public class EventsItems implements Listener, ICustomAdds {
 
@@ -339,25 +337,6 @@ public class EventsItems implements Listener, ICustomAdds {
     }
 
     @EventHandler
-    public void onItemConsume(PlayerItemConsumeEvent event) {
-        ItemStack itemEvent = event.getItem();
-
-        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
-
-        if (!customItem.isPresent()) {
-            return;
-        }
-
-        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_GIVE_POTION)) {
-            String[] values = getCustomAddData(customItem.get().getItem(), CONSUMABLE_GIVE_POTION).split(";");
-            PotionEffectType effect = PotionEffectType.getByName(values[0]);
-            int level = Integer.parseInt(values[1]);
-            int duration = Integer.parseInt(values[2]);
-            event.getPlayer().addPotionEffect(new PotionEffect(effect, duration * 20, level));
-        }
-    }
-
-    @EventHandler
     public void onBlockColumnUse(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
@@ -437,17 +416,17 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_USE_COMMAND)) {
-            String command = getCustomAddData(customItem.get().getItem(), CONSUMABLE_USE_COMMAND).replace("{player}", player.getName());
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-        }
-
-        if (hasCustomAdd(customItem.get().getItem(), GIVE_POTION)) {
-            String[] values = getCustomAddData(customItem.get().getItem(), GIVE_POTION).split(";");
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_GIVE_POTION)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), CONSUMABLE_GIVE_POTION).split(";");
             PotionEffectType effect = PotionEffectType.getByName(values[0]);
             int level = Integer.parseInt(values[1]);
             int duration = Integer.parseInt(values[2]);
-            player.addPotionEffect(new PotionEffect(effect, duration * 20, level));
+            event.getPlayer().addPotionEffect(new PotionEffect(effect, duration * 20, level));
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_USE_COMMAND)) {
+            String command = getCustomAddData(customItem.get().getItem(), CONSUMABLE_USE_COMMAND).replace("{player}", player.getName());
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
         }
 
         if (hasCustomAdd(customItem.get().getItem(), SELL_CHEST_CONTENTS)) {

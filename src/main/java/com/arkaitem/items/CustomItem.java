@@ -33,7 +33,7 @@ public class CustomItem {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         CustomItem that = (CustomItem) o;
-        return id == that.id && Objects.equals(item, that.item);
+        return Objects.equals(id, that.id) && Objects.equals(item, that.item);
     }
 
     @Override

@@ -1169,7 +1169,7 @@ item:
       - DURABILITY:4
 
     customAdds:
-      - "CONSUMABLE_GIVE_POTION;NO_FALL;1;600"
+      - "CONSUMABLE_GIVE_POTION;JUMP;1;600"
       - "CONSUMABLE;3"
 
   - orbeforce :
@@ -1190,7 +1190,7 @@ item:
       - DURABILITY:4
 
     customAdds:
-      - "CONSUMABLE_GIVE_POTION;STRENGHT;0;600"
+      - "CONSUMABLE_GIVE_POTION;INCREASE_DAMAGE;0;600"
       - "CONSUMABLE;3"
 
   - hammer3x3 :
@@ -1270,7 +1270,7 @@ item:
       - "CANT_DROP"
       - "NO_DISCARD"
       - "KEEP_ON_DEATH"
-      - "multiplicateur;1.35" #35% de vente en plus avec ce masque 
+      - "multiplicateur;1.35" #35% de vente en plus avec ce masque
 
   - sceptre_tp:
     id: "sceptre_tp"
