@@ -70,7 +70,7 @@ public interface ICustomAdds {
         }
 
         for (String line : customItem.get().getItem().getItemMeta().getLore()) {
-            if (ChatColor.stripColor(line).contains(tag)) {
+            if (ChatColor.stripColor(line.toUpperCase()).contains(tag)) {
                 return true;
             }
         }
@@ -91,7 +91,7 @@ public interface ICustomAdds {
         ItemMeta meta = customItem.get().getItem().getItemMeta();
         List<String> lore = meta.getLore();
         for (String line : lore) {
-            String strippedLine = ChatColor.stripColor(line);
+            String strippedLine = ChatColor.stripColor(line).toUpperCase();
             if (strippedLine.contains(tag + ";")) {
                 return strippedLine.substring(strippedLine.indexOf(tag + ";") + tag.length() + 1).trim();
             }

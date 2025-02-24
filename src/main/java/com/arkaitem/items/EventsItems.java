@@ -26,6 +26,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.function.Function;
 
@@ -97,10 +98,67 @@ public class EventsItems implements Listener, ICustomAdds {
 
         Player player = (Player) event.getEntity();
 
-        for (ItemStack inventoryItem : player.getInventory().getArmorContents()) {
-            if (hasCustomAdd(inventoryItem, NO_FALL_DAMAGE) && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+        for (ItemStack itemEvent : player.getInventory().getArmorContents()) {
+            Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
+
+            if (!customItem.isPresent()) {
+                continue;
+            }
+
+            if (hasCustomAdd(customItem.get().getItem(), NO_FALL_DAMAGE) && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
                 event.setCancelled(true);
                 break;
+            }
+        }
+
+        List<ItemStack> itemsEvent = new ArrayList<ItemStack>() {{
+            add(player.getInventory().getItemInHand());
+            addAll(Arrays.asList(player.getInventory().getArmorContents()));
+        }};
+
+        for (ItemStack itemEventInLoop : itemsEvent) {
+            Optional<CustomItem> customItemInLoop = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEventInLoop);
+
+            if (!customItemInLoop.isPresent()) {
+                continue;
+            }
+
+            if (player.getHealth() - event.getFinalDamage() <= 0) {
+                if (hasCustomAdd(customItemInLoop.get().getItem(), DEATH_CHANCE_TP)) {
+                    event.setCancelled(true);
+                    String[] values = getCustomAddData(customItemInLoop.get().getItem(), DEATH_CHANCE_TP).split(";");
+
+                    if (values.length == 4) {
+                        int chance = Integer.parseInt(values[0]);
+                        int radius = Integer.parseInt(values[1]);
+                        int attempts = Integer.parseInt(values[2]);
+                        int delay = Integer.parseInt(values[3]);
+
+                        if (new Random().nextInt(100) < chance) {
+                            Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
+                                int attemptsDone = Math.max(100, attempts);
+                                Location originalLocation = player.getLocation();
+                                Location newLocation = null;
+                                while (attemptsDone > 0) {
+                                    int xOffset = new Random().nextInt(radius * 2 + 1) - radius;
+                                    int zOffset = new Random().nextInt(radius * 2 + 1) - radius;
+                                    newLocation = originalLocation.clone().add(xOffset, 0, zOffset);
+
+                                    Block groundBlock = newLocation.getWorld().getBlockAt(newLocation.getBlockX(), newLocation.getBlockY() - 1, newLocation.getBlockZ());
+                                    Block feetBlock = newLocation.getWorld().getBlockAt(newLocation.getBlockX(), newLocation.getBlockY(), newLocation.getBlockZ());
+                                    Block headBlock = newLocation.getWorld().getBlockAt(newLocation.getBlockX(), newLocation.getBlockY() + 1, newLocation.getBlockZ());
+
+                                    if (groundBlock.getType().isSolid() && feetBlock.getType() == Material.AIR && headBlock.getType() == Material.AIR) {
+                                        player.teleport(newLocation);
+                                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("teleport_on_death", null));
+                                    }
+
+                                    attemptsDone--;
+                                }
+                            }, delay);
+                        }
+                    }
+                }
             }
         }
     }
@@ -130,21 +188,21 @@ public class EventsItems implements Listener, ICustomAdds {
 
 
     @EventHandler
-    public void onEntityDamage(EntityDamageByEntityEvent event) {
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player)) {
             return;
         }
-        Player player = (Player) event.getDamager();
-        ItemStack itemEvent = player.getInventory().getItemInHand();
 
-        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
+        Player playerDamager = (Player) event.getDamager();
+        ItemStack itemEventDamager = playerDamager.getInventory().getItemInHand();
+        Optional<CustomItem> customItemDamager = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEventDamager);
 
-        if (!customItem.isPresent()) {
+        if (!customItemDamager.isPresent()) {
             return;
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), STEAL_MONEY)) {
-            String[] values = getCustomAddData(customItem.get().getItem(), STEAL_MONEY).split(";");
+        if (hasCustomAdd(customItemDamager.get().getItem(), STEAL_MONEY)) {
+            String[] values = getCustomAddData(customItemDamager.get().getItem(), STEAL_MONEY).split(";");
             if (values.length == 3 && event.getEntity() instanceof Player) {
                 int chance = Integer.parseInt(values[0]);
                 int minAmount = Integer.parseInt(values[1]);
@@ -157,15 +215,15 @@ public class EventsItems implements Listener, ICustomAdds {
                     Map<String, String> placeholders = new HashMap<>();
                     placeholders.put("money", String.valueOf(stolenAmount));
                     placeholders.put("target", victim.getName());
-                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_money_stolen", placeholders));
+                    playerDamager.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_money_stolen", placeholders));
                     placeholders.remove("target");
                     victim.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_money_stolen_victim", placeholders));
                 }
             }
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), SELF_EFFECT)) {
-            String[] values = getCustomAddData(customItem.get().getItem(), SELF_EFFECT).split(";");
+        if (hasCustomAdd(customItemDamager.get().getItem(), SELF_EFFECT)) {
+            String[] values = getCustomAddData(customItemDamager.get().getItem(), SELF_EFFECT).split(";");
             if (values.length == 4) {
                 PotionEffectType effectType = PotionEffectType.getByName(values[0]);
                 int level = Integer.parseInt(values[1]);
@@ -173,13 +231,13 @@ public class EventsItems implements Listener, ICustomAdds {
                 int chance = Integer.parseInt(values[3]);
 
                 if (new Random().nextInt(100) < chance) {
-                    player.addPotionEffect(new PotionEffect(effectType, duration, level));
+                    playerDamager.addPotionEffect(new PotionEffect(effectType, duration, level));
                 }
             }
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), HIT_EFFECT)) {
-            String[] values = getCustomAddData(customItem.get().getItem(), HIT_EFFECT).split(";");
+        if (hasCustomAdd(customItemDamager.get().getItem(), HIT_EFFECT)) {
+            String[] values = getCustomAddData(customItemDamager.get().getItem(), HIT_EFFECT).split(";");
             if (values.length == 4) {
                 PotionEffectType effectType = PotionEffectType.getByName(values[0]);
                 int level = Integer.parseInt(values[1]);
@@ -192,14 +250,14 @@ public class EventsItems implements Listener, ICustomAdds {
                         Map<String, String> placeholders = new HashMap<>();
                         placeholders.put("effect", effectType.getName());
                         placeholders.put("target", event.getEntity().getName());
-                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_effect_applied", placeholders));
+                        playerDamager.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_effect_applied", placeholders));
                     }
                 }
             }
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), TELEPORT_ON_ATTACK)) {
-            String[] values = getCustomAddData(customItem.get().getItem(), TELEPORT_ON_ATTACK).split(";");
+        if (hasCustomAdd(customItemDamager.get().getItem(), TELEPORT_ON_ATTACK)) {
+            String[] values = getCustomAddData(customItemDamager.get().getItem(), TELEPORT_ON_ATTACK).split(";");
             int radius = Integer.parseInt(values[0]);
             Random random = new Random();
             Location targetLocation;
@@ -224,11 +282,11 @@ public class EventsItems implements Listener, ICustomAdds {
                 if ((feet == Material.AIR || feet == Material.WATER || feet == Material.LAVA) &&
                         (head == Material.AIR) &&
                         (ground.isSolid())) {
-                    player.teleport(targetLocation);
+                    playerDamager.teleport(targetLocation);
 
                     Map<String, String> placeholders = new HashMap<>();
                     placeholders.put("target", targetLocation.getBlockX() + ", " + targetLocation.getBlockY() + ", " + targetLocation.getBlockZ());
-                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation", placeholders));
+                    playerDamager.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation", placeholders));
                     return;
                 }
 
@@ -236,20 +294,20 @@ public class EventsItems implements Listener, ICustomAdds {
             } while (attempts > 0);
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), STEAL_LIFE)) {
-            String[] values = getCustomAddData(customItem.get().getItem(), STEAL_LIFE).split(";");
+        if (hasCustomAdd(customItemDamager.get().getItem(), STEAL_LIFE)) {
+            String[] values = getCustomAddData(customItemDamager.get().getItem(), STEAL_LIFE).split(";");
             if (values.length == 2) {
                 double stolenHealth = event.getDamage() * (Double.parseDouble(values[0]) / 100);
                 event.setDamage(event.getDamage() * (1 + stolenHealth));
-                player.setHealth(Math.min(player.getMaxHealth(), player.getHealth() + stolenHealth));
+                playerDamager.setHealth(Math.min(playerDamager.getMaxHealth(), playerDamager.getHealth() + stolenHealth));
                 Map<String, String> placeholders = new HashMap<>();
                 placeholders.put("health", String.valueOf(stolenHealth));
                 placeholders.put("target", event.getEntity().getName());
-                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_health_stolen", placeholders));
+                playerDamager.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_health_stolen", placeholders));
             }
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), SPAWN_LIGHTNING)) {
+        if (hasCustomAdd(customItemDamager.get().getItem(), SPAWN_LIGHTNING)) {
             event.getEntity().getWorld().strikeLightning(event.getEntity().getLocation());
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("target", event.getEntity().getName());
@@ -511,51 +569,7 @@ public class EventsItems implements Listener, ICustomAdds {
                     player.getInventory().addItem(item);
                 }
                 itemsToRestore.remove(playerId);
-                player.sendMessage("§aTes objets ont été conservés après la mort !");
-            }
-
-            for (ItemStack itemEvent : player.getInventory().getContents()) {
-                Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
-
-                if (!customItem.isPresent()) {
-                    continue;
-                }
-
-                if (hasCustomAdd(customItem.get().getItem(), DEATH_CHANCE_TP)) {
-                    String[] values = getCustomAddData(customItem.get().getItem(), DEATH_CHANCE_TP).split(";");
-
-                    if (values.length == 4) {
-                        int chance = Integer.parseInt(values[0]);
-                        int radius = Integer.parseInt(values[1]);
-                        int attempts = Integer.parseInt(values[2]);
-                        int delay = Integer.parseInt(values[3]);
-
-                        if (new Random().nextInt(100) < chance) {
-                            Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
-                                int attemptsDone = Math.max(100, attempts);
-                                Location originalLocation = player.getLocation();
-                                Location newLocation = null;
-                                while (attemptsDone > 0) {
-                                    int xOffset = new Random().nextInt(radius * 2 + 1) - radius;
-                                    int zOffset = new Random().nextInt(radius * 2 + 1) - radius;
-                                    newLocation = originalLocation.clone().add(xOffset, 0, zOffset);
-
-                                    Block groundBlock = newLocation.getWorld().getBlockAt(newLocation.getBlockX(), newLocation.getBlockY() - 1, newLocation.getBlockZ());
-                                    Block feetBlock = newLocation.getWorld().getBlockAt(newLocation.getBlockX(), newLocation.getBlockY(), newLocation.getBlockZ());
-                                    Block headBlock = newLocation.getWorld().getBlockAt(newLocation.getBlockX(), newLocation.getBlockY() + 1, newLocation.getBlockZ());
-
-                                    if (groundBlock.getType().isSolid() && feetBlock.getType() == Material.AIR && headBlock.getType() == Material.AIR) {
-                                        player.teleport(newLocation);
-                                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("teleport_on_death", null));
-                                        return;
-                                    }
-
-                                    attemptsDone--;
-                                }
-                            }, delay);
-                        }
-                    }
-                }
+                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_keep_on_death", null));
             }
         }, 5L);
     }
