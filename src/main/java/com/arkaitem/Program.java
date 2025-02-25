@@ -35,7 +35,10 @@ public class Program extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new DynamicCraftTableGUIListener(), this);
 
             RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-            ECONOMY = rsp.getProvider();
+
+            if (rsp != null) {
+                ECONOMY = rsp.getProvider();
+            }
 
             isRegistered = true;
         }
