@@ -1248,7 +1248,7 @@ item:
 
   - masque :
     id: "masqueglace"
-    material: SKULL
+    material: SKULL_ITEM
     name: "&b✺ §3§lMasque de Glace &b✺"
     lore:
       - '§3§m❄❄❄❄❄❄❄❄❄❄❄❄❄❄❄'
