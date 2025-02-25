@@ -3,14 +3,17 @@ package com.arkaitem.items;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Objects;
+import java.util.Set;
 
 public class CustomItem {
     private String id;
     private ItemStack item;
+    private Set<String> customAdds;
 
-    public CustomItem(String id, ItemStack item) {
+    public CustomItem(String id, ItemStack item, Set<String> customAdds) {
         this.id = id;
         this.item = item;
+        this.customAdds = customAdds;
     }
 
     public String getId() {
@@ -27,6 +30,14 @@ public class CustomItem {
 
     public void setItem(ItemStack item) {
         this.item = item;
+    }
+
+    public Set<String> getCustomAdds() {
+        return customAdds;
+    }
+
+    public void setCustomAdds(Set<String> customAdds) {
+        this.customAdds = customAdds;
     }
 
     @Override

@@ -27,7 +27,8 @@ public abstract class RegistryCustomItems {
                 try {
                     Map<String, Object> data = (Map<String, Object>) obj;
                     ItemStack item = processItem(data);
-                    items.add(new CustomItem((String) data.get("id"), item));
+                    List<String> customAdds = data.containsKey("customAdds") ? (List<String>) data.get("customAdds") : null;
+                    items.add(new CustomItem((String) data.get("id"), item, customAdds == null ? new HashSet<>() : new HashSet<>(customAdds)));
                 } catch (Exception e) {
                     Bukkit.getLogger().log(Level.SEVERE, "Failed to load items: ", e);
                 }
@@ -71,16 +72,7 @@ public abstract class RegistryCustomItems {
             }
         }
 
-        if (section.containsKey("customAdds")) {
-            Object customAddsObject = section.get("customAdds");
-            List<String> customAdds = (List<String>) customAddsObject;
-            for (String customAdd : customAdds) {
-                lore.add(ChatColor.BLACK + "[HIDDEN] " + customAdd);
-            }
-        }
-        meta.setLore(lore);
         item.setItemMeta(meta);
-
         return ItemsUtils.setUniqueID(item, section.get("id").toString());
     }
 }

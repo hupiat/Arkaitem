@@ -795,36 +795,6 @@ item:
       - "NO_DISCARD"
       - "UNBREAKABLE"
 
-  - sword_ouest :
-    id: "sword_ouest"
-    material: DIAMOND_SWORD
-    name: '&4&lLame de l''Ouest'
-    lore:
-      - '&4&l❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂'
-      - '§4§lRareté §f§l» §c§l✯✯✯✯✯ §f§l«'
-      - ''
-      - "§3✸&k!! §bCollection de &4&ll''Ouest &3&k!!"
-      - ''
-      - "&c&l✪ &7Une lame forgée dans &cles flammes du combat."
-      - "&7Elle tranche l'air avec une brutalité inégalée."
-      - ''
-      - '§8✸&7 Propriétaire : §5{item_owner}'
-      - '§8✸&7 Dernier joueur tué : §4{last_kill}'
-      - ''
-      - '§7✔ §4Infinie'
-      - '§7✔ §4Incassable'
-      - '&4&l❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂❂'
-    enchantments:
-      - SHARPNESS:5
-      - FIRE_ASPECT:2
-      - DURABILITY:3
-
-    customAdds:
-      - "CANT_DROP"
-      - "NO_DISCARD"
-      - "KEEP_ON_DEATH"
-      - "UNBREAKABLE"
-
   - arc_ouest :
     id: "arc_ouest"
     material: BOW
@@ -884,8 +854,8 @@ item:
       - "CANT_DROP"
       - "NO_DISCARD"
       - "KEEP_ON_DEATH"
-      - "UNBREAKABLE"
       - "DEATH_CHANCE_TP;15;300;1;10"
+      - "UNBREAKABLE"
 
   - bati_sand30 :
     id: "bati_sand30"

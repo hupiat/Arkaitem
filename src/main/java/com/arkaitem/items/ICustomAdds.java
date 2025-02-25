@@ -68,8 +68,8 @@ public interface ICustomAdds {
             throw new IllegalArgumentException("Custom item cannot be found");
         }
 
-        for (String line : customItem.get().getItem().getItemMeta().getLore()) {
-            if (ChatColor.stripColor(line.toUpperCase()).contains(tag)) {
+        for (String line : customItem.get().getCustomAdds()) {
+            if (line.toUpperCase().contains(tag)) {
                 return true;
             }
         }
@@ -87,12 +87,9 @@ public interface ICustomAdds {
             throw new IllegalArgumentException("custom item not found");
         }
 
-        ItemMeta meta = customItem.get().getItem().getItemMeta();
-        List<String> lore = meta.getLore();
-        for (String line : lore) {
-            String strippedLine = ChatColor.stripColor(line).toUpperCase();
-            if (strippedLine.contains(tag + ";")) {
-                return strippedLine.substring(strippedLine.indexOf(tag + ";") + tag.length() + 1).trim();
+        for (String line : customItem.get().getCustomAdds()) {
+            if (line.toUpperCase().contains(tag + ";")) {
+                return line.toUpperCase().substring(line.indexOf(tag + ";") + tag.length() + 1).trim();
             }
         }
         throw new IllegalArgumentException("No such tag: " + tag);
