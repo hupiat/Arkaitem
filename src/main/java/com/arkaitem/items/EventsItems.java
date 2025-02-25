@@ -192,13 +192,18 @@ public class EventsItems implements Listener, ICustomAdds {
     }
 
 
+    private static final Map<UUID, UUID> LAST_HIT_PLAYERS = new HashMap<>();
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player)) {
             return;
         }
 
+        Player player = (Player) event.getEntity();
         Player playerDamager = (Player) event.getDamager();
+
+        LAST_HIT_PLAYERS.put(player.getUniqueId(), playerDamager.getUniqueId());
+
         ItemStack itemEventDamager = playerDamager.getInventory().getItemInHand();
         Optional<CustomItem> customItemDamager = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEventDamager);
 
@@ -264,44 +269,6 @@ public class EventsItems implements Listener, ICustomAdds {
                     }
                 }
             }
-        }
-
-        if (hasCustomAdd(customItemDamager.get().getItem(), TELEPORT_ON_ATTACK)) {
-            String[] values = getCustomAddData(customItemDamager.get().getItem(), TELEPORT_ON_ATTACK).split(";");
-            int radius = Integer.parseInt(values[0]);
-            Random random = new Random();
-            Location targetLocation;
-            int attempts = 100;
-
-            do {
-                int xOffset = random.nextInt(radius * 2 + 1) - radius;
-                int zOffset = random.nextInt(radius * 2 + 1) - radius;
-                targetLocation = event.getEntity().getLocation().clone().add(xOffset, 0, zOffset);
-
-                while (targetLocation.getBlockY() < targetLocation.getWorld().getMaxHeight() - 1 &&
-                        !(targetLocation.getBlock().getType() == Material.AIR ||
-                                targetLocation.getBlock().getType() == Material.WATER ||
-                                targetLocation.getBlock().getType() == Material.LAVA)) {
-                    targetLocation.add(0, 1, 0);
-                }
-
-                Material feet = targetLocation.getBlock().getType();
-                Material head = targetLocation.clone().add(0, 1, 0).getBlock().getType();
-                Material ground = targetLocation.clone().add(0, -1, 0).getBlock().getType();
-
-                if ((feet == Material.AIR || feet == Material.WATER || feet == Material.LAVA) &&
-                        (head == Material.AIR) &&
-                        (ground.isSolid())) {
-                    playerDamager.teleport(targetLocation);
-
-                    Map<String, String> placeholders = new HashMap<>();
-                    placeholders.put("target", targetLocation.getBlockX() + ", " + targetLocation.getBlockY() + ", " + targetLocation.getBlockZ());
-                    playerDamager.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation", placeholders));
-                    return;
-                }
-
-                attempts--;
-            } while (attempts > 0);
         }
 
         if (hasCustomAdd(customItemDamager.get().getItem(), STEAL_LIFE)) {
@@ -410,7 +377,7 @@ public class EventsItems implements Listener, ICustomAdds {
     public static final int CONSUMABLES_COOLDOWN_SECONDS = 5;
     public static final String VIEW_ON_CHEST_TITLE = "Vue du coffre";
     public static final int VIEW_ON_CHEST_LENGTH = 1000;
-    public static final Double SELL_CHEST_CONTENT_VALUE = 100D;
+    public static final Double SELL_CHEST_CONTENT_VALUE = 500D;
     @EventHandler
     public void onItemUse(PlayerInteractEvent event) {
         Player player = event.getPlayer();
@@ -420,6 +387,23 @@ public class EventsItems implements Listener, ICustomAdds {
 
         if (!customItem.isPresent()) {
             return;
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), TELEPORT_ON_ATTACK)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), TELEPORT_ON_ATTACK).split(";");
+            int radius = Integer.parseInt(values[0]);
+            if (LAST_HIT_PLAYERS.containsKey(player.getUniqueId())) {
+                Location currentLocation = player.getLocation();
+                Location targetLocation = Bukkit.getPlayer(player.getUniqueId()).getLocation();
+                if (Math.abs(targetLocation.getX() - currentLocation.getX()) <= radius
+                        || Math.abs(targetLocation.getY() - currentLocation.getY()) <= radius
+                        || Math.abs(targetLocation.getZ() - currentLocation.getZ()) <= radius) {
+                    player.teleport(targetLocation);
+                    Map<String, String> placeholders = new HashMap<>();
+                    placeholders.put("target", targetLocation.getBlockX() + ", " + targetLocation.getBlockY() + ", " + targetLocation.getBlockZ());
+                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation", placeholders));
+                }
+            }
         }
 
         if (hasCustomAdd(customItem.get().getItem(), VIEW_ON_CHEST)) {
