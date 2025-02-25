@@ -635,7 +635,12 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        for (ItemStack itemEventInLoop : player.getInventory().getArmorContents()) {
+        List<ItemStack> itemEvents = new ArrayList<ItemStack>() {{
+            add(itemEvent);
+            addAll(Arrays.asList(player.getInventory().getArmorContents()));
+        }};
+
+        for (ItemStack itemEventInLoop : itemEvents) {
 
             Optional<CustomItem> customItemInLoop = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEventInLoop);
 
