@@ -28,7 +28,12 @@ public abstract class RegistryCustomItems {
                     Map<String, Object> data = (Map<String, Object>) obj;
                     ItemStack item = processItem(data);
                     List<String> customAdds = data.containsKey("customAdds") ? (List<String>) data.get("customAdds") : null;
-                    items.add(new CustomItem((String) data.get("id"), item, customAdds == null ? new HashSet<>() : new HashSet<>(customAdds)));
+                    CustomItem customItem = new CustomItem((String) data.get("id"), item, customAdds == null ? new HashSet<>() : new HashSet<>(customAdds));
+                    if (data.containsKey("fullSetRequirement") && data.containsKey("fullSetCustomAdds")) {
+                        customItem.setFullSetRequirements(new HashSet<>((List<String>) data.get("fullSetRequirement")));
+                        customItem.setFullSetCustomAdds(new HashSet<>((List<String>) data.get("fullSetCustomAdds")));
+                    }
+                    items.add(customItem);
                 } catch (Exception e) {
                     Bukkit.getLogger().log(Level.SEVERE, "Failed to load items: ", e);
                 }

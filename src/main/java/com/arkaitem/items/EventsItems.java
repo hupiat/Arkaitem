@@ -46,7 +46,7 @@ public class EventsItems implements Listener, ICustomAdds {
         }
 
 
-        if (hasCustomAdd(customItem.get().getItem(), CANT_DROP)) {
+        if (hasCustomAdd(customItem.get().getItem(), CANT_DROP, event.getPlayer())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cannot_drop", null));
         } else {
@@ -63,21 +63,21 @@ public class EventsItems implements Listener, ICustomAdds {
             return;
         }
 
+        Player player = (Player) event.getWhoClicked();
+
         Inventory inventory = event.getInventory();
         ItemStack itemEvent = event.getCurrentItem();
 
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
         if (customItem.isPresent()) {
-            if (hasCustomAdd(customItem.get().getItem(), NO_DISCARD)) {
+            if (hasCustomAdd(customItem.get().getItem(), NO_DISCARD, player)) {
                 if (inventory.getName().trim().equalsIgnoreCase("poubelle")) {
                     event.setCancelled(true);
                     event.getWhoClicked().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cannot_drop", null));
                 }
             }
         }
-
-        Player player = (Player) event.getWhoClicked();
 
         for (ItemStack itemEventInLoop : player.getInventory().getArmorContents()) {
             Optional<CustomItem> customItemInLoop = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEventInLoop);
@@ -86,7 +86,7 @@ public class EventsItems implements Listener, ICustomAdds {
                 continue;
             }
 
-            if (hasCustomAdd(customItemInLoop.get().getItem(), HIDE_PLAYER_NAME)) {
+            if (hasCustomAdd(customItemInLoop.get().getItem(), HIDE_PLAYER_NAME, player)) {
                 applyNameHiding(player);
                 return;
             }
@@ -110,7 +110,7 @@ public class EventsItems implements Listener, ICustomAdds {
                 continue;
             }
 
-            if (hasCustomAdd(customItem.get().getItem(), NO_FALL_DAMAGE) && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+            if (hasCustomAdd(customItem.get().getItem(), NO_FALL_DAMAGE, player) && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
                 event.setCancelled(true);
                 break;
             }
@@ -129,9 +129,9 @@ public class EventsItems implements Listener, ICustomAdds {
             }
 
             if (player.getHealth() - event.getFinalDamage() <= 0) {
-                if (hasCustomAdd(customItemInLoop.get().getItem(), DEATH_CHANCE_TP)) {
+                if (hasCustomAdd(customItemInLoop.get().getItem(), DEATH_CHANCE_TP, player)) {
                     event.setCancelled(true);
-                    String[] values = getCustomAddData(customItemInLoop.get().getItem(), DEATH_CHANCE_TP).split(";");
+                    String[] values = getCustomAddData(customItemInLoop.get().getItem(), DEATH_CHANCE_TP, player).split(";");
 
                     if (values.length == 4) {
                         int chance = Integer.parseInt(values[0]);
@@ -184,7 +184,7 @@ public class EventsItems implements Listener, ICustomAdds {
             return;
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), UNBREAKABLE)) {
+        if (hasCustomAdd(customItem.get().getItem(), UNBREAKABLE, player)) {
             Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
                 itemEvent.setDurability((short) 0);
             }, 1L);
@@ -211,8 +211,8 @@ public class EventsItems implements Listener, ICustomAdds {
             return;
         }
 
-        if (hasCustomAdd(customItemDamager.get().getItem(), STEAL_MONEY)) {
-            String[] values = getCustomAddData(customItemDamager.get().getItem(), STEAL_MONEY).split(";");
+        if (hasCustomAdd(customItemDamager.get().getItem(), STEAL_MONEY, playerDamager)) {
+            String[] values = getCustomAddData(customItemDamager.get().getItem(), STEAL_MONEY, playerDamager).split(";");
             if (values.length == 3 && event.getEntity() instanceof Player) {
                 int chance = Integer.parseInt(values[0]);
                 int minAmount = Integer.parseInt(values[1]);
@@ -237,8 +237,8 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (hasCustomAdd(customItemDamager.get().getItem(), SELF_EFFECT)) {
-            String[] values = getCustomAddData(customItemDamager.get().getItem(), SELF_EFFECT).split(";");
+        if (hasCustomAdd(customItemDamager.get().getItem(), SELF_EFFECT, playerDamager)) {
+            String[] values = getCustomAddData(customItemDamager.get().getItem(), SELF_EFFECT, playerDamager).split(";");
             if (values.length == 4) {
                 PotionEffectType effectType = PotionEffectType.getByName(values[0]);
                 int level = Integer.parseInt(values[1]);
@@ -251,8 +251,8 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (hasCustomAdd(customItemDamager.get().getItem(), HIT_EFFECT)) {
-            String[] values = getCustomAddData(customItemDamager.get().getItem(), HIT_EFFECT).split(";");
+        if (hasCustomAdd(customItemDamager.get().getItem(), HIT_EFFECT, playerDamager)) {
+            String[] values = getCustomAddData(customItemDamager.get().getItem(), HIT_EFFECT, playerDamager).split(";");
             if (values.length == 4) {
                 PotionEffectType effectType = PotionEffectType.getByName(values[0]);
                 int level = Integer.parseInt(values[1]);
@@ -271,8 +271,8 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (hasCustomAdd(customItemDamager.get().getItem(), STEAL_LIFE)) {
-            String[] values = getCustomAddData(customItemDamager.get().getItem(), STEAL_LIFE).split(";");
+        if (hasCustomAdd(customItemDamager.get().getItem(), STEAL_LIFE, playerDamager)) {
+            String[] values = getCustomAddData(customItemDamager.get().getItem(), STEAL_LIFE, playerDamager).split(";");
             if (values.length == 2) {
                 double stolenHealth = event.getDamage() * (Double.parseDouble(values[0]) / 100);
                 event.setDamage(event.getDamage() * (1 + stolenHealth));
@@ -284,7 +284,7 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (hasCustomAdd(customItemDamager.get().getItem(), SPAWN_LIGHTNING)) {
+        if (hasCustomAdd(customItemDamager.get().getItem(), SPAWN_LIGHTNING, playerDamager)) {
             event.getEntity().getWorld().strikeLightning(event.getEntity().getLocation());
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("target", event.getEntity().getName());
@@ -304,8 +304,8 @@ public class EventsItems implements Listener, ICustomAdds {
             return;
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), MULTIPLICATEUR)) {
-            String[] values = getCustomAddData(customItem.get().getItem(), MULTIPLICATEUR).split(";");
+        if (hasCustomAdd(customItem.get().getItem(), MULTIPLICATEUR, player)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), MULTIPLICATEUR, player).split(";");
             if (values.length == 1) {
                 double multiplier = Double.parseDouble(values[0]);
                 MULTIPLIER_BONUS.put(player.getUniqueId(), multiplier);
@@ -332,8 +332,8 @@ public class EventsItems implements Listener, ICustomAdds {
         }
 
 
-        if (hasCustomAdd(customItem.get().getItem(), BLOCK_COLUMN)) {
-            String[] values = getCustomAddData(customItem.get().getItem(), BLOCK_COLUMN).split(";");
+        if (hasCustomAdd(customItem.get().getItem(), BLOCK_COLUMN, player)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), BLOCK_COLUMN, player).split(";");
             Material blockMaterial = Material.getMaterial(values[0].toUpperCase());
             int length = Integer.parseInt(values[1]);
 
@@ -389,8 +389,8 @@ public class EventsItems implements Listener, ICustomAdds {
             return;
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), TELEPORT_ON_ATTACK)) {
-            String[] values = getCustomAddData(customItem.get().getItem(), TELEPORT_ON_ATTACK).split(";");
+        if (hasCustomAdd(customItem.get().getItem(), TELEPORT_ON_ATTACK, player)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), TELEPORT_ON_ATTACK, player).split(";");
             int radius = Integer.parseInt(values[0]);
             if (LAST_HIT_PLAYERS.containsKey(player.getUniqueId())) {
                 Location currentLocation = player.getLocation();
@@ -406,7 +406,7 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), VIEW_ON_CHEST)) {
+        if (hasCustomAdd(customItem.get().getItem(), VIEW_ON_CHEST, player)) {
             Set<Material> transparent = new HashSet<>();
             transparent.add(Material.AIR);
             transparent.add(Material.GLASS);
@@ -421,7 +421,7 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), SELL_CHEST_CONTENTS)) {
+        if (hasCustomAdd(customItem.get().getItem(), SELL_CHEST_CONTENTS, player)) {
             Block block = event.getClickedBlock();
             if (block != null && block.getState() instanceof Chest) {
                 Chest chest = (Chest) block.getState();
@@ -447,12 +447,12 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE)) {
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player)) {
             if (CONSUMABLES_COOLDOWN.containsKey(player.getUniqueId()) && CONSUMABLES_COOLDOWN.get(player.getUniqueId())) {
                 player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cooldown", null));
                 return;
             }
-            int uses = Integer.parseInt(getCustomAddData(customItem.get().getItem(), CONSUMABLE)) - 1;
+            int uses = Integer.parseInt(getCustomAddData(customItem.get().getItem(), CONSUMABLE, player)) - 1;
             CONSUMABLES_COOLDOWN.put(player.getUniqueId(), true);
             if (uses <= 0) {
                 for (int i = 0; i < player.getInventory().getSize(); i++) {
@@ -472,16 +472,16 @@ public class EventsItems implements Listener, ICustomAdds {
             Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> CONSUMABLES_COOLDOWN.put(player.getUniqueId(), false), CONSUMABLES_COOLDOWN_SECONDS * 5L);
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_GIVE_POTION)) {
-            String[] values = getCustomAddData(customItem.get().getItem(), CONSUMABLE_GIVE_POTION).split(";");
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_GIVE_POTION, player)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), CONSUMABLE_GIVE_POTION, player).split(";");
             PotionEffectType effect = PotionEffectType.getByName(values[0]);
             int level = Integer.parseInt(values[1]);
             int duration = Integer.parseInt(values[2]);
             event.getPlayer().addPotionEffect(new PotionEffect(effect, duration * 20, level));
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_USE_COMMAND)) {
-            String command = getCustomAddData(customItem.get().getItem(), CONSUMABLE_USE_COMMAND).replace("{player}", player.getName());
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_USE_COMMAND, player)) {
+            String command = getCustomAddData(customItem.get().getItem(), CONSUMABLE_USE_COMMAND, player).replace("{player}", player.getName());
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
         }
     }
@@ -499,7 +499,7 @@ public class EventsItems implements Listener, ICustomAdds {
 
         Block block = event.getClickedBlock();
 
-        if (block != null && hasCustomAdd(customItem.get().getItem(), TREE_FELLER)) {
+        if (block != null && hasCustomAdd(customItem.get().getItem(), TREE_FELLER, player)) {
             if (block.getType() == Material.LOG || block.getType() == Material.LOG_2) {
                 Queue<Block> blocksToCheck = new LinkedList<>();
                 Set<Block> checkedBlocks = new HashSet<>();
@@ -528,8 +528,8 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (block != null && hasCustomAdd(customItem.get().getItem(), MINE_AREA)) {
-            String[] values = getCustomAddData(customItem.get().getItem(), MINE_AREA).split("x");
+        if (block != null && hasCustomAdd(customItem.get().getItem(), MINE_AREA, player)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), MINE_AREA, player).split("x");
 
             if (values.length == 3) {
                 int radiusX = Integer.parseInt(values[0]) / 2;
@@ -567,7 +567,7 @@ public class EventsItems implements Listener, ICustomAdds {
                 return false;
             }
 
-            if (hasCustomAdd(customItem.get().getItem(), KEEP_ON_DEATH)) {
+            if (hasCustomAdd(customItem.get().getItem(), KEEP_ON_DEATH, player)) {
                 savedItems.add(customItem.get().getItem().clone());
                 return true;
             }
@@ -612,15 +612,15 @@ public class EventsItems implements Listener, ICustomAdds {
             return;
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), KILL_GIVE_POTION)) {
-            String[] values = getCustomAddData(customItem.get().getItem(), KILL_GIVE_POTION).split(";");
+        if (hasCustomAdd(customItem.get().getItem(), KILL_GIVE_POTION, player)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), KILL_GIVE_POTION, player).split(";");
             PotionEffectType effect = PotionEffectType.getByName(values[0]);
             int level = Integer.parseInt(values[1]);
             int duration = Integer.parseInt(values[2]);
             player.addPotionEffect(new PotionEffect(effect, duration * 20, level));
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), SPAWN_HEAD_ON_KILL)) {
+        if (hasCustomAdd(customItem.get().getItem(), SPAWN_HEAD_ON_KILL, player)) {
             if (event.getEntity() instanceof Player) {
                 ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
                 SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
@@ -651,8 +651,8 @@ public class EventsItems implements Listener, ICustomAdds {
                 continue;
             }
 
-            if (hasCustomAdd(customItemInLoop.get().getItem(), KILLER_COMMAND)) {
-                String[] commands = getCustomAddData(customItemInLoop.get().getItem(), KILLER_COMMAND).split(";");
+            if (hasCustomAdd(customItemInLoop.get().getItem(), KILLER_COMMAND, player)) {
+                String[] commands = getCustomAddData(customItemInLoop.get().getItem(), KILLER_COMMAND, player).split(";");
 
                 if (commands.length == 1) {
                     String command = commands[0];
@@ -677,7 +677,7 @@ public class EventsItems implements Listener, ICustomAdds {
                 continue;
             }
 
-            if (hasCustomAdd(customItem.get().getItem(), HIDE_PLAYER_NAME)) {
+            if (hasCustomAdd(customItem.get().getItem(), HIDE_PLAYER_NAME, player)) {
                 applyNameHiding(player);
                 return;
             }

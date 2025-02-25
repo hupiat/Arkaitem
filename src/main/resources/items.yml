@@ -619,6 +619,7 @@ item:
       - "GIVE_POTION;STRENGHT;0;999"
 
     fullSetRequirement:
+      - "casque_farm"
       - "plastron_farm"
       - "jambiere_farm"
       - "botte_farm"
@@ -656,6 +657,17 @@ item:
       - "UNBREAKABLE"
       - "GIVE_POTION;FIRE_RESISTANCE;0;999"
 
+    fullSetRequirement:
+      - "casque_farm"
+      - "plastron_farm"
+      - "jambiere_farm"
+      - "botte_farm"
+
+    fullSetCustomAdds:
+      - "NO_FALL_DAMAGE"
+      - "HIDE_PLAYER_NAME"
+      - "GIVE_POTION;INVISIBILITY;1;999"
+
   - jambiere_farm :
     id: "jambiere_farm"
     material: LEATHER_LEGGINGS
@@ -683,6 +695,17 @@ item:
     customAdds:
       - "UNBREAKABLE"
       - "GIVE_POTION;HASTE;1;999"
+
+    fullSetRequirement:
+      - "casque_farm"
+      - "plastron_farm"
+      - "jambiere_farm"
+      - "botte_farm"
+
+    fullSetCustomAdds:
+      - "NO_FALL_DAMAGE"
+      - "HIDE_PLAYER_NAME"
+      - "GIVE_POTION;INVISIBILITY;1;999"
 
   - botte_farm :
     id: "botte_farm"
@@ -712,6 +735,17 @@ item:
     customAdds:
       - "UNBREAKABLE"
       - "GIVE_POTION;SPPED;1;999"
+
+    fullSetRequirement:
+      - "casque_farm"
+      - "plastron_farm"
+      - "jambiere_farm"
+      - "botte_farm"
+
+    fullSetCustomAdds:
+      - "NO_FALL_DAMAGE"
+      - "HIDE_PLAYER_NAME"
+      - "GIVE_POTION;INVISIBILITY;1;999"
 
   - sword_farming :
     id: "sword_farming"

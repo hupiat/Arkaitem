@@ -3,6 +3,7 @@ package com.arkaitem.items;
 import com.arkaitem.Program;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -57,7 +58,7 @@ public interface ICustomAdds {
         return customAdds;
     }
 
-    default boolean hasCustomAdd(ItemStack item, String tag) {
+    default boolean hasCustomAdd(ItemStack item, String tag, Player player) {
         if (item == null) {
             throw new IllegalArgumentException("Item cannot be null");
         }
@@ -73,18 +74,27 @@ public interface ICustomAdds {
                 return true;
             }
         }
+
+        if (hasFullSetRequirements(customItem.get(), player)) {
+            for (String line : customItem.get().getFullSetCustomAdds()) {
+                if (line.toUpperCase().contains(tag)) {
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 
-    default String getCustomAddData(ItemStack item, String tag) {
+    default String getCustomAddData(ItemStack item, String tag, Player player) {
         if (item == null) {
-            throw new IllegalArgumentException("item is null");
+            throw new IllegalArgumentException("Item cannot be null");
         }
 
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(item);
 
         if (!customItem.isPresent()) {
-            throw new IllegalArgumentException("custom item not found");
+            throw new IllegalArgumentException("Custom item cannot be found");
         }
 
         for (String line : customItem.get().getCustomAdds()) {
@@ -92,6 +102,28 @@ public interface ICustomAdds {
                 return line.toUpperCase().substring(line.indexOf(tag + ";") + tag.length() + 1).trim();
             }
         }
+
+        if (hasFullSetRequirements(customItem.get(), player)) {
+            for (String line : customItem.get().getFullSetCustomAdds()) {
+                if (line.toUpperCase().contains(tag + ";")) {
+                    return line.toUpperCase().substring(line.indexOf(tag + ";") + tag.length() + 1).trim();
+                }
+            }
+        }
+
         throw new IllegalArgumentException("No such tag: " + tag);
+    }
+
+    default boolean hasFullSetRequirements(CustomItem customItem, Player player) {
+        for (ItemStack equipment : player.getInventory().getArmorContents()) {
+            String id = ItemsUtils.getUniqueID(equipment);
+            if (id == null) {
+                return false;
+            }
+            if (!customItem.getFullSetRequirements().contains(id)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

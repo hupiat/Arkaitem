@@ -2,13 +2,17 @@ package com.arkaitem.items;
 
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 public class CustomItem {
     private String id;
     private ItemStack item;
-    private Set<String> customAdds;
+    private Set<String> customAdds = new HashSet<>();
+
+    private Set<String> fullSetRequirements = new HashSet<>();
+    private Set<String> fullSetCustomAdds = new HashSet<>();
 
     public CustomItem(String id, ItemStack item, Set<String> customAdds) {
         this.id = id;
@@ -38,6 +42,22 @@ public class CustomItem {
 
     public void setCustomAdds(Set<String> customAdds) {
         this.customAdds = customAdds;
+    }
+
+    public Set<String> getFullSetRequirements() {
+        return fullSetRequirements;
+    }
+
+    public void setFullSetRequirements(Set<String> fullSetRequirements) {
+        this.fullSetRequirements = fullSetRequirements;
+    }
+
+    public Set<String> getFullSetCustomAdds() {
+        return fullSetCustomAdds;
+    }
+
+    public void setFullSetCustomAdds(Set<String> fullSetCustomAdds) {
+        this.fullSetCustomAdds = fullSetCustomAdds;
     }
 
     @Override
