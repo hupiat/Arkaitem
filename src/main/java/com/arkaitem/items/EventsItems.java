@@ -409,6 +409,7 @@ public class EventsItems implements Listener, ICustomAdds {
     private static final Map<UUID, Boolean> CONSUMABLES_COOLDOWN = new HashMap<>();
     public static final int CONSUMABLES_COOLDOWN_SECONDS = 5;
     public static final String VIEW_ON_CHEST_TITLE = "Vue du coffre";
+    public static final int VIEW_ON_CHEST_LENGTH = 1000;
     public static final Double SELL_CHEST_CONTENT_VALUE = 100D;
     @EventHandler
     public void onItemUse(PlayerInteractEvent event) {
@@ -427,7 +428,7 @@ public class EventsItems implements Listener, ICustomAdds {
             transparent.add(Material.GLASS);
             transparent.add(Material.WATER);
             transparent.add(Material.LAVA);
-            Block block = player.getTargetBlock(transparent, 100);
+            Block block = player.getTargetBlock(transparent, VIEW_ON_CHEST_LENGTH);
             if (block != null && block.getState() instanceof Chest) {
                 Chest chest = (Chest) block.getState();
                 Inventory viewOnlyInventory = Bukkit.createInventory(null, chest.getInventory().getSize(), VIEW_ON_CHEST_TITLE);
