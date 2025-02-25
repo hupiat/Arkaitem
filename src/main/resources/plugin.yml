@@ -16,3 +16,4 @@ commands:
 permissions:
   arkaitem.admin:
     default: op
+depend: [Vault]

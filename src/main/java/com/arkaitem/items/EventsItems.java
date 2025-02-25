@@ -214,9 +214,14 @@ public class EventsItems implements Listener, ICustomAdds {
                 int maxAmount = Integer.parseInt(values[2]);
 
                 if (new Random().nextInt(100) < chance) {
-                    int stolenAmount = new Random().nextInt(maxAmount - minAmount + 1) + minAmount;
+                    double stolenAmount = new Random().nextInt(maxAmount - minAmount + 1) + minAmount;
+                    if (MULTIPLIER_BONUS.containsKey(playerDamager.getUniqueId())) {
+                        stolenAmount *= MULTIPLIER_BONUS.get(playerDamager.getUniqueId());
+                    }
+
                     Player victim = (Player) event.getEntity();
-                    // TODO: Integrate Vault
+                    Program.ECONOMY.depositPlayer(playerDamager, stolenAmount);
+                    Program.ECONOMY.withdrawPlayer(victim, stolenAmount);
                     Map<String, String> placeholders = new HashMap<>();
                     placeholders.put("money", String.valueOf(stolenAmount));
                     placeholders.put("target", victim.getName());
@@ -320,6 +325,7 @@ public class EventsItems implements Listener, ICustomAdds {
         }
     }
 
+    private static final Map<UUID, Double> MULTIPLIER_BONUS = new HashMap<>();
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
@@ -335,7 +341,7 @@ public class EventsItems implements Listener, ICustomAdds {
             String[] values = getCustomAddData(customItem.get().getItem(), MULTIPLICATEUR).split(";");
             if (values.length == 1) {
                 double multiplier = Double.parseDouble(values[0]);
-                // TODO: Integrate Vault
+                MULTIPLIER_BONUS.put(player.getUniqueId(), multiplier);
                 Map<String, String> placeholders = new HashMap<>();
                 placeholders.put("bonus", String.valueOf(multiplier * 100 - 100));
                 player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("farm_mask_bonus", placeholders));
@@ -402,6 +408,7 @@ public class EventsItems implements Listener, ICustomAdds {
 
     private static final Map<UUID, Boolean> CONSUMABLES_COOLDOWN = new HashMap<>();
     public static final String VIEW_ON_CHEST_TITLE = "Vue du coffre";
+    public static final Double SELL_CHEST_CONTENT_VALUE = 100D;
     @EventHandler
     public void onItemUse(PlayerInteractEvent event) {
         Player player = event.getPlayer();
@@ -429,25 +436,28 @@ public class EventsItems implements Listener, ICustomAdds {
         }
 
         if (hasCustomAdd(customItem.get().getItem(), SELL_CHEST_CONTENTS)) {
-            // TODO : integrate Vault
             Block block = event.getClickedBlock();
             if (block != null && block.getState() instanceof Chest) {
                 Chest chest = (Chest) block.getState();
                 Inventory inventory = chest.getInventory();
-                int totalValue = 0;
+                double totalValue = 0;
 
                 for (ItemStack stack : inventory.getContents()) {
                     if (stack != null) {
-                        // totalValue += getItemSellPrice(stack) * stack.getAmount();
+                        if (MULTIPLIER_BONUS.containsKey(player.getUniqueId())) {
+                            totalValue += SELL_CHEST_CONTENT_VALUE * stack.getAmount() * MULTIPLIER_BONUS.get(player.getUniqueId());
+                        } else {
+                            totalValue += SELL_CHEST_CONTENT_VALUE * stack.getAmount();
+                        }
                     }
                 }
 
                 inventory.clear();
 
+                Program.ECONOMY.depositPlayer(player, totalValue);
                 Map<String, String> placeholders = new HashMap<>();
                 placeholders.put("amount", String.valueOf(totalValue));
                 player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_sell_chest", placeholders));
-                // addCoinsToPlayer(player, totalValue);
             }
         }
 
@@ -557,7 +567,7 @@ public class EventsItems implements Listener, ICustomAdds {
         }
     }
 
-    private final Map<UUID, List<ItemStack>> itemsToRestore = new HashMap<>();
+    private static final Map<UUID, List<ItemStack>> itemsToRestore = new HashMap<>();
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {

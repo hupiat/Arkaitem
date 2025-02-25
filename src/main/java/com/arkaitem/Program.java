@@ -6,12 +6,15 @@ import com.arkaitem.crafts.tables.CommandDynamicCraft;
 import com.arkaitem.crafts.tables.DynamicCraftTableGUIListener;
 import com.arkaitem.items.*;
 import com.arkaitem.messages.ManagerMessages;
+import net.milkbowl.vault.economy.Economy;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Program extends JavaPlugin {
     private boolean isRegistered = false;
 
     public static Program INSTANCE;
+    public static Economy ECONOMY;
 
     public final ManagerCustomItems ITEMS_MANAGER = new ManagerCustomItems(this);
     public final ManagerMessages MESSAGES_MANAGER = new ManagerMessages(this);
@@ -30,6 +33,9 @@ public class Program extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new EventsItems(), this);
             getServer().getPluginManager().registerEvents(new MenuItemsGUIListener(), this);
             getServer().getPluginManager().registerEvents(new DynamicCraftTableGUIListener(), this);
+
+            RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+            ECONOMY = rsp.getProvider();
 
             isRegistered = true;
         }
