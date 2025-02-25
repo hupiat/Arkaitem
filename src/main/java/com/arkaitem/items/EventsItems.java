@@ -400,6 +400,7 @@ public class EventsItems implements Listener, ICustomAdds {
         }
     }
 
+    private static final Map<UUID, Boolean> CONSUMABLES_COOLDOWN = new HashMap<>();
     public static final String VIEW_ON_CHEST_TITLE = "Vue du coffre";
     @EventHandler
     public void onItemUse(PlayerInteractEvent event) {
@@ -427,38 +428,6 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE)) {
-            int uses = Integer.parseInt(getCustomAddData(customItem.get().getItem(), CONSUMABLE)) - 1;
-            if (uses <= 0) {
-                for (int i = 0; i < player.getInventory().getSize(); i++) {
-                    ItemStack inventoryItem = player.getInventory().getItem(i);
-                    if (inventoryItem != null && ItemsUtils.areEquals(inventoryItem, customItem.get().getItem())) {
-                        player.getInventory().setItem(i, null);
-                        break;
-                    }
-                }
-            } else {
-                ItemMeta meta = customItem.get().getItem().getItemMeta();
-                List<String> lore = meta.getLore();
-                lore.replaceAll(line -> line.contains(CONSUMABLE + ";") ? CONSUMABLE + ";" + uses : line);
-                meta.setLore(lore);
-                customItem.get().getItem().setItemMeta(meta);
-            }
-        }
-
-        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_GIVE_POTION)) {
-            String[] values = getCustomAddData(customItem.get().getItem(), CONSUMABLE_GIVE_POTION).split(";");
-            PotionEffectType effect = PotionEffectType.getByName(values[0]);
-            int level = Integer.parseInt(values[1]);
-            int duration = Integer.parseInt(values[2]);
-            event.getPlayer().addPotionEffect(new PotionEffect(effect, duration * 20, level));
-        }
-
-        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_USE_COMMAND)) {
-            String command = getCustomAddData(customItem.get().getItem(), CONSUMABLE_USE_COMMAND).replace("{player}", player.getName());
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-        }
-
         if (hasCustomAdd(customItem.get().getItem(), SELL_CHEST_CONTENTS)) {
             // TODO : integrate Vault
             Block block = event.getClickedBlock();
@@ -480,6 +449,44 @@ public class EventsItems implements Listener, ICustomAdds {
                 player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_sell_chest", placeholders));
                 // addCoinsToPlayer(player, totalValue);
             }
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE)) {
+            if (CONSUMABLES_COOLDOWN.containsKey(player.getUniqueId()) && CONSUMABLES_COOLDOWN.get(player.getUniqueId())) {
+                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cooldown", null));
+                return;
+            }
+            int uses = Integer.parseInt(getCustomAddData(customItem.get().getItem(), CONSUMABLE)) - 1;
+            CONSUMABLES_COOLDOWN.put(player.getUniqueId(), true);
+            if (uses <= 0) {
+                for (int i = 0; i < player.getInventory().getSize(); i++) {
+                    ItemStack inventoryItem = player.getInventory().getItem(i);
+                    if (inventoryItem != null && ItemsUtils.areEquals(inventoryItem, customItem.get().getItem())) {
+                        player.getInventory().setItem(i, null);
+                        break;
+                    }
+                }
+            } else {
+                ItemMeta meta = customItem.get().getItem().getItemMeta();
+                List<String> lore = meta.getLore();
+                lore.replaceAll(line -> line.contains(CONSUMABLE + ";") ? CONSUMABLE + ";" + uses : line);
+                meta.setLore(lore);
+                customItem.get().getItem().setItemMeta(meta);
+            }
+            Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> CONSUMABLES_COOLDOWN.put(player.getUniqueId(), false), 5 * 5L);
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_GIVE_POTION)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), CONSUMABLE_GIVE_POTION).split(";");
+            PotionEffectType effect = PotionEffectType.getByName(values[0]);
+            int level = Integer.parseInt(values[1]);
+            int duration = Integer.parseInt(values[2]);
+            event.getPlayer().addPotionEffect(new PotionEffect(effect, duration * 20, level));
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_USE_COMMAND)) {
+            String command = getCustomAddData(customItem.get().getItem(), CONSUMABLE_USE_COMMAND).replace("{player}", player.getName());
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
         }
     }
 
