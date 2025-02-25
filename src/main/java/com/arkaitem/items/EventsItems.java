@@ -407,6 +407,7 @@ public class EventsItems implements Listener, ICustomAdds {
     }
 
     private static final Map<UUID, Boolean> CONSUMABLES_COOLDOWN = new HashMap<>();
+    public static final int CONSUMABLES_COOLDOWN_SECONDS = 5;
     public static final String VIEW_ON_CHEST_TITLE = "Vue du coffre";
     public static final Double SELL_CHEST_CONTENT_VALUE = 100D;
     @EventHandler
@@ -483,7 +484,7 @@ public class EventsItems implements Listener, ICustomAdds {
                 meta.setLore(lore);
                 customItem.get().getItem().setItemMeta(meta);
             }
-            Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> CONSUMABLES_COOLDOWN.put(player.getUniqueId(), false), 5 * 5L);
+            Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> CONSUMABLES_COOLDOWN.put(player.getUniqueId(), false), CONSUMABLES_COOLDOWN_SECONDS * 5L);
         }
 
         if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_GIVE_POTION)) {
