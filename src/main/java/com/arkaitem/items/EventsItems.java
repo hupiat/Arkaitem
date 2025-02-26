@@ -214,6 +214,7 @@ public class EventsItems implements Listener, ICustomAdds {
     }
 
 
+    private static final Set<UUID> IMMUNE_TO_LIGHTNING_PLAYERS = new HashSet<>();
     private static final Map<UUID, UUID> LAST_HIT_PLAYERS = new HashMap<>();
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
@@ -224,9 +225,12 @@ public class EventsItems implements Listener, ICustomAdds {
 
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            LAST_HIT_PLAYERS.put(player.getUniqueId(), playerDamager.getUniqueId());
+            if (IMMUNE_TO_LIGHTNING_PLAYERS.contains(player.getUniqueId()) && event.getCause() == EntityDamageEvent.DamageCause.LIGHTNING) {
+                event.setCancelled(true);
+            } else {
+                LAST_HIT_PLAYERS.put(player.getUniqueId(), playerDamager.getUniqueId());
+            }
         }
-
 
         ItemStack itemEventDamager = playerDamager.getInventory().getItemInHand();
         Optional<CustomItem> customItemDamager = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEventDamager);
@@ -312,10 +316,12 @@ public class EventsItems implements Listener, ICustomAdds {
         }
 
         if (hasCustomAdd(customItemDamager.get().getItem(), SPAWN_LIGHTNING, playerDamager)) {
-            event.getEntity().getWorld().strikeLightning(event.getEntity().getLocation());
+            IMMUNE_TO_LIGHTNING_PLAYERS.add(playerDamager.getUniqueId());
+            event.getEntity().getWorld().strikeLightningEffect(event.getEntity().getLocation());
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("target", event.getEntity().getName());
             MessagesUtils.sendToAll(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_lightning_strike", placeholders));
+            Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> IMMUNE_TO_LIGHTNING_PLAYERS.remove(playerDamager.getUniqueId()), 5L);
         }
     }
 
