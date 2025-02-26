@@ -2,9 +2,7 @@ package com.arkaitem.items;
 
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class CustomItem {
     private String id;
@@ -13,6 +11,8 @@ public class CustomItem {
 
     private Set<String> fullSetRequirements = new HashSet<>();
     private Set<String> fullSetCustomAdds = new HashSet<>();
+
+    private Map<String, String> placeholders = new HashMap<>();
 
     public CustomItem(String id, ItemStack item, Set<String> customAdds) {
         this.id = id;
@@ -58,6 +58,16 @@ public class CustomItem {
 
     public void setFullSetCustomAdds(Set<String> fullSetCustomAdds) {
         this.fullSetCustomAdds = fullSetCustomAdds;
+    }
+
+
+
+    public Map<String, String> getPlaceholders() {
+        return placeholders;
+    }
+
+    public void setPlaceholder(String name, String value) {
+        placeholders.put(name, value);
     }
 
     @Override
