@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 public interface ICustomAdds {
+    String GIVE_POTION = "GIVE_POTION";
     String CANT_DROP = "CANT_DROP";
     String TREE_FELLER = "TREE_FELLER";
     String NO_DISCARD = "NO_DISCARD";

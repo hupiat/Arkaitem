@@ -28,7 +28,7 @@
 ###############
 # "CANT_DROP" empêche le joueur de jeter l'item.
 # "KEEP_ON_DEATH" pour garder l'item lors de la mort du joueur.
-# "GIVE_POTION;TYPE;LEVEL" pour donner un effet de potion au joueur (exemple: "GIVE_POTION;SPEED;1;1").
+# "GIVE_POTION;TYPE;LEVEL" pour donner un effet de potion au joueur (exemple: "GIVE_POTION;SPEED;1").
 # "UNBREAKABLE" rend l'item incassable.
 # "NO_DISCARD" empêche de mettre l'item à la poubelle.
 # "NO_FALL_DAMAGE" empêche les dégâts de chute lorsque l'item est porté.
@@ -112,7 +112,6 @@ item:
 
     customAdds:
       - "CANT_DROP"
-      - "GIVE_POTION;SPEED;2"
       - "KEEP_ON_DEATH"
       - "UNBREAKABLE"
 
@@ -129,7 +128,7 @@ item:
 
     customAdds:
       - "CANT_DROP"
-      - "GIVE_POTION;SPEED;1;1"
+      - "GIVE_POTION;SPEED;1"
       - "KEEP_ON_DEATH"
 
   - bottes_no_falls:
@@ -321,13 +320,6 @@ item:
       - "NO_DISCARD"
       - "KEEP_ON_DEATH"
       - "UNBREAKABLE"
-
-  - casque_de_l_infinie:
-    id: "casque_de_l_infinie"
-    material: DIAMOND_HELMET
-    name: "&6Casque de l'infinie"
-    lore:
-      - "&7Un casque qui ne se perd pas"
 
   - Cupidonbow :
     id: "Cupidonbow"
@@ -616,7 +608,7 @@ item:
 
     customAdds:
       - "UNBREAKABLE"
-      - "GIVE_POTION;STRENGHT;0;999"
+      - "GIVE_POTION;STRENGHT;0"
 
     fullSetRequirement:
       - "casque_farm"
@@ -627,7 +619,7 @@ item:
     fullSetCustomAdds:
       - "NO_FALL_DAMAGE"
       - "HIDE_PLAYER_NAME"
-      - "GIVE_POTION;INVISIBILITY;1;999"
+      - "GIVE_POTION;INVISIBILITY;1"
 
   - plastron_farm :
     id: "plastron_farm"
@@ -655,7 +647,7 @@ item:
 
     customAdds:
       - "UNBREAKABLE"
-      - "GIVE_POTION;FIRE_RESISTANCE;0;999"
+      - "GIVE_POTION;FIRE_RESISTANCE;0"
 
     fullSetRequirement:
       - "casque_farm"
@@ -666,7 +658,7 @@ item:
     fullSetCustomAdds:
       - "NO_FALL_DAMAGE"
       - "HIDE_PLAYER_NAME"
-      - "GIVE_POTION;INVISIBILITY;1;999"
+      - "GIVE_POTION;INVISIBILITY;1"
 
   - jambiere_farm :
     id: "jambiere_farm"
@@ -694,7 +686,7 @@ item:
 
     customAdds:
       - "UNBREAKABLE"
-      - "GIVE_POTION;HASTE;1;999"
+      - "GIVE_POTION;HASTE;1"
 
     fullSetRequirement:
       - "casque_farm"
@@ -705,7 +697,7 @@ item:
     fullSetCustomAdds:
       - "NO_FALL_DAMAGE"
       - "HIDE_PLAYER_NAME"
-      - "GIVE_POTION;INVISIBILITY;1;999"
+      - "GIVE_POTION;INVISIBILITY;1"
 
   - botte_farm :
     id: "botte_farm"
@@ -734,7 +726,7 @@ item:
 
     customAdds:
       - "UNBREAKABLE"
-      - "GIVE_POTION;SPPED;1;999"
+      - "GIVE_POTION;SPPED;1"
 
     fullSetRequirement:
       - "casque_farm"
@@ -745,7 +737,7 @@ item:
     fullSetCustomAdds:
       - "NO_FALL_DAMAGE"
       - "HIDE_PLAYER_NAME"
-      - "GIVE_POTION;INVISIBILITY;1;999"
+      - "GIVE_POTION;INVISIBILITY;1"
 
   - sword_farming :
     id: "sword_farming"

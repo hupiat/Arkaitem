@@ -65,36 +65,47 @@ public class EventsItems implements Listener, ICustomAdds {
             return;
         }
 
-        Player player = (Player) event.getWhoClicked();
+        Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
+            Player player = (Player) event.getWhoClicked();
 
-        Inventory inventory = event.getInventory();
-        ItemStack itemEvent = event.getCurrentItem();
+            Inventory inventory = event.getInventory();
+            ItemStack itemEvent = event.getCurrentItem();
 
-        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
+            Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
-        if (customItem.isPresent()) {
-            if (hasCustomAdd(customItem.get().getItem(), NO_DISCARD, player)) {
-                if (inventory.getName().trim().equalsIgnoreCase("poubelle")) {
-                    event.setCancelled(true);
-                    event.getWhoClicked().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cannot_drop", null));
+            if (customItem.isPresent()) {
+                if (hasCustomAdd(customItem.get().getItem(), NO_DISCARD, player)) {
+                    if (inventory.getName().trim().equalsIgnoreCase("poubelle")) {
+                        event.setCancelled(true);
+                        event.getWhoClicked().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cannot_drop", null));
+                    }
                 }
             }
-        }
 
-        for (ItemStack itemEventInLoop : player.getInventory().getArmorContents()) {
-            Optional<CustomItem> customItemInLoop = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEventInLoop);
+            for (ItemStack itemEventInLoop : player.getInventory().getArmorContents()) {
+                Optional<CustomItem> customItemInLoop = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEventInLoop);
 
-            if (!customItemInLoop.isPresent()) {
-                continue;
+                if (!customItemInLoop.isPresent()) {
+                    continue;
+                }
+
+                if (hasCustomAdd(customItemInLoop.get().getItem(), GIVE_POTION, player)) {
+                    String[] values = getCustomAddData(customItemInLoop.get().getItem(), GIVE_POTION, player).split(";");
+                    if (values.length == 2) {
+                        PotionEffectType effect = PotionEffectType.getByName(values[0]);
+                        int level = Integer.parseInt(values[1]);
+                        TaskTracker.applyInfiniteEffect(Program.INSTANCE, player, effect, level, customItemInLoop.get());
+                    }
+                }
+
+                if (hasCustomAdd(customItemInLoop.get().getItem(), HIDE_PLAYER_NAME, player)) {
+                    applyNameHiding(player);
+                    return;
+                }
             }
 
-            if (hasCustomAdd(customItemInLoop.get().getItem(), HIDE_PLAYER_NAME, player)) {
-                applyNameHiding(player);
-                return;
-            }
-        }
-
-        removeNameHiding(player);
+            removeNameHiding(player);
+        }, 5L);
     }
 
     private static final Map<UUID, TaskTracker> DEATH_TP_COOLDOWN = new HashMap<>();
