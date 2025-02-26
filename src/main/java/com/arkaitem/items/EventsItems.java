@@ -2,6 +2,7 @@ package com.arkaitem.items;
 
 import com.arkaitem.Program;
 import com.arkaitem.messages.MessagesUtils;
+import com.arkaitem.utils.TaskTracker;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -24,6 +25,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
@@ -198,11 +200,13 @@ public class EventsItems implements Listener, ICustomAdds {
         if (!(event.getDamager() instanceof Player)) {
             return;
         }
-
-        Player player = (Player) event.getEntity();
         Player playerDamager = (Player) event.getDamager();
 
-        LAST_HIT_PLAYERS.put(player.getUniqueId(), playerDamager.getUniqueId());
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            LAST_HIT_PLAYERS.put(player.getUniqueId(), playerDamager.getUniqueId());
+        }
+
 
         ItemStack itemEventDamager = playerDamager.getInventory().getItemInHand();
         Optional<CustomItem> customItemDamager = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEventDamager);
@@ -373,7 +377,7 @@ public class EventsItems implements Listener, ICustomAdds {
         }
     }
 
-    private static final Map<UUID, Boolean> CONSUMABLES_COOLDOWN = new HashMap<>();
+    private static final Map<UUID, TaskTracker> CONSUMABLES_COOLDOWN = new HashMap<>();
     public static final int CONSUMABLES_COOLDOWN_SECONDS = 5;
     public static final String VIEW_ON_CHEST_TITLE = "Vue du coffre";
     public static final int VIEW_ON_CHEST_LENGTH = 1000;
@@ -448,12 +452,7 @@ public class EventsItems implements Listener, ICustomAdds {
         }
 
         if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player)) {
-            if (CONSUMABLES_COOLDOWN.containsKey(player.getUniqueId()) && CONSUMABLES_COOLDOWN.get(player.getUniqueId())) {
-                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cooldown", null));
-                return;
-            }
             int uses = Integer.parseInt(getCustomAddData(customItem.get().getItem(), CONSUMABLE, player)) - 1;
-            CONSUMABLES_COOLDOWN.put(player.getUniqueId(), true);
             if (uses <= 0) {
                 for (int i = 0; i < player.getInventory().getSize(); i++) {
                     ItemStack inventoryItem = player.getInventory().getItem(i);
@@ -469,20 +468,28 @@ public class EventsItems implements Listener, ICustomAdds {
                 meta.setLore(lore);
                 customItem.get().getItem().setItemMeta(meta);
             }
-            Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> CONSUMABLES_COOLDOWN.put(player.getUniqueId(), false), CONSUMABLES_COOLDOWN_SECONDS * 5L);
         }
 
         if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_GIVE_POTION, player)) {
+            if (CONSUMABLES_COOLDOWN.containsKey(player.getUniqueId()) && CONSUMABLES_COOLDOWN.get(player.getUniqueId()) != null) {
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("seconds", String.valueOf(CONSUMABLES_COOLDOWN.get(player.getUniqueId()).getTimeLeftSeconds()));
+                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cooldown", placeholders));
+                return;
+            }
             String[] values = getCustomAddData(customItem.get().getItem(), CONSUMABLE_GIVE_POTION, player).split(";");
             PotionEffectType effect = PotionEffectType.getByName(values[0]);
             int level = Integer.parseInt(values[1]);
             int duration = Integer.parseInt(values[2]);
             event.getPlayer().addPotionEffect(new PotionEffect(effect, duration * 20, level));
+            CONSUMABLES_COOLDOWN.put(player.getUniqueId(), new TaskTracker().startTask(Program.INSTANCE, () -> {
+                CONSUMABLES_COOLDOWN.put(player.getUniqueId(), null);
+            }, CONSUMABLES_COOLDOWN_SECONDS * 20L));
         }
 
         if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_USE_COMMAND, player)) {
             String command = getCustomAddData(customItem.get().getItem(), CONSUMABLE_USE_COMMAND, player).replace("{player}", player.getName());
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+            Bukkit.dispatchCommand(player, command.replaceFirst("/", ""));
         }
     }
 
@@ -529,7 +536,10 @@ public class EventsItems implements Listener, ICustomAdds {
         }
 
         if (block != null && hasCustomAdd(customItem.get().getItem(), MINE_AREA, player)) {
-            String[] values = getCustomAddData(customItem.get().getItem(), MINE_AREA, player).split("x");
+            String[] values = getCustomAddData(customItem.get().getItem(), MINE_AREA, player).split("X");
+            if (values.length != 3) {
+                values = getCustomAddData(customItem.get().getItem(), MINE_AREA, player).split("x");
+            }
 
             if (values.length == 3) {
                 int radiusX = Integer.parseInt(values[0]) / 2;
@@ -601,6 +611,9 @@ public class EventsItems implements Listener, ICustomAdds {
         if (!(entity.getLastDamageCause() instanceof EntityDamageByEntityEvent)) {
             return;
         }
+        if (!(((EntityDamageByEntityEvent) entity.getLastDamageCause()).getDamager() instanceof Player)) {
+            return;
+        }
 
         EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) entity.getLastDamageCause();
         Player player = (Player) damageEvent.getDamager();
@@ -657,7 +670,7 @@ public class EventsItems implements Listener, ICustomAdds {
                 if (commands.length == 1) {
                     String command = commands[0];
 
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+                    Bukkit.dispatchCommand(player, command.replaceFirst("/", ""));
                     Map<String, String> placeholders = new HashMap<>();
                     placeholders.put("command", command);
                     player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("kill_command_executed", placeholders));
