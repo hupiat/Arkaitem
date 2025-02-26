@@ -97,6 +97,7 @@ public class EventsItems implements Listener, ICustomAdds {
         removeNameHiding(player);
     }
 
+    private static final Map<UUID, TaskTracker> DEATH_TP_COOLDOWN = new HashMap<>();
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) {
@@ -132,18 +133,24 @@ public class EventsItems implements Listener, ICustomAdds {
 
             if (player.getHealth() - event.getFinalDamage() <= 0) {
                 if (hasCustomAdd(customItemInLoop.get().getItem(), DEATH_CHANCE_TP, player)) {
+                    if (DEATH_TP_COOLDOWN.containsKey(player.getUniqueId()) && DEATH_TP_COOLDOWN.get(player.getUniqueId()) != null) {
+                        Map<String, String> placeholders = new HashMap<>();
+                        placeholders.put("seconds", String.valueOf(DEATH_TP_COOLDOWN.get(player.getUniqueId()).getTimeLeftSeconds()));
+                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cooldown", placeholders));
+                        return;
+                    }
                     event.setCancelled(true);
                     String[] values = getCustomAddData(customItemInLoop.get().getItem(), DEATH_CHANCE_TP, player).split(";");
 
                     if (values.length == 4) {
                         int chance = Integer.parseInt(values[0]);
-                        int radius = Integer.parseInt(values[1]);
-                        int attempts = Integer.parseInt(values[2]);
-                        int delay = Integer.parseInt(values[3]);
+                        int cooldown = Integer.parseInt(values[1]);
+                        int hearts = Integer.parseInt(values[2]);
+                        int radius = Integer.parseInt(values[3]);
 
                         if (new Random().nextInt(100) < chance) {
                             Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
-                                int attemptsDone = Math.max(100, attempts);
+                                int attemptsDone = 100;
                                 Location originalLocation = player.getLocation();
                                 Location newLocation = null;
                                 while (attemptsDone > 0) {
@@ -157,12 +164,14 @@ public class EventsItems implements Listener, ICustomAdds {
 
                                     if (groundBlock.getType().isSolid() && feetBlock.getType() == Material.AIR && headBlock.getType() == Material.AIR) {
                                         player.teleport(newLocation);
+                                        player.setHealth(player.getHealth() + hearts);
                                         player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("teleport_on_death", null));
                                     }
 
                                     attemptsDone--;
                                 }
-                            }, delay);
+                            }, 5L);
+                            DEATH_TP_COOLDOWN.put(player.getUniqueId(), new TaskTracker().startTask(Program.INSTANCE, () -> DEATH_TP_COOLDOWN.put(player.getUniqueId(), null), cooldown * 20L));
                         }
                     }
                 }
