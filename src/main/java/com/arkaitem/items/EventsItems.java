@@ -4,6 +4,7 @@ import com.arkaitem.Program;
 import com.arkaitem.messages.MessagesUtils;
 import com.arkaitem.utils.EntitiesUtils;
 import com.arkaitem.utils.TaskTracker;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -485,23 +486,9 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player)) {
-            int uses = Integer.parseInt(getCustomAddData(customItem.get().getItem(), CONSUMABLE, player)) - 1;
-            if (uses <= 0) {
-                for (int i = 0; i < player.getInventory().getSize(); i++) {
-                    ItemStack inventoryItem = player.getInventory().getItem(i);
-                    if (inventoryItem != null && ItemsUtils.areEquals(inventoryItem, customItem.get().getItem())) {
-                        player.getInventory().setItem(i, null);
-                        break;
-                    }
-                }
-            } else {
-                ItemMeta meta = customItem.get().getItem().getItemMeta();
-                List<String> lore = meta.getLore();
-                lore.replaceAll(line -> line.contains(CONSUMABLE + ";") ? CONSUMABLE + ";" + uses : line);
-                meta.setLore(lore);
-                customItem.get().getItem().setItemMeta(meta);
-            }
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_USE_COMMAND, player)) {
+            String command = getCustomAddData(customItem.get().getItem(), CONSUMABLE_USE_COMMAND, player).replace("{player}", player.getName());
+            Bukkit.dispatchCommand(player, command.replaceFirst("/", ""));
         }
 
         if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_GIVE_POTION, player)) {
@@ -521,9 +508,23 @@ public class EventsItems implements Listener, ICustomAdds {
             }, CONSUMABLES_COOLDOWN_SECONDS * 20L));
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_USE_COMMAND, player)) {
-            String command = getCustomAddData(customItem.get().getItem(), CONSUMABLE_USE_COMMAND, player).replace("{player}", player.getName());
-            Bukkit.dispatchCommand(player, command.replaceFirst("/", ""));
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player)) {
+            String baseUses = getCustomAddData(customItem.get().getItem(), CONSUMABLE, player);
+            int uses = Integer.parseInt(baseUses) - 1;
+            if (uses <= 0) {
+                for (int i = 0; i < player.getInventory().getSize(); i++) {
+                    ItemStack inventoryItem = player.getInventory().getItem(i);
+                    if (inventoryItem != null && ItemsUtils.areEquals(inventoryItem, customItem.get().getItem())) {
+                        player.getInventory().setItem(i, null);
+                        break;
+                    }
+                }
+            } else {
+                String oldCustomAddData = customItem.get().getCustomAdds().stream().filter(add -> StringUtils.equals(add.split(";")[0], CONSUMABLE)).findAny().orElse(null);
+                String newCustomAddData = CONSUMABLE + ";" + uses;
+                customItem.get().getCustomAdds().remove(oldCustomAddData);
+                customItem.get().getCustomAdds().add(newCustomAddData);
+            }
         }
     }
 
