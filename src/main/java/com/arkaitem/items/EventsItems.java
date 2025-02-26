@@ -742,10 +742,9 @@ public class EventsItems implements Listener, ICustomAdds {
             team = scoreboard.registerNewTeam(TEAM_HIDDEN_PLAYERS);
             team.setPrefix("§7");
             team.setSuffix("");
+            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_hide_name", null));
+            team.addPlayer(player);
         }
-
-        team.addPlayer(player);
-        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_hide_name", null));
     }
 
     private void removeNameHiding(Player player) {
