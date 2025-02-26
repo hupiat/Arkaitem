@@ -2,6 +2,7 @@ package com.arkaitem.items;
 
 import com.arkaitem.Program;
 import com.arkaitem.messages.MessagesUtils;
+import com.arkaitem.utils.EntitiesUtils;
 import com.arkaitem.utils.TaskTracker;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -175,7 +176,7 @@ public class EventsItems implements Listener, ICustomAdds {
 
                                     if (groundBlock.getType().isSolid() && feetBlock.getType() == Material.AIR && headBlock.getType() == Material.AIR) {
                                         player.teleport(newLocation);
-                                        player.setHealth(player.getHealth() + hearts);
+                                        player.setHealth(Math.min(20, player.getHealth() + hearts));
                                         player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("teleport_on_death", null));
                                     }
 
@@ -218,20 +219,24 @@ public class EventsItems implements Listener, ICustomAdds {
     private static final Map<UUID, UUID> LAST_HIT_PLAYERS = new HashMap<>();
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player)) {
+        if (!(event.getDamager() instanceof LivingEntity)) {
             return;
         }
-        Player playerDamager = (Player) event.getDamager();
 
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
             if (IMMUNE_TO_LIGHTNING_PLAYERS.contains(player.getUniqueId()) && event.getCause() == EntityDamageEvent.DamageCause.LIGHTNING) {
                 event.setCancelled(true);
             } else {
-                LAST_HIT_PLAYERS.put(player.getUniqueId(), playerDamager.getUniqueId());
+                LAST_HIT_PLAYERS.put(player.getUniqueId(), event.getDamager().getUniqueId());
             }
         }
 
+        if (!(event.getDamager() instanceof Player)) {
+            return;
+        }
+
+        Player playerDamager = (Player) event.getDamager();
         ItemStack itemEventDamager = playerDamager.getInventory().getItemInHand();
         Optional<CustomItem> customItemDamager = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEventDamager);
 
@@ -427,10 +432,10 @@ public class EventsItems implements Listener, ICustomAdds {
             int radius = Integer.parseInt(values[0]);
             if (LAST_HIT_PLAYERS.containsKey(player.getUniqueId())) {
                 Location currentLocation = player.getLocation();
-                Location targetLocation = Bukkit.getPlayer(player.getUniqueId()).getLocation();
-                if (Math.abs(targetLocation.getX() - currentLocation.getX()) <= radius
-                        || Math.abs(targetLocation.getY() - currentLocation.getY()) <= radius
-                        || Math.abs(targetLocation.getZ() - currentLocation.getZ()) <= radius) {
+                Location targetLocation = EntitiesUtils.getLivingEntityByUUID(LAST_HIT_PLAYERS.get(player.getUniqueId())).getLocation();
+
+                double distance = currentLocation.distance(targetLocation);
+                if (distance <= radius) {
                     player.teleport(targetLocation);
                     Map<String, String> placeholders = new HashMap<>();
                     placeholders.put("target", targetLocation.getBlockX() + ", " + targetLocation.getBlockY() + ", " + targetLocation.getBlockZ());
