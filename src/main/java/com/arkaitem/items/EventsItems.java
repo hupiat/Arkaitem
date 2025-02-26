@@ -278,13 +278,16 @@ public class EventsItems implements Listener, ICustomAdds {
         if (hasCustomAdd(customItemDamager.get().getItem(), STEAL_LIFE, playerDamager)) {
             String[] values = getCustomAddData(customItemDamager.get().getItem(), STEAL_LIFE, playerDamager).split(";");
             if (values.length == 2) {
-                double stolenHealth = event.getDamage() * (Double.parseDouble(values[0]) / 100);
-                event.setDamage(event.getDamage() * (1 + stolenHealth));
-                playerDamager.setHealth(Math.min(playerDamager.getMaxHealth(), playerDamager.getHealth() + stolenHealth));
-                Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("health", String.valueOf(stolenHealth));
-                placeholders.put("target", event.getEntity().getName());
-                playerDamager.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_health_stolen", placeholders));
+                double chance = Double.parseDouble(values[0]);
+                if (new Random().nextInt(100) < chance) {
+                    double stolenHealth = event.getDamage() * (Double.parseDouble(values[1]) / 100);
+                    event.setDamage(event.getDamage() * (1 + stolenHealth));
+                    playerDamager.setHealth(Math.min(playerDamager.getMaxHealth(), playerDamager.getHealth() + stolenHealth));
+                    Map<String, String> placeholders = new HashMap<>();
+                    placeholders.put("health", String.valueOf(stolenHealth));
+                    placeholders.put("target", event.getEntity().getName());
+                    playerDamager.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_health_stolen", placeholders));
+                }
             }
         }
 
