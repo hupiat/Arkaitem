@@ -23,11 +23,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
@@ -419,6 +417,10 @@ public class EventsItems implements Listener, ICustomAdds {
     public static final Double SELL_CHEST_CONTENT_VALUE = 500D;
     @EventHandler
     public void onItemUse(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
+
         Player player = event.getPlayer();
         ItemStack itemEvent = player.getInventory().getItemInHand();
 
@@ -441,6 +443,7 @@ public class EventsItems implements Listener, ICustomAdds {
                     Map<String, String> placeholders = new HashMap<>();
                     placeholders.put("target", targetLocation.getBlockX() + ", " + targetLocation.getBlockY() + ", " + targetLocation.getBlockZ());
                     player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation", placeholders));
+                    LAST_HIT_PLAYERS.remove(player.getUniqueId());
                 }
             }
         }
