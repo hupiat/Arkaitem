@@ -607,7 +607,7 @@ public class EventsItems implements Listener, ICustomAdds {
                 int radiusY = Integer.parseInt(values[1]) / 2;
                 int radiusZ = Integer.parseInt(values[2]) / 2;
 
-                Location loc = player.getLocation();
+                Location loc = block.getLocation();
                 World world = player.getWorld();
                 List<Block> blocksToBreak = new ArrayList<>();
 
@@ -634,7 +634,6 @@ public class EventsItems implements Listener, ICustomAdds {
                             }
                             index++;
                         } else {
-                            player.sendMessage("§aZone minée avec succès !");
                             cancel();
                         }
                     }
