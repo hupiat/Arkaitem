@@ -2,14 +2,12 @@ package com.arkaitem.items;
 
 import com.arkaitem.Program;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
@@ -59,7 +57,7 @@ public interface ICustomAdds {
         return customAdds;
     }
 
-    default boolean hasCustomAdd(ItemStack item, String tag, Player player) {
+    default boolean hasCustomAdd(ItemStack item, String tag, @Nullable Player player) {
         if (item == null) {
             throw new IllegalArgumentException("Item cannot be null");
         }
@@ -76,10 +74,12 @@ public interface ICustomAdds {
             }
         }
 
-        if (hasFullSetRequirements(customItem.get(), player)) {
-            for (String line : customItem.get().getFullSetCustomAdds()) {
-                if (line.toUpperCase().contains(tag)) {
-                    return true;
+        if (player != null) {
+            if (hasFullSetRequirements(customItem.get(), player)) {
+                for (String line : customItem.get().getFullSetCustomAdds()) {
+                    if (line.toUpperCase().contains(tag)) {
+                        return true;
+                    }
                 }
             }
         }
@@ -87,7 +87,7 @@ public interface ICustomAdds {
         return false;
     }
 
-    default String getCustomAddData(ItemStack item, String tag, Player player) {
+    default String getCustomAddData(ItemStack item, String tag, @Nullable Player player) {
         if (item == null) {
             throw new IllegalArgumentException("Item cannot be null");
         }
@@ -104,10 +104,12 @@ public interface ICustomAdds {
             }
         }
 
-        if (hasFullSetRequirements(customItem.get(), player)) {
-            for (String line : customItem.get().getFullSetCustomAdds()) {
-                if (line.toUpperCase().contains(tag + ";")) {
-                    return line.toUpperCase().substring(line.indexOf(tag + ";") + tag.length() + 1).trim();
+        if (player != null) {
+            if (hasFullSetRequirements(customItem.get(), player)) {
+                for (String line : customItem.get().getFullSetCustomAdds()) {
+                    if (line.toUpperCase().contains(tag + ";")) {
+                        return line.toUpperCase().substring(line.indexOf(tag + ";") + tag.length() + 1).trim();
+                    }
                 }
             }
         }

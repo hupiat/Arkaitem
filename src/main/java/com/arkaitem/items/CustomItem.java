@@ -1,10 +1,11 @@
 package com.arkaitem.items;
 
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-public class CustomItem {
+public class CustomItem implements ICustomAdds {
     private String id;
     private ItemStack item;
     private Set<String> customAdds = new HashSet<>();
@@ -60,14 +61,20 @@ public class CustomItem {
         this.fullSetCustomAdds = fullSetCustomAdds;
     }
 
-
-
     public Map<String, String> getPlaceholders() {
         return placeholders;
     }
 
     public void setPlaceholder(String name, String value) {
         placeholders.put(name, value);
+    }
+
+    public void postProcessItem() {
+        if (hasCustomAdd(item, CONSUMABLE, null)) {
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+            nmsStack.getTag().setInt(CONSUMABLE, Integer.parseInt(getCustomAddData(item, CONSUMABLE, null)));
+            this.item = CraftItemStack.asBukkitCopy(nmsStack);
+        }
     }
 
     @Override

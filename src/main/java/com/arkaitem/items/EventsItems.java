@@ -9,6 +9,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -412,6 +413,7 @@ public class EventsItems implements Listener, ICustomAdds {
 
     private static final Map<UUID, TaskTracker> CONSUMABLES_COOLDOWN = new HashMap<>();
     public static final int CONSUMABLES_COOLDOWN_SECONDS = 5;
+
     public static final String VIEW_ON_CHEST_TITLE = "Vue du coffre";
     public static final int VIEW_ON_CHEST_LENGTH = 1000;
     public static final Double SELL_CHEST_CONTENT_VALUE = 500D;
@@ -512,22 +514,22 @@ public class EventsItems implements Listener, ICustomAdds {
         }
 
         if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player)) {
-            String baseUses = getCustomAddData(customItem.get().getItem(), CONSUMABLE, player);
-            int uses = Integer.parseInt(baseUses) - 1;
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemEvent);
+            int uses = nmsStack.getTag().getInt(CONSUMABLE);
             if (uses <= 0) {
-                for (int i = 0; i < player.getInventory().getSize(); i++) {
-                    ItemStack inventoryItem = player.getInventory().getItem(i);
-                    if (inventoryItem != null && ItemsUtils.areEquals(inventoryItem, customItem.get().getItem())) {
-                        player.getInventory().setItem(i, null);
-                        break;
-                    }
+                if (player.getItemInHand().getAmount() > 1) {
+                    player.getItemInHand().setAmount(player.getItemInHand().getAmount() - 1);
+                } else {
+                    player.setItemInHand(null);
                 }
             } else {
-                String oldCustomAddData = customItem.get().getCustomAdds().stream().filter(add -> StringUtils.equals(add.split(";")[0], CONSUMABLE)).findAny().orElse(null);
-                String newCustomAddData = CONSUMABLE + ";" + uses;
-                customItem.get().getCustomAdds().remove(oldCustomAddData);
-                customItem.get().getCustomAdds().add(newCustomAddData);
+                uses -= 1;
+                nmsStack.getTag().remove(CONSUMABLE);
+                nmsStack.getTag().setInt(CONSUMABLE, uses);
+                ItemStack updatedItem = CraftItemStack.asBukkitCopy(nmsStack);
+                player.setItemInHand(updatedItem);
             }
+            player.updateInventory();
         }
     }
 

@@ -23,7 +23,7 @@ messages:
   item_keep_on_death: "&aTes objets ont été conservés après la mort !"
   item_hide_name: "&aTon pseudo est désormais masqué !"
   item_hide_name_end: "&cTon pseudo n'est plus masqué."
-  item_cooldown: "&cTes consommables sont en cooldown pour ${seconds} secondes."
+  item_cooldown: "&cTes consommables sont en cooldown pour {seconds} secondes."
 
   # Masques de farm
   farm_mask_bonus: "&aVous avez reçu un bonus de {bonus}% sur vos ventes."

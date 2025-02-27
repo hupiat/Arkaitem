@@ -38,6 +38,9 @@ public abstract class RegistryCustomItems {
                     Bukkit.getLogger().log(Level.SEVERE, "Failed to load items: ", e);
                 }
             }
+            for (CustomItem customItem : items) {
+                customItem.postProcessItem();
+            }
         }
     }
 
