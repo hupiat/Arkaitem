@@ -454,6 +454,8 @@ public class EventsItems implements Listener, ICustomAdds {
             return;
         }
 
+        boolean hasConsumed = false;
+
         if (hasCustomAdd(customItem.get().getItem(), TELEPORT_ON_ATTACK, player)) {
             String[] values = getCustomAddData(customItem.get().getItem(), TELEPORT_ON_ATTACK, player).split(";");
             int radius = Integer.parseInt(values[0]);
@@ -461,13 +463,16 @@ public class EventsItems implements Listener, ICustomAdds {
                 Location currentLocation = player.getLocation();
                 Location targetLocation = EntitiesUtils.getLivingEntityByUUID(LAST_HIT_PLAYERS.get(player.getUniqueId())).getLocation();
 
-                double distance = currentLocation.distance(targetLocation);
-                if (distance <= radius) {
-                    player.teleport(targetLocation);
-                    Map<String, String> placeholders = new HashMap<>();
-                    placeholders.put("target", targetLocation.getBlockX() + ", " + targetLocation.getBlockY() + ", " + targetLocation.getBlockZ());
-                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation", placeholders));
-                    LAST_HIT_PLAYERS.remove(player.getUniqueId());
+                if (targetLocation != null) {
+                    double distance = currentLocation.distance(targetLocation);
+                    if (distance <= radius) {
+                        hasConsumed = true;
+                        player.teleport(targetLocation);
+                        Map<String, String> placeholders = new HashMap<>();
+                        placeholders.put("target", targetLocation.getBlockX() + ", " + targetLocation.getBlockY() + ", " + targetLocation.getBlockZ());
+                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation", placeholders));
+                        LAST_HIT_PLAYERS.remove(player.getUniqueId());
+                    }
                 }
             }
         }
@@ -480,6 +485,7 @@ public class EventsItems implements Listener, ICustomAdds {
             transparent.add(Material.LAVA);
             Block block = player.getTargetBlock(transparent, VIEW_ON_CHEST_LENGTH);
             if (block != null && block.getState() instanceof Chest) {
+                hasConsumed = true;
                 Chest chest = (Chest) block.getState();
                 Inventory viewOnlyInventory = Bukkit.createInventory(null, chest.getInventory().getSize(), VIEW_ON_CHEST_TITLE);
                 viewOnlyInventory.setContents(chest.getInventory().getContents());
@@ -505,7 +511,7 @@ public class EventsItems implements Listener, ICustomAdds {
                 }
 
                 inventory.clear();
-
+                hasConsumed = true;
                 Program.ECONOMY.depositPlayer(player, totalValue);
                 Map<String, String> placeholders = new HashMap<>();
                 placeholders.put("amount", String.valueOf(totalValue));
@@ -514,6 +520,7 @@ public class EventsItems implements Listener, ICustomAdds {
         }
 
         if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_USE_COMMAND, player)) {
+            hasConsumed = true;
             String command = getCustomAddData(customItem.get().getItem(), CONSUMABLE_USE_COMMAND, player).replace("{player}", player.getName());
             Bukkit.dispatchCommand(player, command.replaceFirst("/", ""));
         }
@@ -523,19 +530,20 @@ public class EventsItems implements Listener, ICustomAdds {
                 Map<String, String> placeholders = new HashMap<>();
                 placeholders.put("seconds", String.valueOf(CONSUMABLES_COOLDOWN.get(player.getUniqueId()).getTimeLeftSeconds()));
                 player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cooldown", placeholders));
-                return;
+            } else {
+                hasConsumed = true;
+                String[] values = getCustomAddData(customItem.get().getItem(), CONSUMABLE_GIVE_POTION, player).split(";");
+                PotionEffectType effect = PotionEffectType.getByName(values[0]);
+                int level = Integer.parseInt(values[1]);
+                int duration = Integer.parseInt(values[2]);
+                event.getPlayer().addPotionEffect(new PotionEffect(effect, duration * 20, level));
+                CONSUMABLES_COOLDOWN.put(player.getUniqueId(), new TaskTracker().startTask(Program.INSTANCE, () -> {
+                    CONSUMABLES_COOLDOWN.put(player.getUniqueId(), null);
+                }, CONSUMABLES_COOLDOWN_SECONDS * 20L));
             }
-            String[] values = getCustomAddData(customItem.get().getItem(), CONSUMABLE_GIVE_POTION, player).split(";");
-            PotionEffectType effect = PotionEffectType.getByName(values[0]);
-            int level = Integer.parseInt(values[1]);
-            int duration = Integer.parseInt(values[2]);
-            event.getPlayer().addPotionEffect(new PotionEffect(effect, duration * 20, level));
-            CONSUMABLES_COOLDOWN.put(player.getUniqueId(), new TaskTracker().startTask(Program.INSTANCE, () -> {
-                CONSUMABLES_COOLDOWN.put(player.getUniqueId(), null);
-            }, CONSUMABLES_COOLDOWN_SECONDS * 20L));
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player)) {
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player) && hasConsumed) {
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemEvent);
             int uses = nmsStack.getTag().getInt(CONSUMABLE);
             if (uses <= 0) {
