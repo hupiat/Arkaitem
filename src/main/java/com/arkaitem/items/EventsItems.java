@@ -61,6 +61,28 @@ public class EventsItems implements Listener, ICustomAdds {
     }
 
     @EventHandler
+    public void onItemSwitch(PlayerItemHeldEvent event) {
+        Player player = event.getPlayer();
+        ItemStack itemEvent = player.getInventory().getItem(event.getNewSlot());
+
+        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
+
+        if (!customItem.isPresent()) {
+            return;
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), GIVE_POTION, player)) {
+            String[] values = getCustomAddData(customItem.get().getItem(), GIVE_POTION, player).split(";");
+            if (values.length == 2) {
+                PotionEffectType effect = PotionEffectType.getByName(values[0]);
+                int level = Integer.parseInt(values[1]);
+                TaskTracker.applyInfiniteEffect(Program.INSTANCE, player, effect, level, customItem.get());
+            }
+        }
+    }
+
+
+    @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getView().getTitle().equals(VIEW_ON_CHEST_TITLE)) {
             event.setCancelled(true);

@@ -608,7 +608,7 @@ item:
 
     customAdds:
       - "UNBREAKABLE"
-      - "GIVE_POTION;STRENGHT;0"
+      - "GIVE_POTION;INCREASE_DAMAGE;0"
 
     fullSetRequirement:
       - "casque_farm"
@@ -726,7 +726,7 @@ item:
 
     customAdds:
       - "UNBREAKABLE"
-      - "GIVE_POTION;SPPED;1"
+      - "GIVE_POTION;SPEED;1"
 
     fullSetRequirement:
       - "casque_farm"
@@ -766,6 +766,7 @@ item:
     customAdds:
       - "NO_DISCARD"
       - "UNBREAKABLE"
+      - "GIVE_POTION;INCREASE_DAMAGE;0"
 
   - sword_chasseur :
     id: "sword_chasseur"

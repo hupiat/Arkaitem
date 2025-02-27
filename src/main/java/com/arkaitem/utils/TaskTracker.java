@@ -54,7 +54,8 @@ public class TaskTracker {
             public void run() {
                 if (!player.isOnline() ||
                         Arrays.stream(player.getInventory().getArmorContents())
-                                .noneMatch(armorItem -> ItemsUtils.areEquals(armorItem, giverItem.getItem()))) {
+                                .noneMatch(armorItem -> ItemsUtils.areEquals(armorItem, giverItem.getItem())) &&
+                        !ItemsUtils.areEquals(player.getItemInHand(), giverItem.getItem())) {
                     player.removePotionEffect(effectType);
                     this.cancel();
                     return;
