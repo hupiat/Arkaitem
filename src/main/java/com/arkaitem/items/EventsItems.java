@@ -174,7 +174,6 @@ public class EventsItems implements Listener, ICustomAdds {
                         player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cooldown", placeholders));
                         return;
                     }
-                    event.setCancelled(true);
                     String[] values = getCustomAddData(customItemInLoop.get().getItem(), DEATH_CHANCE_TP, player).split(";");
 
                     if (values.length == 4) {
@@ -184,6 +183,7 @@ public class EventsItems implements Listener, ICustomAdds {
                         int radius = Integer.parseInt(values[3]);
 
                         if (new Random().nextInt(100) < chance) {
+                            event.setCancelled(true);
                             Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
                                 int attemptsDone = 100;
                                 Location originalLocation = player.getLocation();
