@@ -27,6 +27,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
@@ -552,12 +553,14 @@ public class EventsItems implements Listener, ICustomAdds {
                 Set<Block> checkedBlocks = new HashSet<>();
                 blocksToCheck.add(block);
 
+                List<Block> blocksToBreak = new ArrayList<>();
+
                 while (!blocksToCheck.isEmpty()) {
                     Block current = blocksToCheck.poll();
 
                     if ((current.getType() == Material.LOG || current.getType() == Material.LOG_2) && !checkedBlocks.contains(current)) {
                         checkedBlocks.add(current);
-                        current.breakNaturally();
+                        blocksToBreak.add(current);
 
                         for (BlockFace face : new BlockFace[]{
                                 BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH,
@@ -571,9 +574,27 @@ public class EventsItems implements Listener, ICustomAdds {
                         }
                     }
                 }
-                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_tree_cut", null));
+
+                new BukkitRunnable() {
+                    int index = 0;
+
+                    @Override
+                    public void run() {
+                        if (index < blocksToBreak.size()) {
+                            Block b = blocksToBreak.get(index);
+                            if (b.getType() == Material.LOG || b.getType() == Material.LOG_2) {
+                                b.breakNaturally();
+                            }
+                            index++;
+                        } else {
+                            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_tree_cut", null));
+                            cancel();
+                        }
+                    }
+                }.runTaskTimer(Program.INSTANCE, 0L, 2L);
             }
         }
+
 
         if (block != null && hasCustomAdd(customItem.get().getItem(), MINE_AREA, player)) {
             String[] values = getCustomAddData(customItem.get().getItem(), MINE_AREA, player).split("X");
@@ -588,17 +609,36 @@ public class EventsItems implements Listener, ICustomAdds {
 
                 Location loc = player.getLocation();
                 World world = player.getWorld();
+                List<Block> blocksToBreak = new ArrayList<>();
 
                 for (int x = -radiusX; x <= radiusX; x++) {
                     for (int y = -radiusY; y <= radiusY; y++) {
                         for (int z = -radiusZ; z <= radiusZ; z++) {
                             Block blockToBreak = world.getBlockAt(loc.getBlockX() + x, loc.getBlockY() + y, loc.getBlockZ() + z);
-                            if (blockToBreak.getType() != Material.AIR) {
-                                blockToBreak.breakNaturally();
+                            if (blockToBreak.getType() != Material.AIR && blockToBreak.getType() != Material.BEDROCK) {
+                                blocksToBreak.add(blockToBreak);
                             }
                         }
                     }
                 }
+
+                new BukkitRunnable() {
+                    int index = 0;
+
+                    @Override
+                    public void run() {
+                        if (index < blocksToBreak.size()) {
+                            Block b = blocksToBreak.get(index);
+                            if (b.getType() != Material.BEDROCK) {
+                                b.breakNaturally();
+                            }
+                            index++;
+                        } else {
+                            player.sendMessage("§aZone minée avec succès !");
+                            cancel();
+                        }
+                    }
+                }.runTaskTimer(Program.INSTANCE, 0L, 2L);
             }
         }
     }
