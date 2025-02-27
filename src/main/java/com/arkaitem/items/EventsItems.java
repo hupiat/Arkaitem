@@ -347,9 +347,6 @@ public class EventsItems implements Listener, ICustomAdds {
             if (hasCustomAdd(customItemDamager.get().getItem(), SPAWN_LIGHTNING, playerDamager)) {
                 IMMUNE_TO_LIGHTNING_PLAYERS.add(playerDamager.getUniqueId());
                 event.getEntity().getWorld().strikeLightningEffect(event.getEntity().getLocation());
-                Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("target", event.getEntity().getName());
-                MessagesUtils.sendToAll(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_lightning_strike", placeholders));
                 Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> IMMUNE_TO_LIGHTNING_PLAYERS.remove(playerDamager.getUniqueId()), 5L);
             }
         }
