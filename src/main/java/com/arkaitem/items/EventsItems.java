@@ -38,18 +38,6 @@ import java.util.*;
 public class EventsItems implements Listener, ICustomAdds {
 
     @EventHandler
-    public void onPlayerJump(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-
-        if (player.hasPotionEffect(PotionEffectType.JUMP) &&
-                PotionUtils.getByPotionEffectType(PotionEffectType.JUMP, player.getActivePotionEffects(), effect -> effect.getAmplifier() > 100) != null) {
-            EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
-            player.getVelocity().setY(0.42);
-            nmsPlayer.motY = 0.42;
-        }
-    }
-
-    @EventHandler
     public void onItemDrop(PlayerDropItemEvent event) {
         ItemStack itemEvent = event.getItemDrop().getItemStack();
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
