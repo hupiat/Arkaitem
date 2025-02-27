@@ -33,6 +33,7 @@ public class Program extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new EventsItems(), this);
             getServer().getPluginManager().registerEvents(new MenuItemsGUIListener(), this);
             getServer().getPluginManager().registerEvents(new DynamicCraftTableGUIListener(), this);
+            getServer().getPluginManager().registerEvents(new EventsItemsCapture(), this);
 
             RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
 

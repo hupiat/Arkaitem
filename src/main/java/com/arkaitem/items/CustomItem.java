@@ -13,8 +13,6 @@ public class CustomItem implements ICustomAdds {
     private Set<String> fullSetRequirements = new HashSet<>();
     private Set<String> fullSetCustomAdds = new HashSet<>();
 
-    private Map<String, String> placeholders = new HashMap<>();
-
     public CustomItem(String id, ItemStack item, Set<String> customAdds) {
         this.id = id;
         this.item = item;
@@ -59,14 +57,6 @@ public class CustomItem implements ICustomAdds {
 
     public void setFullSetCustomAdds(Set<String> fullSetCustomAdds) {
         this.fullSetCustomAdds = fullSetCustomAdds;
-    }
-
-    public Map<String, String> getPlaceholders() {
-        return placeholders;
-    }
-
-    public void setPlaceholder(String name, String value) {
-        placeholders.put(name, value);
     }
 
     public void postProcessItem() {
