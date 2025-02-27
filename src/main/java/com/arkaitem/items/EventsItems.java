@@ -171,7 +171,7 @@ public class EventsItems implements Listener, ICustomAdds {
                     if (DEATH_TP_COOLDOWN.containsKey(player.getUniqueId()) && DEATH_TP_COOLDOWN.get(player.getUniqueId()) != null) {
                         Map<String, String> placeholders = new HashMap<>();
                         placeholders.put("seconds", String.valueOf(DEATH_TP_COOLDOWN.get(player.getUniqueId()).getTimeLeftSeconds()));
-                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cooldown", placeholders));
+                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cooldown_tp", placeholders));
                         return;
                     }
                     String[] values = getCustomAddData(customItemInLoop.get().getItem(), DEATH_CHANCE_TP, player).split(";");
@@ -183,30 +183,30 @@ public class EventsItems implements Listener, ICustomAdds {
                         int radius = Integer.parseInt(values[3]);
 
                         if (new Random().nextInt(100) < chance) {
-                            event.setCancelled(true);
-                            Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
-                                int attemptsDone = 100;
-                                Location originalLocation = player.getLocation();
-                                Location newLocation = null;
-                                while (attemptsDone > 0) {
-                                    int xOffset = new Random().nextInt(radius * 2 + 1) - radius;
-                                    int zOffset = new Random().nextInt(radius * 2 + 1) - radius;
-                                    newLocation = originalLocation.clone().add(xOffset, 0, zOffset);
+                            int attemptsDone = 100;
+                            Location originalLocation = player.getLocation();
+                            Location newLocation = null;
+                            while (attemptsDone > 0) {
+                                int xOffset = new Random().nextInt(radius * 2 + 1) - radius;
+                                int zOffset = new Random().nextInt(radius * 2 + 1) - radius;
+                                newLocation = originalLocation.clone().add(xOffset, 0, zOffset);
 
-                                    Block groundBlock = newLocation.getWorld().getBlockAt(newLocation.getBlockX(), newLocation.getBlockY() - 1, newLocation.getBlockZ());
-                                    Block feetBlock = newLocation.getWorld().getBlockAt(newLocation.getBlockX(), newLocation.getBlockY(), newLocation.getBlockZ());
-                                    Block headBlock = newLocation.getWorld().getBlockAt(newLocation.getBlockX(), newLocation.getBlockY() + 1, newLocation.getBlockZ());
+                                Block groundBlock = newLocation.getWorld().getBlockAt(newLocation.getBlockX(), newLocation.getBlockY() - 1, newLocation.getBlockZ());
+                                Block feetBlock = newLocation.getWorld().getBlockAt(newLocation.getBlockX(), newLocation.getBlockY(), newLocation.getBlockZ());
+                                Block headBlock = newLocation.getWorld().getBlockAt(newLocation.getBlockX(), newLocation.getBlockY() + 1, newLocation.getBlockZ());
 
-                                    if (groundBlock.getType().isSolid() && feetBlock.getType() == Material.AIR && headBlock.getType() == Material.AIR) {
-                                        player.teleport(newLocation);
-                                        player.setHealth(Math.min(20, player.getHealth() + hearts));
-                                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("teleport_on_death", null));
-                                    }
-
-                                    attemptsDone--;
+                                if (groundBlock.getType().isSolid() && feetBlock.getType() == Material.AIR && headBlock.getType() == Material.AIR || attemptsDone == 1) {
+                                    event.setCancelled(true);
+                                    player.teleport(newLocation);
+                                    player.setHealth(Math.min(20, player.getHealth() + hearts));
+                                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("teleport_on_death", null));
+                                    DEATH_TP_COOLDOWN.put(player.getUniqueId(), new TaskTracker().startTask(Program.INSTANCE, () -> DEATH_TP_COOLDOWN.put(player.getUniqueId(), null), cooldown * 20L));
+                                    break;
                                 }
-                            }, 5L);
-                            DEATH_TP_COOLDOWN.put(player.getUniqueId(), new TaskTracker().startTask(Program.INSTANCE, () -> DEATH_TP_COOLDOWN.put(player.getUniqueId(), null), cooldown * 20L));
+
+                                attemptsDone--;
+                            }
+
                         }
                     }
                 }
