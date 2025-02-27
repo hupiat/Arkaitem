@@ -1,4 +1,4 @@
-package com.arkaitem.messages;
+package com.arkaitem.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

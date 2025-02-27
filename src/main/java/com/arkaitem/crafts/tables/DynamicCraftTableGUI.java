@@ -1,6 +1,6 @@
 package com.arkaitem.crafts.tables;
 
-import com.arkaitem.items.ItemsUtils;
+import com.arkaitem.utils.ItemsUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

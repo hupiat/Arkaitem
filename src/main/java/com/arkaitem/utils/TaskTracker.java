@@ -1,10 +1,7 @@
 package com.arkaitem.utils;
 
 import com.arkaitem.items.CustomItem;
-import com.arkaitem.items.ItemsUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;

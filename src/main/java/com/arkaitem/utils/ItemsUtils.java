@@ -1,4 +1,4 @@
-package com.arkaitem.items;
+package com.arkaitem.utils;
 
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Material;

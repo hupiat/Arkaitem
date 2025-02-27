@@ -1,14 +1,15 @@
 package com.arkaitem.items;
 
 import com.arkaitem.Program;
-import com.arkaitem.messages.MessagesUtils;
 import com.arkaitem.utils.EntitiesUtils;
+import com.arkaitem.utils.PotionUtils;
 import com.arkaitem.utils.TaskTracker;
-import org.apache.commons.lang3.StringUtils;
+import net.minecraft.server.v1_8_R3.EntityPlayer;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -35,6 +36,18 @@ import org.bukkit.util.Vector;
 import java.util.*;
 
 public class EventsItems implements Listener, ICustomAdds {
+
+    @EventHandler
+    public void onPlayerJump(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+
+        if (player.hasPotionEffect(PotionEffectType.JUMP) &&
+                PotionUtils.getByPotionEffectType(PotionEffectType.JUMP, player.getActivePotionEffects(), effect -> effect.getAmplifier() > 100) != null) {
+            EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
+            player.getVelocity().setY(0.42);
+            nmsPlayer.motY = 0.42;
+        }
+    }
 
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent event) {
