@@ -8,6 +8,7 @@ import com.arkaitem.utils.TaskTracker;
 import net.brcdev.shopgui.ShopGuiPlusApi;
 import net.brcdev.shopgui.shop.item.ShopItem;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -159,6 +160,13 @@ public class EventsItems implements Listener, ICustomAdds {
                 event.setCancelled(true);
                 break;
             }
+        }
+
+        if (CONSUMABLES_NO_FALL.containsKey(player.getUniqueId()) && CONSUMABLES_NO_FALL.get(player.getUniqueId()) != null) {
+            event.setCancelled(true);
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("seconds", String.valueOf(CONSUMABLES_NO_FALL.get(player.getUniqueId()).getTimeLeftSeconds()));
+            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_orbe_no_fall", placeholders));
         }
 
         List<ItemStack> itemsEvent = new ArrayList<ItemStack>() {{
@@ -441,6 +449,7 @@ public class EventsItems implements Listener, ICustomAdds {
     }
 
     private static final Map<UUID, TaskTracker> CONSUMABLES_COOLDOWN = new HashMap<>();
+    private static final Map<UUID, TaskTracker> CONSUMABLES_NO_FALL = new HashMap<>();
     public static final int CONSUMABLES_COOLDOWN_SECONDS = 5;
 
     public static final String VIEW_ON_CHEST_TITLE = "Vue du coffre";
@@ -545,13 +554,22 @@ public class EventsItems implements Listener, ICustomAdds {
             } else {
                 hasConsumed = true;
                 String[] values = getCustomAddData(customItem.get().getItem(), CONSUMABLE_GIVE_POTION, player).split(";");
-                PotionEffectType effect = PotionEffectType.getByName(values[0]);
                 int level = Integer.parseInt(values[1]);
                 int duration = Integer.parseInt(values[2]);
-                event.getPlayer().addPotionEffect(new PotionEffect(effect, duration * 20, level), true);
-                CONSUMABLES_COOLDOWN.put(player.getUniqueId(), new TaskTracker().startTask(Program.INSTANCE, () -> {
-                    CONSUMABLES_COOLDOWN.put(player.getUniqueId(), null);
-                }, CONSUMABLES_COOLDOWN_SECONDS * 20L));
+                if (!StringUtils.equals(values[0], "NO_FALL")) {
+                    PotionEffectType effect = PotionEffectType.getByName(values[0]);
+                    event.getPlayer().addPotionEffect(new PotionEffect(effect, duration * 20, level), true);
+                } else {
+                    CONSUMABLES_NO_FALL.put(player.getUniqueId(), new TaskTracker().startTask(Program.INSTANCE, () -> {
+                        CONSUMABLES_NO_FALL.put(player.getUniqueId(), null);
+                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_orbe_no_fall_lost", null));
+                    }, duration * 20L));
+                    Map<String, String> placeholders = new HashMap<>();
+                    placeholders.put("seconds", String.valueOf(CONSUMABLES_NO_FALL.get(player.getUniqueId()).getTimeLeftSeconds()));
+                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_orbe_no_fall", placeholders));
+                }
+                CONSUMABLES_COOLDOWN.put(player.getUniqueId(), new TaskTracker().startTask(Program.INSTANCE, () ->
+                    CONSUMABLES_COOLDOWN.put(player.getUniqueId(), null), CONSUMABLES_COOLDOWN_SECONDS * 20L));
             }
         }
 

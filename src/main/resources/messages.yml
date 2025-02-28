@@ -25,6 +25,8 @@ messages:
   item_hide_name_end: "&cTon pseudo n'est plus masqué."
   item_cooldown: "&cTes consommables sont en cooldown pour {seconds} secondes."
   item_cooldown_tp: "&cTa téléportation à la mort est en cooldown pour {seconds} secondes."
+  item_orbe_no_fall: "&aTu as reçu l'effet NO_FALL pour {seconds} secondes."
+  item_orbe_no_fall_lost: "&cTu as perdu l'effet NO_FALL."
 
   # Masques de farm
   farm_mask_bonus: "&aVous avez reçu un bonus de {bonus}% sur vos ventes."
