@@ -345,7 +345,7 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (event.getEntity() instanceof Player) {
+        if (event.getEntity() instanceof Player && !event.getEntity().hasMetadata("NPC")) {
             if (hasCustomAdd(customItemDamager.get().getItem(), SPAWN_LIGHTNING, playerDamager)) {
                 IMMUNE_TO_LIGHTNING_PLAYERS.add(playerDamager.getUniqueId());
                 event.getEntity().getWorld().strikeLightningEffect(event.getEntity().getLocation());
