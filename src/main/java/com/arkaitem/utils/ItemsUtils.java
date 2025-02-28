@@ -9,6 +9,54 @@ import java.util.function.BiFunction;
 
 public abstract class ItemsUtils {
 
+    public static boolean isWeaponOrTool(Material material) {
+        if (material == null) return false;
+
+        switch (material) {
+            // Épées
+            case WOOD_SWORD:
+            case STONE_SWORD:
+            case IRON_SWORD:
+            case GOLD_SWORD:
+            case DIAMOND_SWORD:
+
+                // Pioches
+            case WOOD_PICKAXE:
+            case STONE_PICKAXE:
+            case IRON_PICKAXE:
+            case GOLD_PICKAXE:
+            case DIAMOND_PICKAXE:
+
+                // Haches
+            case WOOD_AXE:
+            case STONE_AXE:
+            case IRON_AXE:
+            case GOLD_AXE:
+            case DIAMOND_AXE:
+
+                // Pelles
+            case WOOD_SPADE:
+            case STONE_SPADE:
+            case IRON_SPADE:
+            case GOLD_SPADE:
+            case DIAMOND_SPADE:
+
+                // Houes
+            case WOOD_HOE:
+            case STONE_HOE:
+            case IRON_HOE:
+            case GOLD_HOE:
+            case DIAMOND_HOE:
+
+                // Arc
+            case BOW:
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
     public static boolean areEquals(ItemStack expected, ItemStack actual) {
         String idExpected = getUniqueID(expected);
         String idActual = getUniqueID(actual);

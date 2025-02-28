@@ -2,6 +2,7 @@ package com.arkaitem.items;
 
 import com.arkaitem.Program;
 import com.arkaitem.utils.EntitiesUtils;
+import com.arkaitem.utils.ItemsUtils;
 import com.arkaitem.utils.PotionUtils;
 import com.arkaitem.utils.TaskTracker;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
@@ -443,12 +444,13 @@ public class EventsItems implements Listener, ICustomAdds {
     public static final Double SELL_CHEST_CONTENT_VALUE = 500D;
     @EventHandler
     public void onItemUse(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        ItemStack itemEvent = player.getInventory().getItemInHand();
+
         if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
 
-        Player player = event.getPlayer();
-        ItemStack itemEvent = player.getInventory().getItemInHand();
 
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
@@ -546,22 +548,7 @@ public class EventsItems implements Listener, ICustomAdds {
         }
 
         if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player) && hasConsumed) {
-            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemEvent);
-            int uses = nmsStack.getTag().getInt(CONSUMABLE);
-            if (uses <= 0) {
-                if (player.getItemInHand().getAmount() > 1) {
-                    player.getItemInHand().setAmount(player.getItemInHand().getAmount() - 1);
-                } else {
-                    player.setItemInHand(null);
-                }
-            } else {
-                uses -= 1;
-                nmsStack.getTag().remove(CONSUMABLE);
-                nmsStack.getTag().setInt(CONSUMABLE, uses);
-                ItemStack updatedItem = CraftItemStack.asBukkitCopy(nmsStack);
-                player.setItemInHand(updatedItem);
-            }
-            player.updateInventory();
+            applyConsuming(player, itemEvent);
         }
     }
 
@@ -644,6 +631,10 @@ public class EventsItems implements Listener, ICustomAdds {
                     }
                 }, 10L);
             }
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player)) {
+            applyConsuming(player, itemEvent);
         }
     }
 
@@ -806,5 +797,24 @@ public class EventsItems implements Listener, ICustomAdds {
             player.setPlayerListName(player.getName());
             player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_hide_name_end", null));
         }
+    }
+
+    private void applyConsuming(Player player, ItemStack itemEvent) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemEvent);
+        int uses = nmsStack.getTag().getInt(CONSUMABLE);
+        if (uses <= 0) {
+            if (player.getItemInHand().getAmount() > 1) {
+                player.getItemInHand().setAmount(player.getItemInHand().getAmount() - 1);
+            } else {
+                player.setItemInHand(null);
+            }
+        } else {
+            uses -= 1;
+            nmsStack.getTag().remove(CONSUMABLE);
+            nmsStack.getTag().setInt(CONSUMABLE, uses);
+            ItemStack updatedItem = CraftItemStack.asBukkitCopy(nmsStack);
+            player.setItemInHand(updatedItem);
+        }
+        player.updateInventory();
     }
 }
