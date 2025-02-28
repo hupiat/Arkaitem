@@ -1,5 +1,6 @@
 package com.arkaitem.items;
 
+import com.arkaitem.Program;
 import com.arkaitem.utils.ItemsUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -115,8 +116,12 @@ public class EventsItemsCapture implements IItemPlaceholders, Listener {
                         ItemsUtils.areEquals(customPlaceholder.getItem(), player.getItemInHand()) &&
                         customPlaceholder.getPlaceholder().equals(key))
                 .findAny();
+        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(player.getItemInHand());
+        if (!customItem.isPresent()) {
+            throw new IllegalStateException("Custom item could not be found");
+        }
         if (!placeholder.isPresent()) {
-            placeholder = Optional.of(new CustomItemPlaceholder(player, key, player.getItemInHand()));
+            placeholder = Optional.of(new CustomItemPlaceholder(player, key, customItem.get().getItem()));
         }
         placeholder.get().setValue(value);
         updateItemPlaceholders(player, player.getItemInHand());
@@ -128,8 +133,12 @@ public class EventsItemsCapture implements IItemPlaceholders, Listener {
                         ItemsUtils.areEquals(customPlaceholder.getItem(), player.getItemInHand()) &&
                         customPlaceholder.getPlaceholder().equals(key))
                 .findAny();
+        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(player.getItemInHand());
+        if (!customItem.isPresent()) {
+            throw new IllegalStateException("Custom item could not be found");
+        }
         if (!placeholder.isPresent()) {
-            placeholder = Optional.of(new CustomItemPlaceholder(player, key, player.getItemInHand()));
+            placeholder = Optional.of(new CustomItemPlaceholder(player, key, customItem.get().getItem()));
         }
         if (placeholder.get().getValue() == null) {
             placeholder.get().setValue(String.valueOf(1));
