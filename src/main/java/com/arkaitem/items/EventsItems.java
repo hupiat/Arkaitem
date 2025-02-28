@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -565,7 +566,7 @@ public class EventsItems implements Listener, ICustomAdds {
     }
 
     @EventHandler
-    public void onBlockBreak(PlayerInteractEvent event) {
+    public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         ItemStack itemEvent = player.getInventory().getItemInHand();
 
@@ -575,7 +576,7 @@ public class EventsItems implements Listener, ICustomAdds {
             return;
         }
 
-        Block block = event.getClickedBlock();
+        Block block = event.getBlock();
 
         if (block != null && hasCustomAdd(customItem.get().getItem(), TREE_FELLER, player)) {
             if (block.getType() == Material.LOG || block.getType() == Material.LOG_2) {
@@ -593,9 +594,9 @@ public class EventsItems implements Listener, ICustomAdds {
                         blocksToBreak.add(current);
 
                         for (BlockFace face : new BlockFace[]{
-                                BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH,
-                                BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH_EAST, BlockFace.NORTH_WEST,
-                                BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST
+                                BlockFace.UP, BlockFace.NORTH, BlockFace.SOUTH,
+                                BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH_EAST,
+                                BlockFace.NORTH_WEST, BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST
                         }) {
                             Block adjacent = current.getRelative(face);
                             if (!checkedBlocks.contains(adjacent) && (adjacent.getType() == Material.LOG || adjacent.getType() == Material.LOG_2)) {
@@ -605,26 +606,16 @@ public class EventsItems implements Listener, ICustomAdds {
                     }
                 }
 
-                new BukkitRunnable() {
-                    int index = 0;
-
-                    @Override
-                    public void run() {
-                        if (index < blocksToBreak.size()) {
-                            Block b = blocksToBreak.get(index);
-                            if (b.getType() == Material.LOG || b.getType() == Material.LOG_2) {
-                                b.breakNaturally();
-                            }
-                            index++;
-                        } else {
-                            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_tree_cut", null));
-                            cancel();
+                Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
+                    for (Block b : blocksToBreak) {
+                        if (b.getType() == Material.LOG || b.getType() == Material.LOG_2) {
+                            b.breakNaturally();
                         }
                     }
-                }.runTaskTimer(Program.INSTANCE, 0L, 2L);
+                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_tree_cut", null));
+                }, 10L);
             }
         }
-
 
         if (block != null && hasCustomAdd(customItem.get().getItem(), MINE_AREA, player)) {
             String[] values = getCustomAddData(customItem.get().getItem(), MINE_AREA, player).split("X");
@@ -639,35 +630,19 @@ public class EventsItems implements Listener, ICustomAdds {
 
                 Location loc = block.getLocation();
                 World world = player.getWorld();
-                List<Block> blocksToBreak = new ArrayList<>();
 
-                for (int x = -radiusX; x <= radiusX; x++) {
-                    for (int y = -radiusY; y <= radiusY; y++) {
-                        for (int z = -radiusZ; z <= radiusZ; z++) {
-                            Block blockToBreak = world.getBlockAt(loc.getBlockX() + x, loc.getBlockY() + y, loc.getBlockZ() + z);
-                            if (blockToBreak.getType() != Material.AIR && blockToBreak.getType() != Material.BEDROCK) {
-                                blocksToBreak.add(blockToBreak);
+                Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
+                    for (int x = -radiusX; x <= radiusX; x++) {
+                        for (int y = -radiusY; y <= radiusY; y++) {
+                            for (int z = -radiusZ; z <= radiusZ; z++) {
+                                Block blockToBreak = world.getBlockAt(loc.getBlockX() + x, loc.getBlockY() + y, loc.getBlockZ() + z);
+                                if (blockToBreak.getType() != Material.AIR && !blockToBreak.equals(block)) {
+                                    blockToBreak.breakNaturally();
+                                }
                             }
                         }
                     }
-                }
-
-                new BukkitRunnable() {
-                    int index = 0;
-
-                    @Override
-                    public void run() {
-                        if (index < blocksToBreak.size()) {
-                            Block b = blocksToBreak.get(index);
-                            if (b.getType() != Material.BEDROCK) {
-                                b.breakNaturally();
-                            }
-                            index++;
-                        } else {
-                            cancel();
-                        }
-                    }
-                }.runTaskTimer(Program.INSTANCE, 0L, 2L);
+                }, 10L);
             }
         }
     }
