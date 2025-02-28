@@ -2,18 +2,20 @@ package com.arkaitem.items;
 
 import com.arkaitem.Program;
 import com.arkaitem.utils.EntitiesUtils;
-import com.arkaitem.utils.ItemsUtils;
-import com.arkaitem.utils.PotionUtils;
 import com.arkaitem.utils.TaskTracker;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import net.brcdev.shopgui.ShopGuiPlusApi;
 import net.brcdev.shopgui.shop.item.ShopItem;
-import net.minecraft.server.v1_8_R3.EntityPlayer;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -33,14 +35,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
 import java.util.*;
-import java.util.logging.Level;
 
 public class EventsItems implements Listener, ICustomAdds {
 
@@ -360,9 +360,18 @@ public class EventsItems implements Listener, ICustomAdds {
 
         if (event.getEntity() instanceof Player && !event.getEntity().hasMetadata("NPC")) {
             if (hasCustomAdd(customItemDamager.get().getItem(), SPAWN_LIGHTNING, playerDamager)) {
-                IMMUNE_TO_LIGHTNING_PLAYERS.add(playerDamager.getUniqueId());
-                event.getEntity().getWorld().strikeLightningEffect(event.getEntity().getLocation());
-                Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> IMMUNE_TO_LIGHTNING_PLAYERS.remove(playerDamager.getUniqueId()), 5L);
+                String[] values = getCustomAddData(customItemDamager.get().getItem(), SPAWN_LIGHTNING, playerDamager).split(";");
+                int chance = Integer.parseInt(values[0]);
+                if (new Random().nextInt(100) < chance) {
+                    for (int i = 1; i < values.length; i++) {
+                        if (isInRegion(playerDamager.getLocation(), values[i])) {
+                            return;
+                        }
+                    }
+                    IMMUNE_TO_LIGHTNING_PLAYERS.add(playerDamager.getUniqueId());
+                    event.getEntity().getWorld().strikeLightningEffect(event.getEntity().getLocation());
+                    Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> IMMUNE_TO_LIGHTNING_PLAYERS.remove(playerDamager.getUniqueId()), 5L);
+                }
             }
         }
     }
@@ -854,5 +863,17 @@ public class EventsItems implements Listener, ICustomAdds {
             player.setItemInHand(updatedItem);
         }
         player.updateInventory();
+    }
+
+    private boolean isInRegion(Location location, String regionName) {
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionQuery query = container.createQuery();
+        ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(location));
+        for (ProtectedRegion region : set) {
+            if (region.getId().equalsIgnoreCase(regionName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
