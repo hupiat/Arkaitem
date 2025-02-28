@@ -57,10 +57,6 @@
             <url>https://jitpack.io</url>
         </repository>
         <repository>
-            <id>enginehub-repo</id>
-            <url>https://maven.enginehub.org/repo/</url>
-        </repository>
-        <repository>
             <id>local-maven</id>
             <url>file:///C:/Users/hpiat/.m2/repository</url>
             <layout>default</layout>
@@ -98,7 +94,13 @@
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
             <artifactId>worldguard-bukkit</artifactId>
-            <version>7.0.8-SNAPSHOT</version>
+            <version>6.2-legacy</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sk89q.worldedit</groupId>
+            <artifactId>worldedit-bukkit</artifactId>
+            <version>6.1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

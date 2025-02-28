@@ -3,12 +3,10 @@ package com.arkaitem.items;
 import com.arkaitem.Program;
 import com.arkaitem.utils.EntitiesUtils;
 import com.arkaitem.utils.TaskTracker;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
-import com.sk89q.worldguard.protection.regions.RegionQuery;
 import net.brcdev.shopgui.ShopGuiPlusApi;
 import net.brcdev.shopgui.shop.item.ShopItem;
 import org.apache.commons.lang3.StringUtils;
@@ -866,9 +864,15 @@ public class EventsItems implements Listener, ICustomAdds {
     }
 
     private boolean isInRegion(Location location, String regionName) {
-        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-        RegionQuery query = container.createQuery();
-        ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(location));
+        WorldGuardPlugin wg = (WorldGuardPlugin) Bukkit.getPluginManager().getPlugin("WorldGuard");
+        if (wg == null) {
+            return false;
+        }
+        RegionManager manager = wg.getRegionManager(location.getWorld());
+        if (manager == null) {
+            return false;
+        }
+        ApplicableRegionSet set = manager.getApplicableRegions(location);
         for (ProtectedRegion region : set) {
             if (region.getId().equalsIgnoreCase(regionName)) {
                 return true;
