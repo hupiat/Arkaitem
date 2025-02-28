@@ -248,12 +248,12 @@ public class EventsItems implements Listener, ICustomAdds {
             return;
         }
 
+        LAST_HIT_PLAYERS.put(event.getDamager().getUniqueId(), event.getEntity().getUniqueId());
+
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
             if (IMMUNE_TO_LIGHTNING_PLAYERS.contains(player.getUniqueId()) && event.getCause() == EntityDamageEvent.DamageCause.LIGHTNING) {
                 event.setCancelled(true);
-            } else {
-                LAST_HIT_PLAYERS.put(player.getUniqueId(), event.getDamager().getUniqueId());
             }
         }
 
