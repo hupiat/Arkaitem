@@ -14,7 +14,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public abstract class RegistryCustomItems {
-    private static final Set<CustomItem> items = new HashSet<>();
+    private static final Set<CustomItem> items = new LinkedHashSet<>();
 
     public static Set<CustomItem> getItems() {
         return items;

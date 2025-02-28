@@ -39,7 +39,7 @@
 
 # Activation on Attack :
 # "STEAL_LIFE;CHANCE;PERCENTAGE" pour voler un pourcentage de vie à chaque coup porté (exemple: "STEAL_LIFE;10;10" pour voler 10%).
-# "SPAWN_LIGHTNING;CHANCE" pour faire apparaître des éclairs avec un pourcentage de chance à chaque coup porté. (exemple: "SPAWN_LIGHTNING;10" pour 10%).
+# "SPAWN_LIGHTNING;CHANCE;REGIONS_INTERDITES_IDS" pour faire apparaître des éclairs avec un pourcentage de chance à chaque coup porté. (exemple: "SPAWN_LIGHTNING;10" pour 10%).
 # "SPAWN_HEAD_ON_KILL" fait en sorte que la tête du joueur tué soit dropée.
 # "HIT_EFFECT;TYPE;LEVEL;DURATION;CHANCE" pour infliger un effet de potion au joueur ciblé avec un pourcentage de chance (exemple: "HIT_EFFECT;POISON;1;5;20" pour 20% de chance d'infliger Poison niveau 1 pendant 5 secondes).
 # "SELF_EFFECT;TYPE;LEVEL;DURATION;CHANCE" pour appliquer un effet de potion au porteur de l'item avec un pourcentage de chance lors d'un coup (exemple: "SELF_EFFECT;HEALTH_BOOST;2;10;15" pour 15% de chance d'obtenir un boost de santé niveau 2 pendant 10 secondes).
@@ -686,7 +686,7 @@ item:
 
     customAdds:
       - "UNBREAKABLE"
-      - "GIVE_POTION;HASTE;1"
+      - "GIVE_POTION;FAST_DIGGING;1"
 
     fullSetRequirement:
       - "casque_farm"
@@ -1166,7 +1166,7 @@ item:
       - DURABILITY:4
 
     customAdds:
-      - "CONSUMABLE_GIVE_POTION;JUMP;1;600"
+      - "CONSUMABLE_GIVE_POTION;NO_FALL;1;600"
       - "CONSUMABLE;3"
 
   - orbeforce :
@@ -1187,7 +1187,7 @@ item:
       - DURABILITY:4
 
     customAdds:
-      - "CONSUMABLE_GIVE_POTION;INCREASE_DAMAGE;0;600"
+      - "CONSUMABLE_GIVE_POTION;STRENGTH;0;600"
       - "CONSUMABLE;3"
 
   - hammer3x3 :

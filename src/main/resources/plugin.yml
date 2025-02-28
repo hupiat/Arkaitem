@@ -16,4 +16,4 @@ commands:
 permissions:
   arkaitem.admin:
     default: op
-softdepend: [Vault]
+depend: [Vault, ShopGUIPlus, WorldGuard]

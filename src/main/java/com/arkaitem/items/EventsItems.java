@@ -2,14 +2,20 @@ package com.arkaitem.items;
 
 import com.arkaitem.Program;
 import com.arkaitem.utils.EntitiesUtils;
-import com.arkaitem.utils.PotionUtils;
 import com.arkaitem.utils.TaskTracker;
-import net.minecraft.server.v1_8_R3.EntityPlayer;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
+import net.brcdev.shopgui.ShopGuiPlusApi;
+import net.brcdev.shopgui.shop.item.ShopItem;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -17,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -28,7 +35,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
@@ -155,6 +162,13 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
+        if (CONSUMABLES_NO_FALL.containsKey(player.getUniqueId()) && CONSUMABLES_NO_FALL.get(player.getUniqueId()) != null) {
+            event.setCancelled(true);
+            Map<String, String> placeholders = new HashMap<>();
+            placeholders.put("seconds", String.valueOf(CONSUMABLES_NO_FALL.get(player.getUniqueId()).getTimeLeftSeconds()));
+            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_orbe_no_fall", placeholders));
+        }
+
         List<ItemStack> itemsEvent = new ArrayList<ItemStack>() {{
             add(player.getInventory().getItemInHand());
             addAll(Arrays.asList(player.getInventory().getArmorContents()));
@@ -247,12 +261,12 @@ public class EventsItems implements Listener, ICustomAdds {
             return;
         }
 
+        LAST_HIT_PLAYERS.put(event.getDamager().getUniqueId(), event.getEntity().getUniqueId());
+
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
             if (IMMUNE_TO_LIGHTNING_PLAYERS.contains(player.getUniqueId()) && event.getCause() == EntityDamageEvent.DamageCause.LIGHTNING) {
                 event.setCancelled(true);
-            } else {
-                LAST_HIT_PLAYERS.put(player.getUniqueId(), event.getDamager().getUniqueId());
             }
         }
 
@@ -344,11 +358,20 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (event.getEntity() instanceof Player) {
+        if (event.getEntity() instanceof Player && !event.getEntity().hasMetadata("NPC")) {
             if (hasCustomAdd(customItemDamager.get().getItem(), SPAWN_LIGHTNING, playerDamager)) {
-                IMMUNE_TO_LIGHTNING_PLAYERS.add(playerDamager.getUniqueId());
-                event.getEntity().getWorld().strikeLightningEffect(event.getEntity().getLocation());
-                Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> IMMUNE_TO_LIGHTNING_PLAYERS.remove(playerDamager.getUniqueId()), 5L);
+                String[] values = getCustomAddData(customItemDamager.get().getItem(), SPAWN_LIGHTNING, playerDamager).split(";");
+                int chance = Integer.parseInt(values[0]);
+                if (new Random().nextInt(100) < chance) {
+                    for (int i = 1; i < values.length; i++) {
+                        if (isInRegion(playerDamager.getLocation(), values[i])) {
+                            return;
+                        }
+                    }
+                    IMMUNE_TO_LIGHTNING_PLAYERS.add(playerDamager.getUniqueId());
+                    event.getEntity().getWorld().strikeLightningEffect(event.getEntity().getLocation());
+                    Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> IMMUNE_TO_LIGHTNING_PLAYERS.remove(playerDamager.getUniqueId()), 5L);
+                }
             }
         }
     }
@@ -435,19 +458,20 @@ public class EventsItems implements Listener, ICustomAdds {
     }
 
     private static final Map<UUID, TaskTracker> CONSUMABLES_COOLDOWN = new HashMap<>();
+    private static final Map<UUID, TaskTracker> CONSUMABLES_NO_FALL = new HashMap<>();
     public static final int CONSUMABLES_COOLDOWN_SECONDS = 5;
 
     public static final String VIEW_ON_CHEST_TITLE = "Vue du coffre";
     public static final int VIEW_ON_CHEST_LENGTH = 1000;
-    public static final Double SELL_CHEST_CONTENT_VALUE = 500D;
     @EventHandler
     public void onItemUse(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        ItemStack itemEvent = player.getInventory().getItemInHand();
+
         if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
 
-        Player player = event.getPlayer();
-        ItemStack itemEvent = player.getInventory().getItemInHand();
 
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
@@ -503,10 +527,15 @@ public class EventsItems implements Listener, ICustomAdds {
 
                 for (ItemStack stack : inventory.getContents()) {
                     if (stack != null) {
+                        ShopItem shopItem = ShopGuiPlusApi.getItemStackShopItem(stack);
+                        if (shopItem == null) {
+                            continue;
+                        }
+                        double price = shopItem.getSellPrice();
                         if (MULTIPLIER_BONUS.containsKey(player.getUniqueId())) {
-                            totalValue += SELL_CHEST_CONTENT_VALUE * stack.getAmount() * MULTIPLIER_BONUS.get(player.getUniqueId());
+                            totalValue += price * stack.getAmount() * MULTIPLIER_BONUS.get(player.getUniqueId());
                         } else {
-                            totalValue += SELL_CHEST_CONTENT_VALUE * stack.getAmount();
+                            totalValue += price * stack.getAmount();
                         }
                     }
                 }
@@ -534,38 +563,32 @@ public class EventsItems implements Listener, ICustomAdds {
             } else {
                 hasConsumed = true;
                 String[] values = getCustomAddData(customItem.get().getItem(), CONSUMABLE_GIVE_POTION, player).split(";");
-                PotionEffectType effect = PotionEffectType.getByName(values[0]);
                 int level = Integer.parseInt(values[1]);
                 int duration = Integer.parseInt(values[2]);
-                event.getPlayer().addPotionEffect(new PotionEffect(effect, duration * 20, level));
-                CONSUMABLES_COOLDOWN.put(player.getUniqueId(), new TaskTracker().startTask(Program.INSTANCE, () -> {
-                    CONSUMABLES_COOLDOWN.put(player.getUniqueId(), null);
-                }, CONSUMABLES_COOLDOWN_SECONDS * 20L));
+                if (!StringUtils.equals(values[0], "NO_FALL")) {
+                    PotionEffectType effect = PotionEffectType.getByName(values[0]);
+                    event.getPlayer().addPotionEffect(new PotionEffect(effect, duration * 20, level), true);
+                } else {
+                    CONSUMABLES_NO_FALL.put(player.getUniqueId(), new TaskTracker().startTask(Program.INSTANCE, () -> {
+                        CONSUMABLES_NO_FALL.put(player.getUniqueId(), null);
+                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_orbe_no_fall_lost", null));
+                    }, duration * 20L));
+                    Map<String, String> placeholders = new HashMap<>();
+                    placeholders.put("seconds", String.valueOf(CONSUMABLES_NO_FALL.get(player.getUniqueId()).getTimeLeftSeconds()));
+                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_orbe_no_fall", placeholders));
+                }
+                CONSUMABLES_COOLDOWN.put(player.getUniqueId(), new TaskTracker().startTask(Program.INSTANCE, () ->
+                    CONSUMABLES_COOLDOWN.put(player.getUniqueId(), null), CONSUMABLES_COOLDOWN_SECONDS * 20L));
             }
         }
 
         if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player) && hasConsumed) {
-            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemEvent);
-            int uses = nmsStack.getTag().getInt(CONSUMABLE);
-            if (uses <= 0) {
-                if (player.getItemInHand().getAmount() > 1) {
-                    player.getItemInHand().setAmount(player.getItemInHand().getAmount() - 1);
-                } else {
-                    player.setItemInHand(null);
-                }
-            } else {
-                uses -= 1;
-                nmsStack.getTag().remove(CONSUMABLE);
-                nmsStack.getTag().setInt(CONSUMABLE, uses);
-                ItemStack updatedItem = CraftItemStack.asBukkitCopy(nmsStack);
-                player.setItemInHand(updatedItem);
-            }
-            player.updateInventory();
+            applyConsuming(player, itemEvent);
         }
     }
 
     @EventHandler
-    public void onBlockBreak(PlayerInteractEvent event) {
+    public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         ItemStack itemEvent = player.getInventory().getItemInHand();
 
@@ -575,7 +598,7 @@ public class EventsItems implements Listener, ICustomAdds {
             return;
         }
 
-        Block block = event.getClickedBlock();
+        Block block = event.getBlock();
 
         if (block != null && hasCustomAdd(customItem.get().getItem(), TREE_FELLER, player)) {
             if (block.getType() == Material.LOG || block.getType() == Material.LOG_2) {
@@ -593,9 +616,9 @@ public class EventsItems implements Listener, ICustomAdds {
                         blocksToBreak.add(current);
 
                         for (BlockFace face : new BlockFace[]{
-                                BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH,
-                                BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH_EAST, BlockFace.NORTH_WEST,
-                                BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST
+                                BlockFace.UP, BlockFace.NORTH, BlockFace.SOUTH,
+                                BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH_EAST,
+                                BlockFace.NORTH_WEST, BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST
                         }) {
                             Block adjacent = current.getRelative(face);
                             if (!checkedBlocks.contains(adjacent) && (adjacent.getType() == Material.LOG || adjacent.getType() == Material.LOG_2)) {
@@ -605,26 +628,16 @@ public class EventsItems implements Listener, ICustomAdds {
                     }
                 }
 
-                new BukkitRunnable() {
-                    int index = 0;
-
-                    @Override
-                    public void run() {
-                        if (index < blocksToBreak.size()) {
-                            Block b = blocksToBreak.get(index);
-                            if (b.getType() == Material.LOG || b.getType() == Material.LOG_2) {
-                                b.breakNaturally();
-                            }
-                            index++;
-                        } else {
-                            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_tree_cut", null));
-                            cancel();
+                Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
+                    for (Block b : blocksToBreak) {
+                        if (b.getType() == Material.LOG || b.getType() == Material.LOG_2) {
+                            b.breakNaturally();
                         }
                     }
-                }.runTaskTimer(Program.INSTANCE, 0L, 2L);
+                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_tree_cut", null));
+                }, 10L);
             }
         }
-
 
         if (block != null && hasCustomAdd(customItem.get().getItem(), MINE_AREA, player)) {
             String[] values = getCustomAddData(customItem.get().getItem(), MINE_AREA, player).split("X");
@@ -639,36 +652,24 @@ public class EventsItems implements Listener, ICustomAdds {
 
                 Location loc = block.getLocation();
                 World world = player.getWorld();
-                List<Block> blocksToBreak = new ArrayList<>();
 
-                for (int x = -radiusX; x <= radiusX; x++) {
-                    for (int y = -radiusY; y <= radiusY; y++) {
-                        for (int z = -radiusZ; z <= radiusZ; z++) {
-                            Block blockToBreak = world.getBlockAt(loc.getBlockX() + x, loc.getBlockY() + y, loc.getBlockZ() + z);
-                            if (blockToBreak.getType() != Material.AIR && blockToBreak.getType() != Material.BEDROCK) {
-                                blocksToBreak.add(blockToBreak);
+                Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
+                    for (int x = -radiusX; x <= radiusX; x++) {
+                        for (int y = -radiusY; y <= radiusY; y++) {
+                            for (int z = -radiusZ; z <= radiusZ; z++) {
+                                Block blockToBreak = world.getBlockAt(loc.getBlockX() + x, loc.getBlockY() + y, loc.getBlockZ() + z);
+                                if (blockToBreak.getType() != Material.AIR && !blockToBreak.equals(block)) {
+                                    blockToBreak.breakNaturally();
+                                }
                             }
                         }
                     }
-                }
-
-                new BukkitRunnable() {
-                    int index = 0;
-
-                    @Override
-                    public void run() {
-                        if (index < blocksToBreak.size()) {
-                            Block b = blocksToBreak.get(index);
-                            if (b.getType() != Material.BEDROCK) {
-                                b.breakNaturally();
-                            }
-                            index++;
-                        } else {
-                            cancel();
-                        }
-                    }
-                }.runTaskTimer(Program.INSTANCE, 0L, 2L);
+                }, 10L);
             }
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player)) {
+            applyConsuming(player, itemEvent);
         }
     }
 
@@ -817,9 +818,19 @@ public class EventsItems implements Listener, ICustomAdds {
             team = scoreboard.registerNewTeam(TEAM_HIDDEN_PLAYERS);
             team.setPrefix("§7");
             team.setSuffix("");
-            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_hide_name", null));
-            team.addPlayer(player);
+            team.setDisplayName("Hidden Team");
+
+            team.setNameTagVisibility(NameTagVisibility.NEVER);
+
+            team.setCanSeeFriendlyInvisibles(false);
+            team.setAllowFriendlyFire(true);
         }
+
+        team.addPlayer(player);
+
+        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, false, false));
+
+        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_hide_name", null));
     }
 
     private void removeNameHiding(Player player) {
@@ -829,7 +840,40 @@ public class EventsItems implements Listener, ICustomAdds {
         if (team != null && team.hasPlayer(player)) {
             team.removePlayer(player);
             player.setPlayerListName(player.getName());
+            player.removePotionEffect(PotionEffectType.INVISIBILITY);
+
             player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_hide_name_end", null));
         }
+    }
+
+    private void applyConsuming(Player player, ItemStack itemEvent) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemEvent);
+        int uses = nmsStack.getTag().getInt(CONSUMABLE);
+        if (uses <= 0) {
+            if (player.getItemInHand().getAmount() > 1) {
+                player.getItemInHand().setAmount(player.getItemInHand().getAmount() - 1);
+            } else {
+                player.setItemInHand(null);
+            }
+        } else {
+            uses -= 1;
+            nmsStack.getTag().remove(CONSUMABLE);
+            nmsStack.getTag().setInt(CONSUMABLE, uses);
+            ItemStack updatedItem = CraftItemStack.asBukkitCopy(nmsStack);
+            player.setItemInHand(updatedItem);
+        }
+        player.updateInventory();
+    }
+
+    private boolean isInRegion(Location location, String regionName) {
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionQuery query = container.createQuery();
+        ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(location));
+        for (ProtectedRegion region : set) {
+            if (region.getId().equalsIgnoreCase(regionName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
