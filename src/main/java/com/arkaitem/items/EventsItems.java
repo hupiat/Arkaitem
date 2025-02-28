@@ -538,7 +538,7 @@ public class EventsItems implements Listener, ICustomAdds {
                 PotionEffectType effect = PotionEffectType.getByName(values[0]);
                 int level = Integer.parseInt(values[1]);
                 int duration = Integer.parseInt(values[2]);
-                event.getPlayer().addPotionEffect(new PotionEffect(effect, duration * 20, level));
+                event.getPlayer().addPotionEffect(new PotionEffect(effect, duration * 20, level), true);
                 CONSUMABLES_COOLDOWN.put(player.getUniqueId(), new TaskTracker().startTask(Program.INSTANCE, () -> {
                     CONSUMABLES_COOLDOWN.put(player.getUniqueId(), null);
                 }, CONSUMABLES_COOLDOWN_SECONDS * 20L));
