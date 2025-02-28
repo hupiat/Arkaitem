@@ -31,11 +31,13 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.logging.Level;
 
 public class EventsItems implements Listener, ICustomAdds {
 
@@ -783,9 +785,19 @@ public class EventsItems implements Listener, ICustomAdds {
             team = scoreboard.registerNewTeam(TEAM_HIDDEN_PLAYERS);
             team.setPrefix("§7");
             team.setSuffix("");
-            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_hide_name", null));
-            team.addPlayer(player);
+            team.setDisplayName("Hidden Team");
+
+            team.setNameTagVisibility(NameTagVisibility.NEVER);
+
+            team.setCanSeeFriendlyInvisibles(false);
+            team.setAllowFriendlyFire(true);
         }
+
+        team.addPlayer(player);
+
+        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, false, false));
+
+        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_hide_name", null));
     }
 
     private void removeNameHiding(Player player) {
@@ -795,6 +807,8 @@ public class EventsItems implements Listener, ICustomAdds {
         if (team != null && team.hasPlayer(player)) {
             team.removePlayer(player);
             player.setPlayerListName(player.getName());
+            player.removePotionEffect(PotionEffectType.INVISIBILITY);
+
             player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_hide_name_end", null));
         }
     }
