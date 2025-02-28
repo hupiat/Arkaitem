@@ -5,6 +5,8 @@ import com.arkaitem.utils.EntitiesUtils;
 import com.arkaitem.utils.ItemsUtils;
 import com.arkaitem.utils.PotionUtils;
 import com.arkaitem.utils.TaskTracker;
+import net.brcdev.shopgui.ShopGuiPlusApi;
+import net.brcdev.shopgui.shop.item.ShopItem;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -443,7 +445,6 @@ public class EventsItems implements Listener, ICustomAdds {
 
     public static final String VIEW_ON_CHEST_TITLE = "Vue du coffre";
     public static final int VIEW_ON_CHEST_LENGTH = 1000;
-    public static final Double SELL_CHEST_CONTENT_VALUE = 500D;
     @EventHandler
     public void onItemUse(PlayerInteractEvent event) {
         Player player = event.getPlayer();
@@ -508,10 +509,15 @@ public class EventsItems implements Listener, ICustomAdds {
 
                 for (ItemStack stack : inventory.getContents()) {
                     if (stack != null) {
+                        ShopItem shopItem = ShopGuiPlusApi.getItemStackShopItem(stack);
+                        if (shopItem == null) {
+                            continue;
+                        }
+                        double price = shopItem.getSellPrice();
                         if (MULTIPLIER_BONUS.containsKey(player.getUniqueId())) {
-                            totalValue += SELL_CHEST_CONTENT_VALUE * stack.getAmount() * MULTIPLIER_BONUS.get(player.getUniqueId());
+                            totalValue += price * stack.getAmount() * MULTIPLIER_BONUS.get(player.getUniqueId());
                         } else {
-                            totalValue += SELL_CHEST_CONTENT_VALUE * stack.getAmount();
+                            totalValue += price * stack.getAmount();
                         }
                     }
                 }
