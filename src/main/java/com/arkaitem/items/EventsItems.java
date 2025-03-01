@@ -387,10 +387,12 @@ public class EventsItems implements Listener, ICustomAdds {
             String[] values = getCustomAddData(customItem.get().getItem(), MULTIPLICATEUR, player).split(";");
             if (values.length == 1) {
                 double multiplier = Double.parseDouble(values[0]);
-                MULTIPLIER_BONUS.put(player.getUniqueId(), multiplier);
-                Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("bonus", String.valueOf(multiplier * 100 - 100));
-                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("farm_mask_bonus", placeholders));
+                if (!MULTIPLIER_BONUS.containsKey(player.getUniqueId()) || MULTIPLIER_BONUS.get(player.getUniqueId()) < multiplier) {
+                    MULTIPLIER_BONUS.put(player.getUniqueId(), multiplier);
+                    Map<String, String> placeholders = new HashMap<>();
+                    placeholders.put("bonus", String.valueOf(multiplier));
+                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("farm_mask_bonus", placeholders));
+                }
             }
         }
     }
@@ -534,6 +536,8 @@ public class EventsItems implements Listener, ICustomAdds {
         if (hasCustomAdd(customItem.get().getItem(), SELL_CHEST_CONTENTS, player)) {
             Block block = event.getClickedBlock();
             if (block != null && block.getState() instanceof Chest) {
+                double multiplier = Double.parseDouble(
+                        getCustomAddData(customItem.get().getItem(), SELL_CHEST_CONTENTS, player).split(";")[0]);
                 Chest chest = (Chest) block.getState();
                 Inventory inventory = chest.getInventory();
                 double totalValue = 0;
@@ -546,9 +550,9 @@ public class EventsItems implements Listener, ICustomAdds {
                         }
                         double price = shopItem.getSellPrice();
                         if (MULTIPLIER_BONUS.containsKey(player.getUniqueId())) {
-                            totalValue += price * stack.getAmount() * MULTIPLIER_BONUS.get(player.getUniqueId());
+                            totalValue += price * stack.getAmount() * multiplier * MULTIPLIER_BONUS.get(player.getUniqueId());
                         } else {
-                            totalValue += price * stack.getAmount();
+                            totalValue += price * stack.getAmount() * multiplier;
                         }
                     }
                 }
