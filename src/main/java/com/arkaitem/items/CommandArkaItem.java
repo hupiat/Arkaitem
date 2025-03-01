@@ -2,6 +2,7 @@ package com.arkaitem.items;
 
 import com.arkaitem.Program;
 import com.arkaitem.crafts.recipes.RegistryRecipes;
+import com.arkaitem.utils.ItemsUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -70,7 +71,11 @@ public class CommandArkaItem implements CommandExecutor {
             return false;
         }
 
-        target.getInventory().addItem(item.get().getItem());
+        if (item.get().getId().equalsIgnoreCase("loupe")) {
+            target.getInventory().setItem(ItemsUtils.getInventoryFreeSlot(target.getPlayer()), item.get().getItem());
+        } else {
+            target.getInventory().addItem(item.get().getItem());
+        }
 
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("item_name", itemId);

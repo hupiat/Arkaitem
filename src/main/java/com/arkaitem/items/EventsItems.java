@@ -1,7 +1,6 @@
 package com.arkaitem.items;
 
 import com.arkaitem.Program;
-import com.arkaitem.utils.EntitiesUtils;
 import com.arkaitem.utils.ItemsUtils;
 import com.arkaitem.utils.TaskTracker;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -896,6 +895,8 @@ public class EventsItems implements Listener, ICustomAdds {
 
             team.setCanSeeFriendlyInvisibles(false);
             team.setAllowFriendlyFire(true);
+        } else if (team.hasPlayer(player)) {
+            return;
         }
 
         team.addPlayer(player);
