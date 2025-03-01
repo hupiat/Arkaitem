@@ -16,6 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class EventsItemsCapture implements IItemPlaceholders, Listener {
@@ -105,7 +106,8 @@ public class EventsItemsCapture implements IItemPlaceholders, Listener {
             if (meta == null) {
                 meta = itemPlaceholder.getItem().getItemMeta().clone();
             }
-            meta.getLore().replaceAll(line -> line.replaceAll("{" + itemPlaceholder.getPlaceholder() + "}", itemPlaceholder.getValue()));
+            String pattern = "\\{\\s*" + Pattern.quote(itemPlaceholder.getPlaceholder()) + "\\s*\\}";
+            meta.getLore().replaceAll(line -> line.replaceAll(pattern, itemPlaceholder.getValue()));
         }
         item.setItemMeta(meta);
     }
@@ -118,10 +120,11 @@ public class EventsItemsCapture implements IItemPlaceholders, Listener {
                 .findAny();
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(player.getItemInHand());
         if (!customItem.isPresent()) {
-            throw new IllegalStateException("Custom item could not be found");
+            return;
         }
         if (!placeholder.isPresent()) {
             placeholder = Optional.of(new CustomItemPlaceholder(player, key, customItem.get().getItem()));
+            placeholders.add(placeholder.get());
         }
         placeholder.get().setValue(value);
         updateItemPlaceholders(player, player.getItemInHand());
@@ -135,10 +138,11 @@ public class EventsItemsCapture implements IItemPlaceholders, Listener {
                 .findAny();
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(player.getItemInHand());
         if (!customItem.isPresent()) {
-            throw new IllegalStateException("Custom item could not be found");
+            return;
         }
         if (!placeholder.isPresent()) {
             placeholder = Optional.of(new CustomItemPlaceholder(player, key, customItem.get().getItem()));
+            placeholders.add(placeholder.get());
         }
         if (placeholder.get().getValue() == null) {
             placeholder.get().setValue(String.valueOf(1));
