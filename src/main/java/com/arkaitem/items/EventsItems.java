@@ -534,35 +534,55 @@ public class EventsItems implements Listener, ICustomAdds {
         }
 
         if (hasCustomAdd(customItem.get().getItem(), SELL_CHEST_CONTENTS, player)) {
-            Block block = event.getClickedBlock();
-            if (block != null && block.getState() instanceof Chest) {
-                double multiplier = Double.parseDouble(
-                        getCustomAddData(customItem.get().getItem(), SELL_CHEST_CONTENTS, player).split(";")[0]);
-                Chest chest = (Chest) block.getState();
-                Inventory inventory = chest.getInventory();
-                double totalValue = 0;
+            if (CONSUMABLES_COOLDOWN.containsKey(player.getUniqueId()) &&
+                    CONSUMABLES_COOLDOWN.get(player.getUniqueId()) != null &&
+                    ItemsUtils.areEquals(CONSUMABLES_COOLDOWN.get(player.getUniqueId()).getKey(), itemEvent)) {
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("seconds", String.valueOf(CONSUMABLES_COOLDOWN.get(player.getUniqueId()).getValue().getTimeLeftSeconds()));
+                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cooldown", placeholders));
+            } else {
+                Block block = event.getClickedBlock();
+                if (block != null && block.getState() instanceof Chest) {
+                    double multiplier = Double.parseDouble(
+                            getCustomAddData(customItem.get().getItem(), SELL_CHEST_CONTENTS, player).split(";")[0]);
+                    Chest chest = (Chest) block.getState();
+                    Inventory inventory = chest.getInventory();
+                    double totalValue = 0;
 
-                for (ItemStack stack : inventory.getContents()) {
-                    if (stack != null) {
-                        ShopItem shopItem = ShopGuiPlusApi.getItemStackShopItem(stack);
-                        if (shopItem == null) {
-                            continue;
-                        }
-                        double price = shopItem.getSellPrice();
-                        if (MULTIPLIER_BONUS.containsKey(player.getUniqueId())) {
-                            totalValue += price * stack.getAmount() * multiplier * MULTIPLIER_BONUS.get(player.getUniqueId());
-                        } else {
-                            totalValue += price * stack.getAmount() * multiplier;
+                    Set<ItemStack> toSell = new HashSet<>();
+                    for (ItemStack stack : inventory.getContents()) {
+                        if (stack != null) {
+                            ShopItem shopItem = ShopGuiPlusApi.getItemStackShopItem(stack);
+                            if (shopItem == null) {
+                                continue;
+                            }
+                            double price = shopItem.getSellPrice();
+                            if (price <= 0) {
+                                continue;
+                            }
+                            if (MULTIPLIER_BONUS.containsKey(player.getUniqueId())) {
+                                totalValue += price * stack.getAmount() * multiplier * MULTIPLIER_BONUS.get(player.getUniqueId());
+                            } else {
+                                totalValue += price * stack.getAmount() * multiplier;
+                            }
+                            toSell.add(stack);
                         }
                     }
-                }
 
-                inventory.clear();
-                hasConsumed.add(true);
-                Program.ECONOMY.depositPlayer(player, totalValue);
-                Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("amount", String.valueOf(totalValue));
-                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_sell_chest", placeholders));
+                    toSell.forEach(inventory::removeItem);
+                    hasConsumed.add(true);
+                    Program.ECONOMY.depositPlayer(player, totalValue);
+
+                    if (totalValue > 0) {
+                        Map<String, String> placeholders = new HashMap<>();
+                        placeholders.put("amount", String.valueOf(totalValue));
+                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_sell_chest", placeholders));
+                    } else {
+                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_sell_chest_empty", null));
+                    }
+                    CONSUMABLES_COOLDOWN.put(player.getUniqueId(), new Pair<>(itemEvent, new TaskTracker().startTask(Program.INSTANCE, () ->
+                            CONSUMABLES_COOLDOWN.put(player.getUniqueId(), null), CONSUMABLES_COOLDOWN_SECONDS * 20L)));
+                }
             }
         }
 

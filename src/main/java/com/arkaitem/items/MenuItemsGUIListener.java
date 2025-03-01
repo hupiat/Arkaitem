@@ -31,12 +31,11 @@ public class MenuItemsGUIListener implements Listener {
             if (clickedItem != null && !ItemsUtils.areEquals(clickedItem, new ItemStack(Material.AIR))) {
 
                 Player player = (Player) event.getWhoClicked();
-                String itemName = clickedItem.getItemMeta().getDisplayName();
 
-                Optional<CustomItem> item = Program.INSTANCE.ITEMS_MANAGER.getItemByDisplayName(itemName);
+                Optional<CustomItem> item = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(clickedItem);
 
                 if (!item.isPresent()) {
-                    throw new IllegalStateException("No custom item found with display name: " + itemName);
+                    throw new IllegalStateException("Custom item could not be found");
                 }
 
                 String command = "arkaitem give " + item.get().getId() + " " + player.getName();
