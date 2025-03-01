@@ -605,6 +605,9 @@ public class EventsItems implements Listener, ICustomAdds {
                 blocksToCheck.add(block);
 
                 List<Block> blocksToBreak = new ArrayList<>();
+                Queue<Block> leavesToCheck = new LinkedList<>();
+                Set<Block> potentialSeparateTree = new HashSet<>();
+                Set<Block> touchingGround = new HashSet<>();
 
                 while (!blocksToCheck.isEmpty()) {
                     Block current = blocksToCheck.poll();
@@ -613,17 +616,70 @@ public class EventsItems implements Listener, ICustomAdds {
                         checkedBlocks.add(current);
                         blocksToBreak.add(current);
 
+                        Block below = current.getRelative(BlockFace.DOWN);
+                        if (below.getType() == Material.DIRT || below.getType() == Material.GRASS) {
+                            touchingGround.add(current);
+                        }
+
                         for (BlockFace face : new BlockFace[]{
-                                BlockFace.UP, BlockFace.NORTH, BlockFace.SOUTH,
+                                BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH,
                                 BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH_EAST,
                                 BlockFace.NORTH_WEST, BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST
                         }) {
                             Block adjacent = current.getRelative(face);
-                            if (!checkedBlocks.contains(adjacent) && (adjacent.getType() == Material.LOG || adjacent.getType() == Material.LOG_2)) {
-                                blocksToCheck.add(adjacent);
+                            if (!checkedBlocks.contains(adjacent)) {
+                                if (adjacent.getType() == Material.LOG || adjacent.getType() == Material.LOG_2) {
+                                    blocksToCheck.add(adjacent);
+                                } else if (adjacent.getType() == Material.LEAVES || adjacent.getType() == Material.LEAVES_2) {
+                                    leavesToCheck.add(adjacent);
+                                    checkedBlocks.add(adjacent);
+                                }
                             }
                         }
                     }
+                }
+
+                while (!leavesToCheck.isEmpty()) {
+                    Block leaf = leavesToCheck.poll();
+
+                    for (BlockFace face : new BlockFace[]{
+                            BlockFace.UP, BlockFace.NORTH, BlockFace.SOUTH,
+                            BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH_EAST,
+                            BlockFace.NORTH_WEST, BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST
+                    }) {
+                        Block adjacent = leaf.getRelative(face);
+                        if (!checkedBlocks.contains(adjacent) && (adjacent.getType() == Material.LOG || adjacent.getType() == Material.LOG_2)) {
+                            potentialSeparateTree.add(adjacent);
+                            checkedBlocks.add(adjacent);
+                        }
+                    }
+                }
+
+                Set<Block> confirmedSeparateTree = new HashSet<>();
+                Queue<Block> treeCheckQueue = new LinkedList<>(potentialSeparateTree);
+
+                while (!treeCheckQueue.isEmpty()) {
+                    Block log = treeCheckQueue.poll();
+                    confirmedSeparateTree.add(log);
+
+                    Block below = log.getRelative(BlockFace.DOWN);
+                    if (below.getType() == Material.DIRT || below.getType() == Material.GRASS) {
+                        touchingGround.add(log);
+                    }
+
+                    for (BlockFace face : new BlockFace[]{
+                            BlockFace.UP, BlockFace.NORTH, BlockFace.SOUTH,
+                            BlockFace.EAST, BlockFace.WEST
+                    }) {
+                        Block adjacent = log.getRelative(face);
+                        if (potentialSeparateTree.contains(adjacent) && !confirmedSeparateTree.contains(adjacent)) {
+                            treeCheckQueue.add(adjacent);
+                        }
+                    }
+                }
+
+                if (!Collections.disjoint(touchingGround, confirmedSeparateTree)) {
+                    blocksToBreak.removeAll(confirmedSeparateTree);
                 }
 
                 Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
@@ -633,7 +689,7 @@ public class EventsItems implements Listener, ICustomAdds {
                         }
                     }
                     player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_tree_cut", null));
-                }, 10L);
+                }, 2L);
             }
         }
 
@@ -662,7 +718,7 @@ public class EventsItems implements Listener, ICustomAdds {
                             }
                         }
                     }
-                }, 10L);
+                }, 2L);
             }
         }
 
