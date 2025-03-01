@@ -14,7 +14,7 @@ public abstract class EntitiesUtils {
     public static LivingEntity getLivingEntityByUUID(UUID uuid) {
         for (World world : Bukkit.getWorlds()) {
             for (Entity entity : world.getEntities()) {
-                if (entity.getUniqueId().equals(uuid) && entity instanceof LivingEntity) {
+                if (entity instanceof LivingEntity && entity.getUniqueId().equals(uuid)) {
                     return (LivingEntity) entity;
                 }
             }

@@ -2,11 +2,13 @@ package com.arkaitem.items;
 
 import com.arkaitem.Program;
 import com.arkaitem.utils.EntitiesUtils;
+import com.arkaitem.utils.ItemsUtils;
 import com.arkaitem.utils.TaskTracker;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import javafx.util.Pair;
 import net.brcdev.shopgui.ShopGuiPlusApi;
 import net.brcdev.shopgui.shop.item.ShopItem;
 import org.apache.commons.lang3.StringUtils;
@@ -255,24 +257,20 @@ public class EventsItems implements Listener, ICustomAdds {
     private static final Map<UUID, UUID> LAST_HIT_PLAYERS = new HashMap<>();
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof LivingEntity)) {
+        if (!(event.getDamager() instanceof Player)) {
             return;
         }
-
-        LAST_HIT_PLAYERS.put(event.getDamager().getUniqueId(), event.getEntity().getUniqueId());
+        Player playerDamager = (Player) event.getDamager();
 
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
             if (IMMUNE_TO_LIGHTNING_PLAYERS.contains(player.getUniqueId()) && event.getCause() == EntityDamageEvent.DamageCause.LIGHTNING) {
                 event.setCancelled(true);
+            } else {
+                LAST_HIT_PLAYERS.put(playerDamager.getUniqueId(), player.getUniqueId());
             }
         }
 
-        if (!(event.getDamager() instanceof Player)) {
-            return;
-        }
-
-        Player playerDamager = (Player) event.getDamager();
         ItemStack itemEventDamager = playerDamager.getInventory().getItemInHand();
         Optional<CustomItem> customItemDamager = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEventDamager);
 
@@ -455,7 +453,7 @@ public class EventsItems implements Listener, ICustomAdds {
         }
     }
 
-    private static final Map<UUID, TaskTracker> CONSUMABLES_COOLDOWN = new HashMap<>();
+    private static final Map<UUID, Pair<ItemStack, TaskTracker>> CONSUMABLES_COOLDOWN = new HashMap<>();
     private static final Map<UUID, TaskTracker> CONSUMABLES_NO_FALL = new HashMap<>();
     public static final int CONSUMABLES_COOLDOWN_SECONDS = 5;
 
@@ -477,25 +475,43 @@ public class EventsItems implements Listener, ICustomAdds {
             return;
         }
 
-        boolean hasConsumed = false;
+        final Set<Boolean> hasConsumed = new HashSet<>();
 
         if (hasCustomAdd(customItem.get().getItem(), TELEPORT_ON_ATTACK, player)) {
-            String[] values = getCustomAddData(customItem.get().getItem(), TELEPORT_ON_ATTACK, player).split(";");
-            int radius = Integer.parseInt(values[0]);
-            if (LAST_HIT_PLAYERS.containsKey(player.getUniqueId())) {
-                Location currentLocation = player.getLocation();
-                Location targetLocation = EntitiesUtils.getLivingEntityByUUID(LAST_HIT_PLAYERS.get(player.getUniqueId())).getLocation();
+            if (CONSUMABLES_COOLDOWN.containsKey(player.getUniqueId()) &&
+                    CONSUMABLES_COOLDOWN.get(player.getUniqueId()) != null &&
+                    ItemsUtils.areEquals(CONSUMABLES_COOLDOWN.get(player.getUniqueId()).getKey(), itemEvent)) {
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("seconds", String.valueOf(CONSUMABLES_COOLDOWN.get(player.getUniqueId()).getValue().getTimeLeftSeconds()));
+                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cooldown", placeholders));
+            } else {
+                String[] values = getCustomAddData(customItem.get().getItem(), TELEPORT_ON_ATTACK, player).split(";");
+                int radius = Integer.parseInt(values[0]);
+                if (LAST_HIT_PLAYERS.containsKey(player.getUniqueId())) {
+                    Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
+                        Location currentLocation = player.getLocation();
+                        Player targetEntity = Bukkit.getPlayer(LAST_HIT_PLAYERS.get(player.getUniqueId()));
+                        Location targetLocation = targetEntity.getLocation();
 
-                if (targetLocation != null) {
-                    double distance = currentLocation.distance(targetLocation);
-                    if (distance <= radius) {
-                        hasConsumed = true;
-                        player.teleport(targetLocation);
-                        Map<String, String> placeholders = new HashMap<>();
-                        placeholders.put("target", targetLocation.getBlockX() + ", " + targetLocation.getBlockY() + ", " + targetLocation.getBlockZ());
-                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation", placeholders));
-                        LAST_HIT_PLAYERS.remove(player.getUniqueId());
-                    }
+                        if (targetLocation != null) {
+                            targetEntity.teleport(targetLocation);
+                            double distance = currentLocation.distance(targetLocation);
+                            if (distance <= radius) {
+                                hasConsumed.add(true);
+                                player.teleport(targetLocation);
+                                Map<String, String> placeholders = new HashMap<>();
+                                placeholders.put("target", targetLocation.getBlockX() + ", " + targetLocation.getBlockY() + ", " + targetLocation.getBlockZ());
+                                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation", placeholders));
+                                LAST_HIT_PLAYERS.remove(player.getUniqueId());
+                                CONSUMABLES_COOLDOWN.put(player.getUniqueId(), new Pair<>(itemEvent, new TaskTracker().startTask(Program.INSTANCE, () ->
+                                        CONSUMABLES_COOLDOWN.put(player.getUniqueId(), null), CONSUMABLES_COOLDOWN_SECONDS * 20L)));
+                            } else {
+                                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation_no_radius", null));
+                            }
+                        }
+                    }, 1L);
+                } else {
+                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation_no_entity", null));
                 }
             }
         }
@@ -508,7 +524,7 @@ public class EventsItems implements Listener, ICustomAdds {
             transparent.add(Material.LAVA);
             Block block = player.getTargetBlock(transparent, VIEW_ON_CHEST_LENGTH);
             if (block != null && block.getState() instanceof Chest) {
-                hasConsumed = true;
+                hasConsumed.add(true);
                 Chest chest = (Chest) block.getState();
                 Inventory viewOnlyInventory = Bukkit.createInventory(null, chest.getInventory().getSize(), VIEW_ON_CHEST_TITLE);
                 viewOnlyInventory.setContents(chest.getInventory().getContents());
@@ -539,7 +555,7 @@ public class EventsItems implements Listener, ICustomAdds {
                 }
 
                 inventory.clear();
-                hasConsumed = true;
+                hasConsumed.add(true);
                 Program.ECONOMY.depositPlayer(player, totalValue);
                 Map<String, String> placeholders = new HashMap<>();
                 placeholders.put("amount", String.valueOf(totalValue));
@@ -548,18 +564,20 @@ public class EventsItems implements Listener, ICustomAdds {
         }
 
         if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_USE_COMMAND, player)) {
-            hasConsumed = true;
+            hasConsumed.add(true);
             String command = getCustomAddData(customItem.get().getItem(), CONSUMABLE_USE_COMMAND, player).replace("{player}", player.getName());
             Bukkit.dispatchCommand(player, command.replaceFirst("/", ""));
         }
 
         if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_GIVE_POTION, player)) {
-            if (CONSUMABLES_COOLDOWN.containsKey(player.getUniqueId()) && CONSUMABLES_COOLDOWN.get(player.getUniqueId()) != null) {
+            if (CONSUMABLES_COOLDOWN.containsKey(player.getUniqueId()) &&
+                    CONSUMABLES_COOLDOWN.get(player.getUniqueId()) != null &&
+                    ItemsUtils.areEquals(CONSUMABLES_COOLDOWN.get(player.getUniqueId()).getKey(), itemEvent)) {
                 Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("seconds", String.valueOf(CONSUMABLES_COOLDOWN.get(player.getUniqueId()).getTimeLeftSeconds()));
+                placeholders.put("seconds", String.valueOf(CONSUMABLES_COOLDOWN.get(player.getUniqueId()).getValue().getTimeLeftSeconds()));
                 player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cooldown", placeholders));
             } else {
-                hasConsumed = true;
+                hasConsumed.add(true);
                 String[] values = getCustomAddData(customItem.get().getItem(), CONSUMABLE_GIVE_POTION, player).split(";");
                 int level = Integer.parseInt(values[1]);
                 int duration = Integer.parseInt(values[2]);
@@ -575,12 +593,12 @@ public class EventsItems implements Listener, ICustomAdds {
                     placeholders.put("seconds", String.valueOf(CONSUMABLES_NO_FALL.get(player.getUniqueId()).getTimeLeftSeconds()));
                     player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_orbe_no_fall", placeholders));
                 }
-                CONSUMABLES_COOLDOWN.put(player.getUniqueId(), new TaskTracker().startTask(Program.INSTANCE, () ->
-                    CONSUMABLES_COOLDOWN.put(player.getUniqueId(), null), CONSUMABLES_COOLDOWN_SECONDS * 20L));
+                CONSUMABLES_COOLDOWN.put(player.getUniqueId(), new Pair<>(itemEvent, new TaskTracker().startTask(Program.INSTANCE, () ->
+                    CONSUMABLES_COOLDOWN.put(player.getUniqueId(), null), CONSUMABLES_COOLDOWN_SECONDS * 20L)));
             }
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player) && hasConsumed) {
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player) && hasConsumed.stream().anyMatch(consumed -> consumed)) {
             applyConsuming(player, itemEvent);
         }
     }
