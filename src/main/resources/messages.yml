@@ -28,6 +28,7 @@ messages:
   item_cooldown: "&cTes consommables sont en cooldown pour {seconds} secondes."
   item_cooldown_tp: "&cTa téléportation à la mort est en cooldown pour {seconds} secondes."
   item_orbe_no_fall: "&aTu as reçu l'effet NO_FALL pour {seconds} secondes."
+  item_orbe_no_fall_fallen: "&aTu es sous l'effet NO_FALL pour {seconds} secondes."
   item_orbe_no_fall_lost: "&cTu as perdu l'effet NO_FALL."
 
   # Masques de farm

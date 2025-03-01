@@ -161,11 +161,11 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (CONSUMABLES_NO_FALL.containsKey(player.getUniqueId()) && CONSUMABLES_NO_FALL.get(player.getUniqueId()) != null) {
+        if (CONSUMABLES_NO_FALL.containsKey(player.getUniqueId()) && CONSUMABLES_NO_FALL.get(player.getUniqueId()) != null && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
             event.setCancelled(true);
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("seconds", String.valueOf(CONSUMABLES_NO_FALL.get(player.getUniqueId()).getTimeLeftSeconds()));
-            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_orbe_no_fall", placeholders));
+            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_orbe_no_fall_fallen", placeholders));
         }
 
         List<ItemStack> itemsEvent = new ArrayList<ItemStack>() {{
