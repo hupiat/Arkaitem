@@ -904,8 +904,6 @@ public class EventsItems implements Listener, ICustomAdds {
 
     private static final String TEAM_HIDDEN_PLAYERS = "hidden_players";
     private void applyNameHiding(Player player) {
-        player.setPlayerListName("");
-
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         Team team = scoreboard.getTeam(TEAM_HIDDEN_PLAYERS);
 
@@ -919,14 +917,13 @@ public class EventsItems implements Listener, ICustomAdds {
 
             team.setCanSeeFriendlyInvisibles(false);
             team.setAllowFriendlyFire(true);
-        } else if (team.hasPlayer(player)) {
+        } else if (team.hasEntry(player.getName())) {
             return;
         }
 
-        team.addPlayer(player);
-
-        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, false, false));
-
+        player.setPlayerListName("");
+        team.addEntry(player.getName());
+        Program.ESSENTIALS.getUser(player).setVanished(true);
         player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_hide_name", null));
     }
 
@@ -934,11 +931,10 @@ public class EventsItems implements Listener, ICustomAdds {
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         Team team = scoreboard.getTeam(TEAM_HIDDEN_PLAYERS);
 
-        if (team != null && team.hasPlayer(player)) {
-            team.removePlayer(player);
+        if (team != null && team.hasEntry(player.getName())) {
+            team.removeEntry(player.getName());
             player.setPlayerListName(player.getName());
-            player.removePotionEffect(PotionEffectType.INVISIBILITY);
-
+            Program.ESSENTIALS.getUser(player).setVanished(false);
             player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_hide_name_end", null));
         }
     }
