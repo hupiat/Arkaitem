@@ -552,14 +552,11 @@ public class EventsItems implements Listener, ICustomAdds {
                     Set<ItemStack> toSell = new HashSet<>();
                     for (ItemStack stack : inventory.getContents()) {
                         if (stack != null) {
-                            ShopItem shopItem = ShopGuiPlusApi.getItemStackShopItem(stack);
-                            if (shopItem == null) {
+                            ShopItem shopItem = ShopGuiPlusApi.getItemStackShopItem(player, stack);
+                            if (shopItem == null || shopItem.getSellPrice() <= 0) {
                                 continue;
                             }
                             double price = shopItem.getSellPrice();
-                            if (price <= 0) {
-                                continue;
-                            }
                             if (MULTIPLIER_BONUS.containsKey(player.getUniqueId())) {
                                 totalValue += price * stack.getAmount() * multiplier * MULTIPLIER_BONUS.get(player.getUniqueId());
                             } else {
@@ -898,6 +895,48 @@ public class EventsItems implements Listener, ICustomAdds {
             if (hasCustomAdd(customItem.get().getItem(), HIDE_PLAYER_NAME, player)) {
                 applyNameHiding(player);
                 return;
+            }
+        }
+    }
+
+    @EventHandler
+    public void onCommandPreProcess(PlayerCommandPreprocessEvent event) {
+        String command = event.getMessage().toLowerCase();
+        Player player = event.getPlayer();
+
+        if (command.startsWith("/sell")) {
+            event.setCancelled(true);
+
+            double totalValue = 0;
+            double multiplier = MULTIPLIER_BONUS.getOrDefault(player.getUniqueId(), 1.0);
+
+            if (command.equals("/sell all")) {
+                for (ItemStack item : player.getInventory().getContents()) {
+                    if (item != null) {
+                        ShopItem shopItem = ShopGuiPlusApi.getItemStackShopItem(player, item);
+                        if (shopItem == null || shopItem.getSellPrice() <= 0) {
+                            continue;
+                        }
+                        totalValue += shopItem.getSellPrice() * item.getAmount() * multiplier;
+                        player.getInventory().remove(item);
+                    }
+                }
+            } else {
+                ItemStack itemInHand = player.getInventory().getItemInHand();
+                if (itemInHand != null) {
+                    ShopItem shopItem = ShopGuiPlusApi.getItemStackShopItem(player, itemInHand);
+                    if (shopItem != null && shopItem.getSellPrice() > 0) {
+                        totalValue += shopItem.getSellPrice() * itemInHand.getAmount() * multiplier;
+                        player.getInventory().setItemInHand(null);
+                    }
+                }
+            }
+
+            if (totalValue > 0) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "eco give " + player.getName() + " " + totalValue);
+                player.sendMessage("§aVous avez vendu vos objets pour §6" + totalValue + " §a$ grâce à votre bonus x" + multiplier);
+            } else {
+                player.sendMessage("§cAucun objet vendable trouvé !");
             }
         }
     }
