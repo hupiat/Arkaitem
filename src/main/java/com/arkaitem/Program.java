@@ -16,6 +16,8 @@ public class Program extends JavaPlugin {
     public static Program INSTANCE;
     public static Economy ECONOMY;
 
+    public static EventsItemsCapture EVENTS_ITEMS_CAPTURE;
+
     public final ManagerCustomItems ITEMS_MANAGER = new ManagerCustomItems(this);
     public final ManagerMessages MESSAGES_MANAGER = new ManagerMessages(this);
     public final ManagerRecipes RECIPES_MANAGER = new ManagerRecipes(this);
@@ -33,7 +35,9 @@ public class Program extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new EventsItems(), this);
             getServer().getPluginManager().registerEvents(new MenuItemsGUIListener(), this);
             getServer().getPluginManager().registerEvents(new DynamicCraftTableGUIListener(), this);
-            getServer().getPluginManager().registerEvents(new EventsItemsCapture(), this);
+
+            EVENTS_ITEMS_CAPTURE = new EventsItemsCapture();
+            getServer().getPluginManager().registerEvents(EVENTS_ITEMS_CAPTURE, this);
 
             RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
 

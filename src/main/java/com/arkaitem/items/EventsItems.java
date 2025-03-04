@@ -455,7 +455,7 @@ public class EventsItems implements Listener, ICustomAdds {
         }
     }
 
-    private static final Map<UUID, TaskTracker> CONSUMABLES_COOLDOWN = new HashMap<>();
+    public static final Map<UUID, TaskTracker> CONSUMABLES_COOLDOWN = new HashMap<>();
     private static final Map<UUID, TaskTracker> CONSUMABLES_NO_FALL = new HashMap<>();
     public static final int CONSUMABLES_COOLDOWN_SECONDS = 5;
 
