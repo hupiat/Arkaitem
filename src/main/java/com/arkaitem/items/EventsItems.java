@@ -1,12 +1,13 @@
 package com.arkaitem.items;
 
 import com.arkaitem.Program;
-import com.arkaitem.utils.EntitiesUtils;
+import com.arkaitem.utils.ItemsUtils;
 import com.arkaitem.utils.TaskTracker;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import javafx.util.Pair;
 import net.brcdev.shopgui.ShopGuiPlusApi;
 import net.brcdev.shopgui.shop.item.ShopItem;
 import org.apache.commons.lang3.StringUtils;
@@ -160,11 +161,11 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         }
 
-        if (CONSUMABLES_NO_FALL.containsKey(player.getUniqueId()) && CONSUMABLES_NO_FALL.get(player.getUniqueId()) != null) {
+        if (CONSUMABLES_NO_FALL.containsKey(player.getUniqueId()) && CONSUMABLES_NO_FALL.get(player.getUniqueId()) != null && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
             event.setCancelled(true);
             Map<String, String> placeholders = new HashMap<>();
             placeholders.put("seconds", String.valueOf(CONSUMABLES_NO_FALL.get(player.getUniqueId()).getTimeLeftSeconds()));
-            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_orbe_no_fall", placeholders));
+            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_orbe_no_fall_fallen", placeholders));
         }
 
         List<ItemStack> itemsEvent = new ArrayList<ItemStack>() {{
@@ -255,24 +256,20 @@ public class EventsItems implements Listener, ICustomAdds {
     private static final Map<UUID, UUID> LAST_HIT_PLAYERS = new HashMap<>();
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof LivingEntity)) {
+        if (!(event.getDamager() instanceof Player)) {
             return;
         }
-
-        LAST_HIT_PLAYERS.put(event.getDamager().getUniqueId(), event.getEntity().getUniqueId());
+        Player playerDamager = (Player) event.getDamager();
 
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
             if (IMMUNE_TO_LIGHTNING_PLAYERS.contains(player.getUniqueId()) && event.getCause() == EntityDamageEvent.DamageCause.LIGHTNING) {
                 event.setCancelled(true);
+            } else {
+                LAST_HIT_PLAYERS.put(playerDamager.getUniqueId(), player.getUniqueId());
             }
         }
 
-        if (!(event.getDamager() instanceof Player)) {
-            return;
-        }
-
-        Player playerDamager = (Player) event.getDamager();
         ItemStack itemEventDamager = playerDamager.getInventory().getItemInHand();
         Optional<CustomItem> customItemDamager = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEventDamager);
 
@@ -390,10 +387,12 @@ public class EventsItems implements Listener, ICustomAdds {
             String[] values = getCustomAddData(customItem.get().getItem(), MULTIPLICATEUR, player).split(";");
             if (values.length == 1) {
                 double multiplier = Double.parseDouble(values[0]);
-                MULTIPLIER_BONUS.put(player.getUniqueId(), multiplier);
-                Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("bonus", String.valueOf(multiplier * 100 - 100));
-                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("farm_mask_bonus", placeholders));
+                if (!MULTIPLIER_BONUS.containsKey(player.getUniqueId()) || MULTIPLIER_BONUS.get(player.getUniqueId()) < multiplier) {
+                    MULTIPLIER_BONUS.put(player.getUniqueId(), multiplier);
+                    Map<String, String> placeholders = new HashMap<>();
+                    placeholders.put("bonus", String.valueOf(multiplier));
+                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("farm_mask_bonus", placeholders));
+                }
             }
         }
     }
@@ -455,7 +454,7 @@ public class EventsItems implements Listener, ICustomAdds {
         }
     }
 
-    public static final Map<UUID, TaskTracker> CONSUMABLES_COOLDOWN = new HashMap<>();
+    public static final Map<UUID, Pair<ItemStack, TaskTracker>> CONSUMABLES_COOLDOWN = new HashMap<>();
     private static final Map<UUID, TaskTracker> CONSUMABLES_NO_FALL = new HashMap<>();
     public static final int CONSUMABLES_COOLDOWN_SECONDS = 5;
 
@@ -477,25 +476,43 @@ public class EventsItems implements Listener, ICustomAdds {
             return;
         }
 
-        boolean hasConsumed = false;
+        final Set<Boolean> hasConsumed = new HashSet<>();
 
         if (hasCustomAdd(customItem.get().getItem(), TELEPORT_ON_ATTACK, player)) {
-            String[] values = getCustomAddData(customItem.get().getItem(), TELEPORT_ON_ATTACK, player).split(";");
-            int radius = Integer.parseInt(values[0]);
-            if (LAST_HIT_PLAYERS.containsKey(player.getUniqueId())) {
-                Location currentLocation = player.getLocation();
-                Location targetLocation = EntitiesUtils.getLivingEntityByUUID(LAST_HIT_PLAYERS.get(player.getUniqueId())).getLocation();
+            if (CONSUMABLES_COOLDOWN.containsKey(player.getUniqueId()) &&
+                    CONSUMABLES_COOLDOWN.get(player.getUniqueId()) != null &&
+                    ItemsUtils.areEquals(CONSUMABLES_COOLDOWN.get(player.getUniqueId()).getKey(), itemEvent)) {
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("seconds", String.valueOf(CONSUMABLES_COOLDOWN.get(player.getUniqueId()).getValue().getTimeLeftSeconds()));
+                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cooldown", placeholders));
+            } else {
+                String[] values = getCustomAddData(customItem.get().getItem(), TELEPORT_ON_ATTACK, player).split(";");
+                int radius = Integer.parseInt(values[0]);
+                if (LAST_HIT_PLAYERS.containsKey(player.getUniqueId())) {
+                    Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
+                        Location currentLocation = player.getLocation();
+                        Player targetEntity = Bukkit.getPlayer(LAST_HIT_PLAYERS.get(player.getUniqueId()));
+                        Location targetLocation = targetEntity.getLocation();
 
-                if (targetLocation != null) {
-                    double distance = currentLocation.distance(targetLocation);
-                    if (distance <= radius) {
-                        hasConsumed = true;
-                        player.teleport(targetLocation);
-                        Map<String, String> placeholders = new HashMap<>();
-                        placeholders.put("target", targetLocation.getBlockX() + ", " + targetLocation.getBlockY() + ", " + targetLocation.getBlockZ());
-                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation", placeholders));
-                        LAST_HIT_PLAYERS.remove(player.getUniqueId());
-                    }
+                        if (targetLocation != null) {
+                            targetEntity.teleport(targetLocation);
+                            double distance = currentLocation.distance(targetLocation);
+                            if (distance <= radius) {
+                                hasConsumed.add(true);
+                                player.teleport(targetLocation);
+                                Map<String, String> placeholders = new HashMap<>();
+                                placeholders.put("target", targetLocation.getBlockX() + ", " + targetLocation.getBlockY() + ", " + targetLocation.getBlockZ());
+                                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation", placeholders));
+                                LAST_HIT_PLAYERS.remove(player.getUniqueId());
+                                CONSUMABLES_COOLDOWN.put(player.getUniqueId(), new Pair<>(itemEvent, new TaskTracker().startTask(Program.INSTANCE, () ->
+                                        CONSUMABLES_COOLDOWN.put(player.getUniqueId(), null), CONSUMABLES_COOLDOWN_SECONDS * 20L)));
+                            } else {
+                                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation_no_radius", null));
+                            }
+                        }
+                    }, 1L);
+                } else {
+                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation_no_entity", null));
                 }
             }
         }
@@ -508,7 +525,7 @@ public class EventsItems implements Listener, ICustomAdds {
             transparent.add(Material.LAVA);
             Block block = player.getTargetBlock(transparent, VIEW_ON_CHEST_LENGTH);
             if (block != null && block.getState() instanceof Chest) {
-                hasConsumed = true;
+                hasConsumed.add(true);
                 Chest chest = (Chest) block.getState();
                 Inventory viewOnlyInventory = Bukkit.createInventory(null, chest.getInventory().getSize(), VIEW_ON_CHEST_TITLE);
                 viewOnlyInventory.setContents(chest.getInventory().getContents());
@@ -517,49 +534,70 @@ public class EventsItems implements Listener, ICustomAdds {
         }
 
         if (hasCustomAdd(customItem.get().getItem(), SELL_CHEST_CONTENTS, player)) {
-            Block block = event.getClickedBlock();
-            if (block != null && block.getState() instanceof Chest) {
-                Chest chest = (Chest) block.getState();
-                Inventory inventory = chest.getInventory();
-                double totalValue = 0;
+            if (CONSUMABLES_COOLDOWN.containsKey(player.getUniqueId()) &&
+                    CONSUMABLES_COOLDOWN.get(player.getUniqueId()) != null &&
+                    ItemsUtils.areEquals(CONSUMABLES_COOLDOWN.get(player.getUniqueId()).getKey(), itemEvent)) {
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("seconds", String.valueOf(CONSUMABLES_COOLDOWN.get(player.getUniqueId()).getValue().getTimeLeftSeconds()));
+                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cooldown", placeholders));
+            } else {
+                Block block = event.getClickedBlock();
+                if (block != null && block.getState() instanceof Chest) {
+                    double multiplier = Double.parseDouble(
+                            getCustomAddData(customItem.get().getItem(), SELL_CHEST_CONTENTS, player).split(";")[0]);
+                    Chest chest = (Chest) block.getState();
+                    Inventory inventory = chest.getInventory();
+                    double totalValue = 0;
 
-                for (ItemStack stack : inventory.getContents()) {
-                    if (stack != null) {
-                        ShopItem shopItem = ShopGuiPlusApi.getItemStackShopItem(stack);
-                        if (shopItem == null) {
-                            continue;
-                        }
-                        double price = shopItem.getSellPrice();
-                        if (MULTIPLIER_BONUS.containsKey(player.getUniqueId())) {
-                            totalValue += price * stack.getAmount() * MULTIPLIER_BONUS.get(player.getUniqueId());
-                        } else {
-                            totalValue += price * stack.getAmount();
+                    Set<ItemStack> toSell = new HashSet<>();
+                    for (ItemStack stack : inventory.getContents()) {
+                        if (stack != null) {
+                            ShopItem shopItem = ShopGuiPlusApi.getItemStackShopItem(player, stack);
+                            if (shopItem == null || shopItem.getSellPrice() <= 0) {
+                                continue;
+                            }
+                            double price = shopItem.getSellPrice();
+                            if (MULTIPLIER_BONUS.containsKey(player.getUniqueId())) {
+                                totalValue += price * stack.getAmount() * multiplier * MULTIPLIER_BONUS.get(player.getUniqueId());
+                            } else {
+                                totalValue += price * stack.getAmount() * multiplier;
+                            }
+                            toSell.add(stack);
                         }
                     }
-                }
 
-                inventory.clear();
-                hasConsumed = true;
-                Program.ECONOMY.depositPlayer(player, totalValue);
-                Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("amount", String.valueOf(totalValue));
-                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_sell_chest", placeholders));
+                    toSell.forEach(inventory::removeItem);
+                    hasConsumed.add(true);
+                    Program.ECONOMY.depositPlayer(player, totalValue);
+
+                    if (totalValue > 0) {
+                        Map<String, String> placeholders = new HashMap<>();
+                        placeholders.put("amount", String.valueOf(totalValue));
+                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_sell_chest", placeholders));
+                    } else {
+                        player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_sell_chest_empty", null));
+                    }
+                    CONSUMABLES_COOLDOWN.put(player.getUniqueId(), new Pair<>(itemEvent, new TaskTracker().startTask(Program.INSTANCE, () ->
+                            CONSUMABLES_COOLDOWN.put(player.getUniqueId(), null), CONSUMABLES_COOLDOWN_SECONDS * 20L)));
+                }
             }
         }
 
         if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_USE_COMMAND, player)) {
-            hasConsumed = true;
+            hasConsumed.add(true);
             String command = getCustomAddData(customItem.get().getItem(), CONSUMABLE_USE_COMMAND, player).replace("{player}", player.getName());
             Bukkit.dispatchCommand(player, command.replaceFirst("/", ""));
         }
 
         if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_GIVE_POTION, player)) {
-            if (CONSUMABLES_COOLDOWN.containsKey(player.getUniqueId()) && CONSUMABLES_COOLDOWN.get(player.getUniqueId()) != null) {
+            if (CONSUMABLES_COOLDOWN.containsKey(player.getUniqueId()) &&
+                    CONSUMABLES_COOLDOWN.get(player.getUniqueId()) != null &&
+                    ItemsUtils.areEquals(CONSUMABLES_COOLDOWN.get(player.getUniqueId()).getKey(), itemEvent)) {
                 Map<String, String> placeholders = new HashMap<>();
-                placeholders.put("seconds", String.valueOf(CONSUMABLES_COOLDOWN.get(player.getUniqueId()).getTimeLeftSeconds()));
+                placeholders.put("seconds", String.valueOf(CONSUMABLES_COOLDOWN.get(player.getUniqueId()).getValue().getTimeLeftSeconds()));
                 player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cooldown", placeholders));
             } else {
-                hasConsumed = true;
+                hasConsumed.add(true);
                 String[] values = getCustomAddData(customItem.get().getItem(), CONSUMABLE_GIVE_POTION, player).split(";");
                 int level = Integer.parseInt(values[1]);
                 int duration = Integer.parseInt(values[2]);
@@ -575,12 +613,12 @@ public class EventsItems implements Listener, ICustomAdds {
                     placeholders.put("seconds", String.valueOf(CONSUMABLES_NO_FALL.get(player.getUniqueId()).getTimeLeftSeconds()));
                     player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_orbe_no_fall", placeholders));
                 }
-                CONSUMABLES_COOLDOWN.put(player.getUniqueId(), new TaskTracker().startTask(Program.INSTANCE, () ->
-                    CONSUMABLES_COOLDOWN.put(player.getUniqueId(), null), CONSUMABLES_COOLDOWN_SECONDS * 20L));
+                CONSUMABLES_COOLDOWN.put(player.getUniqueId(), new Pair<>(itemEvent, new TaskTracker().startTask(Program.INSTANCE, () ->
+                    CONSUMABLES_COOLDOWN.put(player.getUniqueId(), null), CONSUMABLES_COOLDOWN_SECONDS * 20L)));
             }
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player) && hasConsumed) {
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player) && hasConsumed.stream().anyMatch(consumed -> consumed)) {
             applyConsuming(player, itemEvent);
         }
     }
@@ -605,6 +643,9 @@ public class EventsItems implements Listener, ICustomAdds {
                 blocksToCheck.add(block);
 
                 List<Block> blocksToBreak = new ArrayList<>();
+                Queue<Block> leavesToCheck = new LinkedList<>();
+                Set<Block> potentialSeparateTree = new HashSet<>();
+                Set<Block> touchingGround = new HashSet<>();
 
                 while (!blocksToCheck.isEmpty()) {
                     Block current = blocksToCheck.poll();
@@ -613,17 +654,70 @@ public class EventsItems implements Listener, ICustomAdds {
                         checkedBlocks.add(current);
                         blocksToBreak.add(current);
 
+                        Block below = current.getRelative(BlockFace.DOWN);
+                        if (below.getType() == Material.DIRT || below.getType() == Material.GRASS) {
+                            touchingGround.add(current);
+                        }
+
                         for (BlockFace face : new BlockFace[]{
-                                BlockFace.UP, BlockFace.NORTH, BlockFace.SOUTH,
+                                BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH,
                                 BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH_EAST,
                                 BlockFace.NORTH_WEST, BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST
                         }) {
                             Block adjacent = current.getRelative(face);
-                            if (!checkedBlocks.contains(adjacent) && (adjacent.getType() == Material.LOG || adjacent.getType() == Material.LOG_2)) {
-                                blocksToCheck.add(adjacent);
+                            if (!checkedBlocks.contains(adjacent)) {
+                                if (adjacent.getType() == Material.LOG || adjacent.getType() == Material.LOG_2) {
+                                    blocksToCheck.add(adjacent);
+                                } else if (adjacent.getType() == Material.LEAVES || adjacent.getType() == Material.LEAVES_2) {
+                                    leavesToCheck.add(adjacent);
+                                    checkedBlocks.add(adjacent);
+                                }
                             }
                         }
                     }
+                }
+
+                while (!leavesToCheck.isEmpty()) {
+                    Block leaf = leavesToCheck.poll();
+
+                    for (BlockFace face : new BlockFace[]{
+                            BlockFace.UP, BlockFace.NORTH, BlockFace.SOUTH,
+                            BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH_EAST,
+                            BlockFace.NORTH_WEST, BlockFace.SOUTH_EAST, BlockFace.SOUTH_WEST
+                    }) {
+                        Block adjacent = leaf.getRelative(face);
+                        if (!checkedBlocks.contains(adjacent) && (adjacent.getType() == Material.LOG || adjacent.getType() == Material.LOG_2)) {
+                            potentialSeparateTree.add(adjacent);
+                            checkedBlocks.add(adjacent);
+                        }
+                    }
+                }
+
+                Set<Block> confirmedSeparateTree = new HashSet<>();
+                Queue<Block> treeCheckQueue = new LinkedList<>(potentialSeparateTree);
+
+                while (!treeCheckQueue.isEmpty()) {
+                    Block log = treeCheckQueue.poll();
+                    confirmedSeparateTree.add(log);
+
+                    Block below = log.getRelative(BlockFace.DOWN);
+                    if (below.getType() == Material.DIRT || below.getType() == Material.GRASS) {
+                        touchingGround.add(log);
+                    }
+
+                    for (BlockFace face : new BlockFace[]{
+                            BlockFace.UP, BlockFace.NORTH, BlockFace.SOUTH,
+                            BlockFace.EAST, BlockFace.WEST
+                    }) {
+                        Block adjacent = log.getRelative(face);
+                        if (potentialSeparateTree.contains(adjacent) && !confirmedSeparateTree.contains(adjacent)) {
+                            treeCheckQueue.add(adjacent);
+                        }
+                    }
+                }
+
+                if (!Collections.disjoint(touchingGround, confirmedSeparateTree)) {
+                    blocksToBreak.removeAll(confirmedSeparateTree);
                 }
 
                 Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
@@ -633,7 +727,7 @@ public class EventsItems implements Listener, ICustomAdds {
                         }
                     }
                     player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_tree_cut", null));
-                }, 10L);
+                }, 2L);
             }
         }
 
@@ -662,7 +756,7 @@ public class EventsItems implements Listener, ICustomAdds {
                             }
                         }
                     }
-                }, 10L);
+                }, 2L);
             }
         }
 
@@ -805,10 +899,50 @@ public class EventsItems implements Listener, ICustomAdds {
         }
     }
 
+    @EventHandler
+    public void onCommandPreProcess(PlayerCommandPreprocessEvent event) {
+        String command = event.getMessage().toLowerCase();
+        Player player = event.getPlayer();
+
+        if (command.startsWith("/sell")) {
+            event.setCancelled(true);
+
+            double totalValue = 0;
+            double multiplier = MULTIPLIER_BONUS.getOrDefault(player.getUniqueId(), 1.0);
+
+            if (command.equals("/sell all")) {
+                for (ItemStack item : player.getInventory().getContents()) {
+                    if (item != null) {
+                        ShopItem shopItem = ShopGuiPlusApi.getItemStackShopItem(player, item);
+                        if (shopItem == null || shopItem.getSellPrice() <= 0) {
+                            continue;
+                        }
+                        totalValue += shopItem.getSellPrice() * item.getAmount() * multiplier;
+                        player.getInventory().remove(item);
+                    }
+                }
+            } else {
+                ItemStack itemInHand = player.getInventory().getItemInHand();
+                if (itemInHand != null) {
+                    ShopItem shopItem = ShopGuiPlusApi.getItemStackShopItem(player, itemInHand);
+                    if (shopItem != null && shopItem.getSellPrice() > 0) {
+                        totalValue += shopItem.getSellPrice() * itemInHand.getAmount() * multiplier;
+                        player.getInventory().setItemInHand(null);
+                    }
+                }
+            }
+
+            if (totalValue > 0) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "eco give " + player.getName() + " " + totalValue);
+                player.sendMessage("§aVous avez vendu vos objets pour §6" + totalValue + " §a$ grâce à votre bonus x" + multiplier);
+            } else {
+                player.sendMessage("§cAucun objet vendable trouvé !");
+            }
+        }
+    }
+
     private static final String TEAM_HIDDEN_PLAYERS = "hidden_players";
     private void applyNameHiding(Player player) {
-        player.setPlayerListName("");
-
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         Team team = scoreboard.getTeam(TEAM_HIDDEN_PLAYERS);
 
@@ -822,12 +956,13 @@ public class EventsItems implements Listener, ICustomAdds {
 
             team.setCanSeeFriendlyInvisibles(false);
             team.setAllowFriendlyFire(true);
+        } else if (team.hasEntry(player.getName())) {
+            return;
         }
 
-        team.addPlayer(player);
-
-        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, false, false));
-
+        player.setPlayerListName("");
+        team.addEntry(player.getName());
+        Program.ESSENTIALS.getUser(player).setVanished(true);
         player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_hide_name", null));
     }
 
@@ -835,11 +970,10 @@ public class EventsItems implements Listener, ICustomAdds {
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         Team team = scoreboard.getTeam(TEAM_HIDDEN_PLAYERS);
 
-        if (team != null && team.hasPlayer(player)) {
-            team.removePlayer(player);
+        if (team != null && team.hasEntry(player.getName())) {
+            team.removeEntry(player.getName());
             player.setPlayerListName(player.getName());
-            player.removePotionEffect(PotionEffectType.INVISIBILITY);
-
+            Program.ESSENTIALS.getUser(player).setVanished(false);
             player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_hide_name_end", null));
         }
     }

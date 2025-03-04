@@ -6,7 +6,9 @@ import com.arkaitem.crafts.tables.CommandDynamicCraft;
 import com.arkaitem.crafts.tables.DynamicCraftTableGUIListener;
 import com.arkaitem.items.*;
 import com.arkaitem.messages.ManagerMessages;
+import com.earth2me.essentials.Essentials;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -15,6 +17,7 @@ public class Program extends JavaPlugin {
 
     public static Program INSTANCE;
     public static Economy ECONOMY;
+    public static Essentials ESSENTIALS;
 
     public static EventsItemsCapture EVENTS_ITEMS_CAPTURE;
 
@@ -36,11 +39,12 @@ public class Program extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new MenuItemsGUIListener(), this);
             getServer().getPluginManager().registerEvents(new DynamicCraftTableGUIListener(), this);
 
+            ESSENTIALS = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
+
             EVENTS_ITEMS_CAPTURE = new EventsItemsCapture();
             getServer().getPluginManager().registerEvents(EVENTS_ITEMS_CAPTURE, this);
 
             RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-
             if (rsp != null) {
                 ECONOMY = rsp.getProvider();
             }

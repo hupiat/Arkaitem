@@ -12,6 +12,8 @@ messages:
   item_cannot_drop: "&cVous ne pouvez pas jeter cet item."
   item_dropped: "&aVous avez jeté l'item {item_name}."
   item_teleportation: "&aVous avez été téléporté vers {target}."
+  item_teleportation_no_entity: "&cIl n'y a personne sur qui se téléporter."
+  item_teleportation_no_radius: "&cTu es hors de portée pour se téléporter sur la cible."
   item_lightning_strike: "&eUn éclair a frappé {target}!"
   item_tree_cut: "&aVous avez coupé un arbre entier!"
   item_health_stolen: "&cVous avez volé {health} cœur(s) à {target}."
@@ -20,12 +22,14 @@ messages:
   item_effect_applied: "&aVous avez appliqué {effect} à {target}."
   item_no_pvp_near: "&cAucun ennemi à portée pour utiliser cet item."
   item_sell_chest: "&aVous avez vendu le contenu du coffre pour ${amount} pièces."
+  item_sell_chest_empty: "&cIl n'y a rien à vendre dans ce coffre."
   item_keep_on_death: "&aTes objets ont été conservés après la mort !"
   item_hide_name: "&aTon pseudo est désormais masqué !"
   item_hide_name_end: "&cTon pseudo n'est plus masqué."
   item_cooldown: "&cTes consommables sont en cooldown pour {seconds} secondes."
   item_cooldown_tp: "&cTa téléportation à la mort est en cooldown pour {seconds} secondes."
   item_orbe_no_fall: "&aTu as reçu l'effet NO_FALL pour {seconds} secondes."
+  item_orbe_no_fall_fallen: "&aTu es sous l'effet NO_FALL pour {seconds} secondes."
   item_orbe_no_fall_lost: "&cTu as perdu l'effet NO_FALL."
 
   # Masques de farm
