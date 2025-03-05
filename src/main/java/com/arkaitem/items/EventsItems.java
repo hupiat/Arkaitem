@@ -23,17 +23,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -41,7 +39,14 @@ import org.bukkit.util.Vector;
 
 import java.util.*;
 
-public class EventsItems implements Listener, ICustomAdds {
+public class EventsItems implements Listener, ICustomAdds, IItemPlaceholders {
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        for (ItemStack item : event.getPlayer().getInventory().getContents()) {
+            Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder(event.getPlayer(), blocks_travelled, item);
+        }
+    }
 
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent event) {
@@ -109,6 +114,28 @@ public class EventsItems implements Listener, ICustomAdds {
                     if (inventory.getName().trim().equalsIgnoreCase("poubelle")) {
                         event.setCancelled(true);
                         event.getWhoClicked().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_cannot_drop", null));
+                    }
+                }
+            }
+
+            for (ItemStack itemEventInLoop : player.getInventory().getArmorContents()) {
+                Optional<CustomItem> customItemInLoop = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEventInLoop);
+
+                if (!customItemInLoop.isPresent()) {
+                    continue;
+                }
+
+                if (hasCustomAdd(customItemInLoop.get().getItem(), MULTIPLICATEUR, player)) {
+                    String[] values = getCustomAddData(customItemInLoop.get().getItem(), MULTIPLICATEUR, player).split(";");
+                    if (values.length == 1) {
+                        double multiplier = Double.parseDouble(values[0]);
+                        if (!MULTIPLIER_BONUS.containsKey(player.getUniqueId()) || MULTIPLIER_BONUS.get(player.getUniqueId()) < multiplier) {
+                            MULTIPLIER_BONUS.put(player.getUniqueId(), multiplier);
+                            Map<String, String> placeholders = new HashMap<>();
+                            placeholders.put("bonus", String.valueOf(multiplier));
+                            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("farm_mask_bonus", placeholders));
+                        }
+                        Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder(player, shop_multiplicateur, itemEventInLoop);
                     }
                 }
             }
@@ -238,6 +265,14 @@ public class EventsItems implements Listener, ICustomAdds {
 
         ItemStack itemEvent = player.getInventory().getItemInHand();
 
+        Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder(player, damage_done, event.getDamage(), null);
+        if (hasCustomAdd(player.getItemInHand(), SPAWN_LIGHTNING, player)) {
+            Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder(player, electricado, null);
+        }
+        if (event.getEntity() instanceof Player) {
+            Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder(player, last_enemy_hit, event.getEntity().getName(), null);
+        }
+
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
         if (!customItem.isPresent()) {
@@ -256,6 +291,12 @@ public class EventsItems implements Listener, ICustomAdds {
     private static final Map<UUID, UUID> LAST_HIT_PLAYERS = new HashMap<>();
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof Player) {
+            for (ItemStack itemEventInLoop : ((Player) event.getEntity()).getInventory().getContents()) {
+                Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder((Player) event.getEntity(), hits_taken, itemEventInLoop);
+            }
+        }
+
         if (!(event.getDamager() instanceof Player)) {
             return;
         }
@@ -372,30 +413,6 @@ public class EventsItems implements Listener, ICustomAdds {
     }
 
     private static final Map<UUID, Double> MULTIPLIER_BONUS = new HashMap<>();
-    @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        ItemStack itemEvent = player.getInventory().getItemInHand();
-
-        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
-
-        if (!customItem.isPresent()) {
-            return;
-        }
-
-        if (hasCustomAdd(customItem.get().getItem(), MULTIPLICATEUR, player)) {
-            String[] values = getCustomAddData(customItem.get().getItem(), MULTIPLICATEUR, player).split(";");
-            if (values.length == 1) {
-                double multiplier = Double.parseDouble(values[0]);
-                if (!MULTIPLIER_BONUS.containsKey(player.getUniqueId()) || MULTIPLIER_BONUS.get(player.getUniqueId()) < multiplier) {
-                    MULTIPLIER_BONUS.put(player.getUniqueId(), multiplier);
-                    Map<String, String> placeholders = new HashMap<>();
-                    placeholders.put("bonus", String.valueOf(multiplier));
-                    player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("farm_mask_bonus", placeholders));
-                }
-            }
-        }
-    }
 
     @EventHandler
     public void onBlockColumnUse(PlayerInteractEvent event) {
@@ -404,9 +421,9 @@ public class EventsItems implements Listener, ICustomAdds {
         }
 
         Player player = event.getPlayer();
-        ItemStack eventItem = player.getInventory().getItemInHand();
+        ItemStack itemEvent = player.getInventory().getItemInHand();
 
-        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(eventItem);
+        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
         if (!customItem.isPresent()) {
             return;
@@ -451,6 +468,10 @@ public class EventsItems implements Listener, ICustomAdds {
             }
 
             event.setCancelled(true);
+            if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player)) {
+                Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder(player, uses, null);
+                applyConsuming(player, itemEvent);
+            }
         }
     }
 
@@ -468,7 +489,6 @@ public class EventsItems implements Listener, ICustomAdds {
         if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
-
 
         Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
 
@@ -592,7 +612,16 @@ public class EventsItems implements Listener, ICustomAdds {
         }
 
         if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player) && hasConsumed.stream().anyMatch(consumed -> consumed)) {
+            Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder(player, uses, null);
             applyConsuming(player, itemEvent);
+        }
+    }
+
+    @EventHandler
+    public void onArrowShot(ProjectileLaunchEvent event) {
+        ProjectileSource shooter = event.getEntity().getShooter();
+        if (shooter instanceof Player) {
+            Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder((Player) shooter, arrows_shot, null);
         }
     }
 
@@ -701,6 +730,7 @@ public class EventsItems implements Listener, ICustomAdds {
                     }
                     player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_tree_cut", null));
                 }, 2L);
+                Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder(event.getPlayer(), trees_chopped, null);
             }
         }
 
@@ -711,12 +741,17 @@ public class EventsItems implements Listener, ICustomAdds {
             }
 
             if (values.length == 3) {
-                int radiusX = Integer.parseInt(values[0]) / 2;
-                int radiusY = Integer.parseInt(values[1]) / 2;
-                int radiusZ = Integer.parseInt(values[2]) / 2;
+                int xValue = Integer.parseInt(values[0]);
+                int yValue = Integer.parseInt(values[1]);
+                int zValue = Integer.parseInt(values[2]);
+
+                int radiusX = xValue / 2;
+                int radiusY = yValue / 2;
+                int radiusZ = zValue / 2;
 
                 Location loc = block.getLocation();
                 World world = player.getWorld();
+
 
                 Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
                     for (int x = -radiusX; x <= radiusX; x++) {
@@ -730,10 +765,12 @@ public class EventsItems implements Listener, ICustomAdds {
                         }
                     }
                 }, 2L);
+                Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder(event.getPlayer(), blocks_mined, xValue + yValue + zValue, null);
             }
         }
 
         if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player)) {
+            Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder(player, uses, null);
             applyConsuming(player, itemEvent);
         }
     }
@@ -742,6 +779,12 @@ public class EventsItems implements Listener, ICustomAdds {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
+        Player killer = event.getEntity().getKiller();
+        if (killer != null) {
+            Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder(killer, kills, null);
+            Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder(killer, last_kill, killer.getName(), null);
+        }
+
         Player player = event.getEntity();
         List<ItemStack> savedItems = new ArrayList<>();
 
@@ -788,6 +831,10 @@ public class EventsItems implements Listener, ICustomAdds {
         }
         if (!(((EntityDamageByEntityEvent) entity.getLastDamageCause()).getDamager() instanceof Player)) {
             return;
+        }
+
+        if (event.getEntity().getKiller() != null) {
+            Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder(event.getEntity().getKiller(), mobs_killed, null);
         }
 
         EntityDamageByEntityEvent damageEvent = (EntityDamageByEntityEvent) entity.getLastDamageCause();
@@ -977,7 +1024,7 @@ public class EventsItems implements Listener, ICustomAdds {
     private void applyConsuming(Player player, ItemStack itemEvent) {
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemEvent);
         int uses = nmsStack.getTag().getInt(CONSUMABLE);
-        if (uses <= 0) {
+        if (uses <= 1) {
             if (player.getItemInHand().getAmount() > 1) {
                 player.getItemInHand().setAmount(player.getItemInHand().getAmount() - 1);
             } else {
@@ -985,7 +1032,6 @@ public class EventsItems implements Listener, ICustomAdds {
             }
         } else {
             uses -= 1;
-            nmsStack.getTag().remove(CONSUMABLE);
             nmsStack.getTag().setInt(CONSUMABLE, uses);
             ItemStack updatedItem = CraftItemStack.asBukkitCopy(nmsStack);
             player.setItemInHand(updatedItem);

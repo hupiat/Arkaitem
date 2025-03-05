@@ -10,13 +10,11 @@ public class CustomItemPlaceholder {
     private final String placeholder;
     private final ItemStack item;
     private String value;
-    private boolean isNumeric;
 
-    public CustomItemPlaceholder(Player player, String placeholder, ItemStack item, boolean isNumeric) {
+    public CustomItemPlaceholder(Player player, String placeholder, ItemStack item) {
         this.player = player;
         this.placeholder = placeholder;
         this.item = item.clone();
-        this.isNumeric = isNumeric;
     }
 
     public Player getPlayer() {
@@ -39,24 +37,16 @@ public class CustomItemPlaceholder {
         return item;
     }
 
-    public boolean isNumeric() {
-        return isNumeric;
-    }
-
-    public void setNumeric(boolean numeric) {
-        isNumeric = numeric;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         CustomItemPlaceholder that = (CustomItemPlaceholder) o;
-        return isNumeric == that.isNumeric && Objects.equals(player, that.player) && Objects.equals(placeholder, that.placeholder) && Objects.equals(item, that.item) && Objects.equals(value, that.value);
+        return Objects.equals(player, that.player) && Objects.equals(placeholder, that.placeholder) && Objects.equals(item, that.item) && Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(player, placeholder, item, value, isNumeric);
+        return Objects.hash(player, placeholder, item, value);
     }
 
     @Override
@@ -66,7 +56,6 @@ public class CustomItemPlaceholder {
                 ", placeholder='" + placeholder + '\'' +
                 ", item=" + item +
                 ", value='" + value + '\'' +
-                ", isNumeric=" + isNumeric +
                 '}';
     }
 }

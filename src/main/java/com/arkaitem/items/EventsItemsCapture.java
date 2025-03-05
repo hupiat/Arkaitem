@@ -24,84 +24,6 @@ import java.util.stream.Collectors;
 public class EventsItemsCapture implements IItemPlaceholders, ICustomAdds, Listener {
     private static final List<CustomItemPlaceholder> placeholders = new ArrayList<>();
 
-    @EventHandler
-    public void onPlayerKill(PlayerDeathEvent event) {
-        Player killer = event.getEntity().getKiller();
-        if (killer != null) {
-            incrementPlaceholder(killer, kills, null);
-            incrementPlaceholder(killer, last_kill, killer.getName(), null);
-        }
-    }
-
-    @EventHandler
-    public void onDamage(EntityDamageByEntityEvent event) {
-        if (event.getDamager() instanceof Player) {
-            Player player = (Player) event.getDamager();
-            incrementPlaceholder(player, damage_done, null);
-            if (hasCustomAdd(player.getItemInHand(), SPAWN_LIGHTNING, player)) {
-                incrementPlaceholder(player, electricado, null);
-            }
-            if (event.getEntity() instanceof Player) {
-                incrementPlaceholder(player, last_enemy_hit, event.getEntity().getName(), null);
-            }
-        }
-    }
-
-    @EventHandler
-    public void onBlockBreak(BlockBreakEvent event) {
-        Material block = event.getBlock().getType();
-        incrementPlaceholder(event.getPlayer(), blocks_mined, null);
-        if (block == Material.LOG || block == Material.LOG_2) {
-            incrementPlaceholder(event.getPlayer(), trees_chopped, null);
-        }
-    }
-
-    @EventHandler
-    public void onArrowShot(ProjectileLaunchEvent event) {
-        ProjectileSource shooter = event.getEntity().getShooter();
-        if (shooter instanceof Player) {
-            incrementPlaceholder((Player) shooter, arrows_shot, null);
-        }
-    }
-
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        incrementPlaceholder(event.getPlayer(), blocks_travelled, null);
-    }
-
-    @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        incrementPlaceholder(player, uses, null);
-        incrementPlaceholder(player, item_owner, player.getName(), null);
-    }
-
-    @EventHandler
-    public void onMobKill(EntityDeathEvent event) {
-        if (event.getEntity().getKiller() != null) {
-            incrementPlaceholder(event.getEntity().getKiller(), mobs_killed, null);
-        }
-    }
-
-    @EventHandler
-    public void onFoodLevelChange(FoodLevelChangeEvent event) {
-        if (event.getEntity() instanceof Player) {
-            incrementPlaceholder((Player) event.getEntity(), power_retire, null);
-        }
-    }
-
-    @EventHandler
-    public void onItemConsume(PlayerItemConsumeEvent event) {
-        incrementPlaceholder(event.getPlayer(), shop_multiplicateur, null);
-    }
-
-    @EventHandler
-    public void onPlayerHit(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player) {
-            incrementPlaceholder((Player) event.getEntity(), hits_taken, null);
-        }
-    }
-
     public void registerPlaceholders(Player player, ItemStack item) {
         for (String placeholder : getAllItemPlaceholders()) {
             switch (placeholder) {
@@ -115,8 +37,14 @@ public class EventsItemsCapture implements IItemPlaceholders, ICustomAdds, Liste
                 case maxuses:
                     net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
                     int uses = nmsStack.getTag().getInt(CONSUMABLE);
-                    for (int i = 0; i <= uses; i++) {
-                        incrementPlaceholder(player, placeholder, item);
+                    incrementPlaceholder(player, placeholder, uses, item);
+                    break;
+                case shop_multiplicateur:
+                    if (hasCustomAdd(item, MULTIPLICATEUR, player)) {
+                        String[] values = getCustomAddData(item, MULTIPLICATEUR, player).split(";");
+                        if (values.length == 1) {
+                            incrementPlaceholder(player, placeholder, Double.parseDouble(values[0]), item);
+                        }
                     }
                     break;
                 default:
@@ -126,26 +54,7 @@ public class EventsItemsCapture implements IItemPlaceholders, ICustomAdds, Liste
         }
     }
 
-    private void updateItemPlaceholders(Player player, ItemStack item) {
-        List<CustomItemPlaceholder> itemPlaceholders = placeholders.stream()
-                .filter(customPlaceholder -> customPlaceholder.getPlayer().equals(player) &&
-                        ItemsUtils.areEquals(customPlaceholder.getItem(), item))
-                .collect(Collectors.toList());
-        ItemMeta meta = null;
-        List<String> lore = null;
-        for (CustomItemPlaceholder itemPlaceholder : itemPlaceholders) {
-            if (meta == null && lore == null) {
-                meta = itemPlaceholder.getItem().getItemMeta().clone();
-                lore = new ArrayList<>(meta.getLore());
-            }
-            String pattern = "{" + itemPlaceholder.getPlaceholder() + "}";
-            lore.replaceAll(line -> line.replace(pattern, itemPlaceholder.getValue()));
-        }
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-    }
-
-    private void incrementPlaceholder(Player player, String key, String value, @Nullable ItemStack item) {
+    public void incrementPlaceholder(Player player, String key, String value, @Nullable ItemStack item) {
         ItemStack itemStack = item == null ? player.getItemInHand() : item;
         Optional<CustomItemPlaceholder> placeholder = placeholders.stream()
                 .filter(customPlaceholder -> customPlaceholder.getPlayer().equals(player) &&
@@ -157,14 +66,24 @@ public class EventsItemsCapture implements IItemPlaceholders, ICustomAdds, Liste
             return;
         }
         if (!placeholder.isPresent()) {
-            placeholder = Optional.of(new CustomItemPlaceholder(player, key, customItem.get().getItem(), false));
+            placeholder = Optional.of(new CustomItemPlaceholder(player, key, customItem.get().getItem()));
             placeholders.add(placeholder.get());
         }
         placeholder.get().setValue(value);
         updateItemPlaceholders(player, itemStack);
     }
 
-    private void incrementPlaceholder(Player player, String key, @Nullable ItemStack item) {
+    public void incrementPlaceholder(Player player, String key, int value, ItemStack item) {
+        for (int i = 0; i < value; i++) {
+            incrementPlaceholder(player, key, item);
+        }
+    }
+
+    public void incrementPlaceholder(Player player, String key, double value, ItemStack item) {
+        incrementPlaceholder(player, key, String.valueOf(value), item);
+    }
+
+    public void incrementPlaceholder(Player player, String key, @Nullable ItemStack item) {
         ItemStack itemStack = item == null ? player.getItemInHand() : item;
         Optional<CustomItemPlaceholder> placeholder = placeholders.stream()
                 .filter(customPlaceholder -> customPlaceholder.getPlayer().equals(player) &&
@@ -176,7 +95,7 @@ public class EventsItemsCapture implements IItemPlaceholders, ICustomAdds, Liste
             return;
         }
         if (!placeholder.isPresent()) {
-            placeholder = Optional.of(new CustomItemPlaceholder(player, key, customItem.get().getItem(), true));
+            placeholder = Optional.of(new CustomItemPlaceholder(player, key, customItem.get().getItem()));
             placeholders.add(placeholder.get());
         }
         if (placeholder.get().getValue() == null) {
@@ -185,5 +104,23 @@ public class EventsItemsCapture implements IItemPlaceholders, ICustomAdds, Liste
             placeholder.get().setValue(String.valueOf(Integer.parseInt(placeholder.get().getValue()) + 1));
         }
         updateItemPlaceholders(player, itemStack);
+    }
+
+    private void updateItemPlaceholders(Player player, ItemStack item) {
+        List<CustomItemPlaceholder> itemPlaceholders = placeholders.stream()
+                .filter(customPlaceholder -> customPlaceholder.getPlayer().equals(player) &&
+                        ItemsUtils.areEquals(customPlaceholder.getItem(), item))
+                .collect(Collectors.toList());
+        List<String> lore = null;
+        for (CustomItemPlaceholder itemPlaceholder : itemPlaceholders) {
+            if (lore == null) {
+                lore = new ArrayList<>(itemPlaceholder.getItem().getItemMeta().clone().getLore());
+            }
+            String pattern = "{" + itemPlaceholder.getPlaceholder() + "}";
+            lore.replaceAll(line -> line.replace(pattern, itemPlaceholder.getValue()));
+        }
+        ItemMeta meta = item.getItemMeta();
+        meta.setLore(lore);
+        item.setItemMeta(meta);
     }
 }
