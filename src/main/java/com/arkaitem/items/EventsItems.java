@@ -299,18 +299,18 @@ public class EventsItems implements Listener, ICustomAdds, IItemPlaceholders {
 
         if (hasCustomAdd(customItemDamager.get().getItem(), LOSS_POWER, playerDamager)) {
             String[] values = getCustomAddData(customItemDamager.get().getItem(), LOSS_POWER, playerDamager).split(";");
-            if (values.length == 1 && event.getEntity() instanceof Player player) {
+            if (values.length == 1 && event.getEntity() instanceof Player) {
                 double quantity = Double.parseDouble(values[0]);
                 FPlayer fPlayer = FPlayers.getInstance().getByPlayer(playerDamager);
-                FPlayer fEnemy = FPlayers.getInstance().getByPlayer(player);
+                FPlayer fEnemy = FPlayers.getInstance().getByPlayer((Player) event.getEntity());
                 fEnemy.alterPower(-quantity);
                 fPlayer.alterPower(quantity);
                 Map<String, String> placeholders = new HashMap<>();
                 placeholders.put("money", String.valueOf(quantity));
-                placeholders.put("target", player.getName());
+                placeholders.put("target", event.getEntity().getName());
                 playerDamager.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_power_stolen", placeholders));
                 placeholders.remove("target");
-                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_power_stolen_victim", placeholders));
+                event.getEntity().sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_power_stolen_victim", placeholders));
             }
         }
 

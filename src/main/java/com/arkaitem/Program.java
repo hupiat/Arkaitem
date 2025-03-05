@@ -36,6 +36,7 @@ public class Program extends JavaPlugin {
             getCommand("arkaitemcraft").setExecutor(new CommandDynamicCraft());
 
             getServer().getPluginManager().registerEvents(new EventsItems(), this);
+            getServer().getPluginManager().registerEvents(new EventsItemsEffects(), this);
             getServer().getPluginManager().registerEvents(new MenuItemsGUIListener(), this);
             getServer().getPluginManager().registerEvents(new DynamicCraftTableGUIListener(), this);
 

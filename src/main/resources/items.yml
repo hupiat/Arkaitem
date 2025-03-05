@@ -55,6 +55,10 @@
 # Custom Command Execution :
 # "EXECUTE_COMMAND_ON_KILL;killer_command;victim_command" permet d'exécuter des commandes spécifiques pour le tueur et la victime lors d'un kill. (exemple: "EXECUTE_COMMAND_ON_KILL;/heal;say {player} s'est fait tuer par {killer}").
 
+# Effets visuels
+# EFFECT_DIVINE_GLOW : Lorsqu'un joueur tue un adversaire, une lueur dorée entoure temporairement le tueur.
+# EFFECT_CUPIDON : lorsqu’une flèche est tirée, générer un tracé de cœurs flottants qui suivront la trajectoire de la flèche jusqu’à son impact.
+
 
 ################
 # Consommables #
@@ -349,6 +353,7 @@ item:
       - "NO_DISCARD"
       - "KEEP_ON_DEATH"
       - "UNBREAKABLE"
+      - "EFFECT_CUPIDON"
 
   - Sword_vie :
     id: "lame_de_vie"

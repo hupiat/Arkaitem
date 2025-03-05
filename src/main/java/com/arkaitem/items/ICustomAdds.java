@@ -42,6 +42,9 @@ public interface ICustomAdds {
     String MULTIPLICATEUR = "MULTIPLICATEUR";
     String LOSS_POWER = "LOSS_POWER";
 
+    String EFFECT_DIVINE_GLOW = "EFFECT_DIVINE_GLOW";
+    String EFFECT_CUPIDON = "EFFECT_CUPIDON";
+
     default Set<String> getAllCustomAdds() {
         Set<String> customAdds = new HashSet<>();
         Field[] fields = ICustomAdds.class.getDeclaredFields();
