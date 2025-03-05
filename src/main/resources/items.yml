@@ -125,7 +125,6 @@ item:
       - "CANT_DROP"
       - "KEEP_ON_DEATH"
       - "UNBREAKABLE"
-      - "EFFECT_FIRE"
 
   - casque_de_l_infinie:
     id: "casque_de_l_infinie"
