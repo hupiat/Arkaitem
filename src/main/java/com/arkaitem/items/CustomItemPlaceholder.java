@@ -1,5 +1,6 @@
 package com.arkaitem.items;
 
+import com.arkaitem.utils.ItemsUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -41,7 +42,7 @@ public class CustomItemPlaceholder {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         CustomItemPlaceholder that = (CustomItemPlaceholder) o;
-        return Objects.equals(player, that.player) && Objects.equals(placeholder, that.placeholder) && Objects.equals(item, that.item) && Objects.equals(value, that.value);
+        return Objects.equals(player, that.player) && Objects.equals(placeholder, that.placeholder) && ItemsUtils.areEquals(item, that.item) && Objects.equals(value, that.value);
     }
 
     @Override

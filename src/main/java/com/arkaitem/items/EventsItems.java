@@ -903,6 +903,7 @@ public class EventsItems implements Listener, ICustomAdds, IItemPlaceholders {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+        Program.EVENTS_ITEMS_CAPTURE.loadPlaceholders();
         Player player = event.getPlayer();
 
         for (ItemStack itemEvent : player.getInventory().getArmorContents()) {
