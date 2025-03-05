@@ -37,6 +37,28 @@ public class EventsItemsEffects implements Listener, ICustomAdds {
         if (customItem.isEmpty()) {
             return;
         }
+
+        if (hasCustomAdd(customItem.get().getItem(), EFFECT_BLOOD_EXPLOSION, event.getEntity().getKiller())) {
+            Location loc = event.getEntity().getLocation();
+            new BukkitRunnable() {
+                int count = 0;
+                @Override
+                public void run() {
+                    if (count++ >= 10) {
+                        cancel();
+                        return;
+                    }
+                    for (int i = 0; i < 10; i++) {
+                        Random rand = new Random();
+                        double offsetX = (rand.nextDouble() - 0.5);
+                        double offsetY = (rand.nextDouble() - 0.5);
+                        double offsetZ = (rand.nextDouble() - 0.5);
+                        Location effectLoc = loc.clone().add(offsetX, offsetY, offsetZ);
+                        effectLoc.getWorld().playEffect(effectLoc, Effect.STEP_SOUND, 152);
+                    }
+                }
+            }.runTaskTimer(Program.INSTANCE, 0L, 2L);
+        }
     }
 
     @EventHandler
@@ -188,6 +210,28 @@ public class EventsItemsEffects implements Listener, ICustomAdds {
                     }
                 }
             }.runTaskTimer(Program.INSTANCE, 0L, 10L);
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), EFFECT_BLOOD_EXPLOSION, event.getEntity().getKiller())) {
+            Location loc = event.getEntity().getLocation();
+            new BukkitRunnable() {
+                int count = 0;
+                @Override
+                public void run() {
+                    if (count++ >= 10) {
+                        cancel();
+                        return;
+                    }
+                    for (int i = 0; i < 10; i++) {
+                        Random rand = new Random();
+                        double offsetX = (rand.nextDouble() - 0.5);
+                        double offsetY = (rand.nextDouble() - 0.5);
+                        double offsetZ = (rand.nextDouble() - 0.5);
+                        Location effectLoc = loc.clone().add(offsetX, offsetY, offsetZ);
+                        effectLoc.getWorld().playEffect(effectLoc, Effect.STEP_SOUND, 152);
+                    }
+                }
+            }.runTaskTimer(Program.INSTANCE, 0L, 2L);
         }
     }
 }

@@ -308,6 +308,7 @@ public class EventsItems implements Listener, ICustomAdds, IItemPlaceholders {
                 FPlayer fEnemy = FPlayers.getInstance().getByPlayer((Player) event.getEntity());
                 fEnemy.alterPower(-quantity);
                 fPlayer.alterPower(quantity);
+                Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder(playerDamager, power_retire, quantity, null);
                 Map<String, String> placeholders = new HashMap<>();
                 placeholders.put("money", String.valueOf(quantity));
                 placeholders.put("target", event.getEntity().getName());
