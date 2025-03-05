@@ -19,6 +19,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Optional;
+import java.util.Random;
 
 public class EventsItemsEffects implements Listener, ICustomAdds {
 
@@ -37,8 +38,8 @@ public class EventsItemsEffects implements Listener, ICustomAdds {
             return;
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), EFFECT_DAMNED, event.getEntity().getKiller())) {
-            // event.getEntity().getKiller().getWorld().playSound(event.getEntity().getKiller().getLocation(), Sound.AMBIENCE_CAVE, 1.0F, 1.0F);
+        if (hasCustomAdd(customItem.get().getItem(), EFFECT_SHOOTING_STARS, event.getEntity().getKiller())) {
+            // nothing
         }
     }
 
@@ -147,6 +148,30 @@ public class EventsItemsEffects implements Listener, ICustomAdds {
 
         if (hasCustomAdd(customItem.get().getItem(), EFFECT_DAMNED, event.getEntity().getKiller())) {
             event.getEntity().getKiller().getWorld().playSound(event.getEntity().getKiller().getLocation(), Sound.AMBIENCE_CAVE, 1.0F, 1.0F);
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), EFFECT_SHOOTING_STARS, event.getEntity().getKiller())) {
+            double startY = event.getEntity().getKiller().getLocation().getY() + 20;
+            double x = event.getEntity().getKiller().getLocation().getX();
+            double z = event.getEntity().getKiller().getLocation().getZ();
+            new BukkitRunnable() {
+                double currentY = startY;
+                @Override
+                public void run() {
+                    if (currentY <= event.getEntity().getKiller().getLocation().getY()) {
+                        cancel();
+                        return;
+                    }
+                    for (int i = 0; i < 5; i++) {
+                        Random rand = new Random();
+                        double offsetX = (rand.nextDouble() - 0.5);
+                        double offsetZ = (rand.nextDouble() - 0.5);
+                        Location loc = new Location(event.getEntity().getKiller().getWorld(), x + offsetX, currentY, z + offsetZ);
+                        event.getEntity().getKiller().getWorld().playEffect(loc, Effect.FIREWORKS_SPARK, 0);
+                    }
+                    currentY -= 0.5;
+                }
+            }.runTaskTimer(Program.INSTANCE, 0L, 2L);
         }
     }
 }

@@ -60,6 +60,7 @@
 # EFFECT_CUPIDON : Lorsqu’une flèche est tirée, génère un tracé de cœurs flottants qui suivront la trajectoire de la flèche jusqu’à son impact.
 # EFFECT_GHOST : Un PNJ fantomatique du joueur tué apparaît brièvement avant de disparaître.
 # EFFECT_DAMNED : Un son lugubre se joue quand un joueur est éliminé.
+# EFFECT_SHOOTING_STARS : Des particules d’étoiles descendent du ciel au moment du kill.
 
 ################
 # Consommables #
@@ -118,7 +119,7 @@ item:
       - "CANT_DROP"
       - "KEEP_ON_DEATH"
       - "UNBREAKABLE"
-      - "EFFECT_DAMNED"
+      - "EFFECT_SHOOTING_STARS"
 
   - casque_de_l_infinie:
     id: "casque_de_l_infinie"
