@@ -3,14 +3,16 @@ package com.arkaitem.items;
 import com.arkaitem.Program;
 import com.arkaitem.utils.ItemsUtils;
 import com.arkaitem.utils.TaskTracker;
+import com.massivecraft.factions.FPlayer;
+import com.massivecraft.factions.FPlayers;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import javafx.util.Pair;
 import net.brcdev.shopgui.ShopGuiPlusApi;
 import net.brcdev.shopgui.shop.item.ShopItem;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -711,7 +713,8 @@ public class EventsItems implements Listener, ICustomAdds, IItemPlaceholders {
             }
         }
 
-        if (block != null && hasCustomAdd(customItem.get().getItem(), MINE_AREA, player)) {
+        if (block != null && hasCustomAdd(customItem.get().getItem(), MINE_AREA, player) &&
+                !FPlayers.getInstance().getByPlayer(player).isInEnemyTerritory()) {
             String[] values = getCustomAddData(customItem.get().getItem(), MINE_AREA, player).split("X");
             if (values.length != 3) {
                 values = getCustomAddData(customItem.get().getItem(), MINE_AREA, player).split("x");
@@ -962,7 +965,7 @@ public class EventsItems implements Listener, ICustomAdds, IItemPlaceholders {
         if (!CONSUMABLES_COOLDOWN.containsKey(player.getUniqueId()) || CONSUMABLES_COOLDOWN.get(player.getUniqueId()) == null) {
             CONSUMABLES_COOLDOWN.put(player.getUniqueId(), new ArrayList<>());
         }
-        CONSUMABLES_COOLDOWN.get(player.getUniqueId()).add(new Pair<>(itemEvent, new TaskTracker().startTask(Program.INSTANCE, () ->
+        CONSUMABLES_COOLDOWN.get(player.getUniqueId()).add(Pair.of(itemEvent, new TaskTracker().startTask(Program.INSTANCE, () ->
                 CONSUMABLES_COOLDOWN.put(player.getUniqueId(), null), CONSUMABLES_COOLDOWN_SECONDS * 20L)));
     }
 
