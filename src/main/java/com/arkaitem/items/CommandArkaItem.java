@@ -47,7 +47,6 @@ public class CommandArkaItem implements CommandExecutor {
         }
 
         if (args.length < 3) {
-
             sender.sendMessage(ChatColor.RED + "Usage : /arkaitem give <nom_item> <pseudo>");
             return false;
         }
@@ -70,6 +69,8 @@ public class CommandArkaItem implements CommandExecutor {
             sender.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_not_found", placeholders));
             return false;
         }
+
+        Program.EVENTS_ITEMS_CAPTURE.registerPlaceholders(target, item.get().getItem());
 
         if (item.get().getId().equalsIgnoreCase("loupe")) {
             target.getInventory().setItem(ItemsUtils.getInventoryFreeSlot(target.getPlayer()), item.get().getItem());

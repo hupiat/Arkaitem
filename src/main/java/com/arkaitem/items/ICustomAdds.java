@@ -101,7 +101,7 @@ public interface ICustomAdds {
 
         for (String line : customItem.get().getCustomAdds()) {
             if (line.toUpperCase().contains(tag + ";")) {
-                return line.toUpperCase().substring(line.indexOf(tag + ";") + tag.length() + 1).trim();
+                return line.toUpperCase().substring(line.toUpperCase().indexOf(tag + ";") + tag.length() + 1).trim();
             }
         }
 

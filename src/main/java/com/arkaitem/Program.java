@@ -19,6 +19,8 @@ public class Program extends JavaPlugin {
     public static Economy ECONOMY;
     public static Essentials ESSENTIALS;
 
+    public static EventsItemsCapture EVENTS_ITEMS_CAPTURE;
+
     public final ManagerCustomItems ITEMS_MANAGER = new ManagerCustomItems(this);
     public final ManagerMessages MESSAGES_MANAGER = new ManagerMessages(this);
     public final ManagerRecipes RECIPES_MANAGER = new ManagerRecipes(this);
@@ -38,6 +40,9 @@ public class Program extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new DynamicCraftTableGUIListener(), this);
 
             ESSENTIALS = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
+
+            EVENTS_ITEMS_CAPTURE = new EventsItemsCapture();
+            getServer().getPluginManager().registerEvents(EVENTS_ITEMS_CAPTURE, this);
 
             RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
             if (rsp != null) {
