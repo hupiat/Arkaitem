@@ -84,12 +84,7 @@ public class EventsItems implements Listener, ICustomAdds, IItemPlaceholders {
         }
 
         if (hasCustomAdd(customItem.get().getItem(), GIVE_POTION, player)) {
-            String[] values = getCustomAddData(customItem.get().getItem(), GIVE_POTION, player).split(";");
-            if (values.length == 2) {
-                PotionEffectType effect = PotionEffectType.getByName(values[0]);
-                int level = Integer.parseInt(values[1]);
-                TaskTracker.applyInfiniteEffect(Program.INSTANCE, player, effect, level, customItem.get());
-            }
+            applyGivePotion(player, customItem.get());
         }
     }
 
@@ -126,34 +121,11 @@ public class EventsItems implements Listener, ICustomAdds, IItemPlaceholders {
                 }
 
                 if (hasCustomAdd(customItemInLoop.get().getItem(), MULTIPLICATEUR, player)) {
-                    String[] values = getCustomAddData(customItemInLoop.get().getItem(), MULTIPLICATEUR, player).split(";");
-                    if (values.length == 1) {
-                        double multiplier = Double.parseDouble(values[0]);
-                        if (!MULTIPLIER_BONUS.containsKey(player.getUniqueId()) || MULTIPLIER_BONUS.get(player.getUniqueId()) < multiplier) {
-                            MULTIPLIER_BONUS.put(player.getUniqueId(), multiplier);
-                            Map<String, String> placeholders = new HashMap<>();
-                            placeholders.put("bonus", String.valueOf(multiplier));
-                            player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("farm_mask_bonus", placeholders));
-                        }
-                        Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder(player, shop_multiplicateur, itemEventInLoop);
-                    }
-                }
-            }
-
-            for (ItemStack itemEventInLoop : player.getInventory().getArmorContents()) {
-                Optional<CustomItem> customItemInLoop = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEventInLoop);
-
-                if (!customItemInLoop.isPresent()) {
-                    continue;
+                    applyMultiplier(player, itemEventInLoop);
                 }
 
                 if (hasCustomAdd(customItemInLoop.get().getItem(), GIVE_POTION, player)) {
-                    String[] values = getCustomAddData(customItemInLoop.get().getItem(), GIVE_POTION, player).split(";");
-                    if (values.length == 2) {
-                        PotionEffectType effect = PotionEffectType.getByName(values[0]);
-                        int level = Integer.parseInt(values[1]);
-                        TaskTracker.applyInfiniteEffect(Program.INSTANCE, player, effect, level, customItemInLoop.get());
-                    }
+                    applyGivePotion(player, customItemInLoop.get());
                 }
 
                 if (hasCustomAdd(customItemInLoop.get().getItem(), HIDE_PLAYER_NAME, player)) {
@@ -918,6 +890,10 @@ public class EventsItems implements Listener, ICustomAdds, IItemPlaceholders {
                 continue;
             }
 
+            if (hasCustomAdd(customItem.get().getItem(), MULTIPLICATEUR, player)) {
+                applyMultiplier(player, itemEvent);
+            }
+
             if (hasCustomAdd(customItem.get().getItem(), HIDE_PLAYER_NAME, player)) {
                 applyNameHiding(player);
                 return;
@@ -988,6 +964,29 @@ public class EventsItems implements Listener, ICustomAdds, IItemPlaceholders {
         }
         CONSUMABLES_COOLDOWN.get(player.getUniqueId()).add(new Pair<>(itemEvent, new TaskTracker().startTask(Program.INSTANCE, () ->
                 CONSUMABLES_COOLDOWN.put(player.getUniqueId(), null), CONSUMABLES_COOLDOWN_SECONDS * 20L)));
+    }
+
+    private void applyGivePotion(Player player, CustomItem customItem) {
+        String[] values = getCustomAddData(customItem.getItem(), GIVE_POTION, player).split(";");
+        if (values.length == 2) {
+            PotionEffectType effect = PotionEffectType.getByName(values[0]);
+            int level = Integer.parseInt(values[1]);
+            TaskTracker.applyInfiniteEffect(Program.INSTANCE, player, effect, level, customItem);
+        }
+    }
+
+    private void applyMultiplier(Player player, ItemStack itemEvent) {
+        String[] values = getCustomAddData(itemEvent, MULTIPLICATEUR, player).split(";");
+        if (values.length == 1) {
+            double multiplier = Double.parseDouble(values[0]);
+            if (!MULTIPLIER_BONUS.containsKey(player.getUniqueId()) || MULTIPLIER_BONUS.get(player.getUniqueId()) <= multiplier) {
+                MULTIPLIER_BONUS.put(player.getUniqueId(), multiplier);
+                Map<String, String> placeholders = new HashMap<>();
+                placeholders.put("bonus", String.valueOf(multiplier));
+                player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("farm_mask_bonus", placeholders));
+            }
+            Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder(player, shop_multiplicateur, itemEvent);
+        }
     }
 
     private static final String TEAM_HIDDEN_PLAYERS = "hidden_players";
