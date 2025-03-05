@@ -18,6 +18,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -33,7 +34,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -267,7 +267,7 @@ public class EventsItems implements Listener, ICustomAdds, IItemPlaceholders {
 
 
     private static final Set<UUID> IMMUNE_TO_LIGHTNING_PLAYERS = new HashSet<>();
-    private static final Map<UUID, UUID> LAST_HIT_PLAYERS = new HashMap<>();
+    private static final Map<UUID, UUID> LAST_HIT_PLAYERS_FOR_TP = new HashMap<>();
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof Player) {
@@ -286,7 +286,10 @@ public class EventsItems implements Listener, ICustomAdds, IItemPlaceholders {
             if (IMMUNE_TO_LIGHTNING_PLAYERS.contains(player.getUniqueId()) && event.getCause() == EntityDamageEvent.DamageCause.LIGHTNING) {
                 event.setCancelled(true);
             } else {
-                LAST_HIT_PLAYERS.put(playerDamager.getUniqueId(), player.getUniqueId());
+                LAST_HIT_PLAYERS_FOR_TP.put(playerDamager.getUniqueId(), player.getUniqueId());
+            }
+            if (event.getDamager() instanceof Arrow) {
+                Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder(playerDamager, arrows_shot, null);
             }
         }
 
@@ -497,10 +500,10 @@ public class EventsItems implements Listener, ICustomAdds, IItemPlaceholders {
         if (hasCustomAdd(customItem.get().getItem(), TELEPORT_ON_ATTACK, player) && checkCooldown(player, itemEvent)) {
             String[] values = getCustomAddData(customItem.get().getItem(), TELEPORT_ON_ATTACK, player).split(";");
             int radius = Integer.parseInt(values[0]);
-            if (LAST_HIT_PLAYERS.containsKey(player.getUniqueId())) {
+            if (LAST_HIT_PLAYERS_FOR_TP.containsKey(player.getUniqueId())) {
                 Bukkit.getScheduler().runTaskLater(Program.INSTANCE, () -> {
                     Location currentLocation = player.getLocation();
-                    Player targetEntity = Bukkit.getPlayer(LAST_HIT_PLAYERS.get(player.getUniqueId()));
+                    Player targetEntity = Bukkit.getPlayer(LAST_HIT_PLAYERS_FOR_TP.get(player.getUniqueId()));
                     Location targetLocation = targetEntity.getLocation();
 
                     if (targetLocation != null) {
@@ -512,7 +515,7 @@ public class EventsItems implements Listener, ICustomAdds, IItemPlaceholders {
                             Map<String, String> placeholders = new HashMap<>();
                             placeholders.put("target", targetLocation.getBlockX() + ", " + targetLocation.getBlockY() + ", " + targetLocation.getBlockZ());
                             player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation", placeholders));
-                            LAST_HIT_PLAYERS.remove(player.getUniqueId());
+                            LAST_HIT_PLAYERS_FOR_TP.remove(player.getUniqueId());
                             applyCooldown(player, itemEvent);
                         } else {
                             player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("item_teleportation_no_radius", null));
@@ -610,14 +613,6 @@ public class EventsItems implements Listener, ICustomAdds, IItemPlaceholders {
         if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player) && hasConsumed.stream().anyMatch(consumed -> consumed)) {
             Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder(player, uses, null);
             applyConsuming(player, itemEvent);
-        }
-    }
-
-    @EventHandler
-    public void onArrowShot(ProjectileLaunchEvent event) {
-        ProjectileSource shooter = event.getEntity().getShooter();
-        if (shooter instanceof Player) {
-            Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder((Player) shooter, arrows_shot, null);
         }
     }
 

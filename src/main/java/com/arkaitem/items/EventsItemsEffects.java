@@ -1,18 +1,21 @@
 package com.arkaitem.items;
 
 import com.arkaitem.Program;
-import org.bukkit.Color;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Player;
+import com.mojang.authlib.GameProfile;
+import net.minecraft.server.v1_8_R3.*;
+import org.bukkit.*;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Optional;
@@ -22,35 +25,21 @@ public class EventsItemsEffects implements Listener, ICustomAdds {
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         // TESTING PURPOSE
-//        if (event.getEntity() == null || event.getEntity().getKiller() == null) {
-//            return;
-//        }
-//
-//        ItemStack itemEvent = event.getEntity().getKiller().getItemInHand();
-//
-//        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
-//
-//        if (customItem.isEmpty()) {
-//            return;
-//        }
-//
-//        if (hasCustomAdd(customItem.get().getItem(), EFFECT_DIVINE_GLOW, event.getEntity().getKiller())) {
-//            int durationTicks = 5 * 20;
-//            new BukkitRunnable() {
-//                int elapsedTicks = 0;
-//
-//                @Override
-//                public void run() {
-//                    if (elapsedTicks >= durationTicks) {
-//                        cancel();
-//                        return;
-//                    }
-//                    Location loc = event.getEntity().getKiller().getLocation().add(0, 1.0, 0);
-//                    event.getEntity().getKiller().getWorld().playEffect(loc, Effect.STEP_SOUND, 41);
-//                    elapsedTicks += 2;
-//                }
-//            }.runTaskTimer(Program.INSTANCE, 0L, 2L);
-//        }
+        if (event.getEntity() == null || event.getEntity().getKiller() == null) {
+            return;
+        }
+
+        ItemStack itemEvent = event.getEntity().getKiller().getItemInHand();
+
+        Optional<CustomItem> customItem = Program.INSTANCE.ITEMS_MANAGER.getItemByItemStack(itemEvent);
+
+        if (customItem.isEmpty()) {
+            return;
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), EFFECT_GHOST, event.getEntity().getKiller())) {
+            // Nothing
+        }
     }
 
     @EventHandler
@@ -110,6 +99,48 @@ public class EventsItemsEffects implements Listener, ICustomAdds {
                     Location loc = event.getEntity().getKiller().getLocation().add(0, 1.0, 0);
                     event.getEntity().getKiller().getWorld().playEffect(loc, Effect.STEP_SOUND, 41);
                     elapsedTicks += 2;
+                }
+            }.runTaskTimer(Program.INSTANCE, 0L, 2L);
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), EFFECT_GHOST, event.getEntity().getKiller())) {
+            LivingEntity dead = event.getEntity();
+            Location loc = dead.getLocation();
+            MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
+            WorldServer world = ((CraftWorld) loc.getWorld()).getHandle();
+            GameProfile profile = new GameProfile(dead.getUniqueId(), dead.getName());
+            PlayerInteractManager interactManager = new PlayerInteractManager(world);
+            EntityPlayer ghostNPC = new EntityPlayer(server, world, profile, interactManager);
+            NetworkManager networkManager = new NetworkManager(EnumProtocolDirection.SERVERBOUND);
+            ghostNPC.playerConnection = new PlayerConnection(server, networkManager, ghostNPC);
+            ghostNPC.setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+            for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) {
+                PacketPlayOutPlayerInfo addPlayer = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ghostNPC);
+                PacketPlayOutNamedEntitySpawn spawnPacket = new PacketPlayOutNamedEntitySpawn(ghostNPC);
+                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(addPlayer);
+                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(spawnPacket);
+            }
+            new BukkitRunnable() {
+                int ticks = 0;
+                @Override
+                public void run() {
+                    if (ticks >= 5 * 20) {
+                        for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) {
+                            PacketPlayOutEntityDestroy destroyPacket = new PacketPlayOutEntityDestroy(ghostNPC.getId());
+                            ((CraftPlayer) p).getHandle().playerConnection.sendPacket(destroyPacket);
+                        }
+                        cancel();
+                        return;
+                    }
+                    Location baseLoc = ghostNPC.getBukkitEntity().getLocation().clone().add(0, 1.0, 0);
+                    for (int i = 0; i < 10; i++) {
+                        double offsetX = (Math.random() - 0.5) * 0.5;
+                        double offsetY = (Math.random() - 0.5) * 0.5;
+                        double offsetZ = (Math.random() - 0.5) * 0.5;
+                        Location effectLoc = baseLoc.clone().add(offsetX, offsetY, offsetZ);
+                        ghostNPC.getBukkitEntity().getWorld().playEffect(effectLoc, Effect.SMOKE, 0);
+                    }
+                    ticks += 2;
                 }
             }.runTaskTimer(Program.INSTANCE, 0L, 2L);
         }

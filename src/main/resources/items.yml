@@ -57,7 +57,8 @@
 
 # Effets visuels
 # EFFECT_DIVINE_GLOW : Lorsqu'un joueur tue un adversaire, une lueur dorée entoure temporairement le tueur.
-# EFFECT_CUPIDON : lorsqu’une flèche est tirée, générer un tracé de cœurs flottants qui suivront la trajectoire de la flèche jusqu’à son impact.
+# EFFECT_CUPIDON : Lorsqu’une flèche est tirée, génère un tracé de cœurs flottants qui suivront la trajectoire de la flèche jusqu’à son impact.
+# EFFECT_GHOST : Un PNJ fantomatique du joueur tué apparaît brièvement avant de disparaître.
 
 
 ################
@@ -117,6 +118,7 @@ item:
       - "CANT_DROP"
       - "KEEP_ON_DEATH"
       - "UNBREAKABLE"
+      - "EFFECT_GHOST"
 
   - casque_de_l_infinie:
     id: "casque_de_l_infinie"
