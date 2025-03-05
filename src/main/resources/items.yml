@@ -94,7 +94,6 @@
 # fullSetRequirement #
 ######################
 # "ITEM:ID" permet de s'avoir quel item est nécessaire pour activer le boost (exemple: "DIAMOND_HELMET:Casque de l'oubli").
-# /!\ Il est nécessaire de mettre FullSetBoost que sur un seul item de l'ensemble.
 
 item:
   - lame_de_l_infinie:

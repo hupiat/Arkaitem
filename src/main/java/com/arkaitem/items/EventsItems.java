@@ -581,13 +581,13 @@ public class EventsItems implements Listener, ICustomAdds, IItemPlaceholders {
             }
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_USE_COMMAND, player)) {
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_USE_COMMAND, player) && hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player)) {
             hasConsumed.add(true);
             String command = getCustomAddData(customItem.get().getItem(), CONSUMABLE_USE_COMMAND, player).replace("{player}", player.getName());
             Bukkit.dispatchCommand(player, command.replaceFirst("/", ""));
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_GIVE_POTION, player) && checkCooldown(player, itemEvent)) {
+        if (hasCustomAdd(customItem.get().getItem(), CONSUMABLE_GIVE_POTION, player) && hasCustomAdd(customItem.get().getItem(), CONSUMABLE, player) && checkCooldown(player, itemEvent)) {
             hasConsumed.add(true);
             String[] values = getCustomAddData(customItem.get().getItem(), CONSUMABLE_GIVE_POTION, player).split(";");
             int level = Integer.parseInt(values[1]);
