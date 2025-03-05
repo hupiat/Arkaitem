@@ -4,7 +4,6 @@ import com.arkaitem.Program;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.*;
-import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -15,11 +14,12 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Optional;
 import java.util.Random;
+
+import static org.bukkit.Bukkit.getServer;
 
 public class EventsItemsEffects implements Listener, ICustomAdds {
 
@@ -38,26 +38,49 @@ public class EventsItemsEffects implements Listener, ICustomAdds {
             return;
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), EFFECT_BLOOD_EXPLOSION, event.getEntity().getKiller())) {
+        if (hasCustomAdd(customItem.get().getItem(), EFFECT_LIGHT_COLUMN, event.getEntity().getKiller())) {
             Location loc = event.getEntity().getLocation();
-            new BukkitRunnable() {
-                int count = 0;
-                @Override
-                public void run() {
-                    if (count++ >= 10) {
-                        cancel();
-                        return;
-                    }
-                    for (int i = 0; i < 10; i++) {
-                        Random rand = new Random();
-                        double offsetX = (rand.nextDouble() - 0.5);
-                        double offsetY = (rand.nextDouble() - 0.5);
-                        double offsetZ = (rand.nextDouble() - 0.5);
-                        Location effectLoc = loc.clone().add(offsetX, offsetY, offsetZ);
-                        effectLoc.getWorld().playEffect(effectLoc, Effect.STEP_SOUND, 152);
+            for (double y = loc.getY(); y <= loc.getY() + 15; y += 0.5) {
+                // Position centrale de la colonne
+                Location beamLoc = new Location(loc.getWorld(), loc.getX(), y, loc.getZ());
+                // Envoyer une grande quantité de particules pour le faisceau
+                PacketPlayOutWorldParticles packetBeam = new PacketPlayOutWorldParticles(
+                        EnumParticle.ENCHANTMENT_TABLE,
+                        true,
+                        (float) beamLoc.getX(),
+                        (float) beamLoc.getY(),
+                        (float) beamLoc.getZ(),
+                        0f, 0f, 0f,
+                        0f,
+                        20  // Augmentation de la densité
+                );
+                for (Player p : getServer().getOnlinePlayers()) {
+                    ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packetBeam);
+                }
+
+                // Créer un halo lumineux autour de la colonne
+                int haloParticles = 16;
+                double haloRadius = 0.5;
+                for (int i = 0; i < haloParticles; i++) {
+                    double angle = (2 * Math.PI / haloParticles) * i;
+                    double offsetX = haloRadius * Math.cos(angle);
+                    double offsetZ = haloRadius * Math.sin(angle);
+                    Location haloLoc = beamLoc.clone().add(offsetX, 0, offsetZ);
+                    PacketPlayOutWorldParticles packetHalo = new PacketPlayOutWorldParticles(
+                            EnumParticle.ENCHANTMENT_TABLE,
+                            true,
+                            (float) haloLoc.getX(),
+                            (float) haloLoc.getY(),
+                            (float) haloLoc.getZ(),
+                            0f, 0f, 0f,
+                            0f,
+                            1
+                    );
+                    for (Player p : getServer().getOnlinePlayers()) {
+                        ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packetHalo);
                     }
                 }
-            }.runTaskTimer(Program.INSTANCE, 0L, 2L);
+            }
         }
     }
 
@@ -125,7 +148,7 @@ public class EventsItemsEffects implements Listener, ICustomAdds {
         if (hasCustomAdd(customItem.get().getItem(), EFFECT_GHOST, event.getEntity().getKiller())) {
             LivingEntity dead = event.getEntity();
             Location loc = dead.getLocation();
-            MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
+            MinecraftServer server = ((CraftServer) getServer()).getServer();
             WorldServer world = ((CraftWorld) loc.getWorld()).getHandle();
             GameProfile profile = new GameProfile(dead.getUniqueId(), dead.getName());
             PlayerInteractManager interactManager = new PlayerInteractManager(world);
@@ -232,6 +255,24 @@ public class EventsItemsEffects implements Listener, ICustomAdds {
                     }
                 }
             }.runTaskTimer(Program.INSTANCE, 0L, 2L);
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), EFFECT_LIGHT_COLUMN, event.getEntity().getKiller())) {
+            Location loc = event.getEntity().getLocation();
+            new BukkitRunnable() {
+                int count = 0;
+                @Override
+                public void run() {
+                    if(count++ >= 20) {
+                        cancel();
+                        return;
+                    }
+                    for(double y = 0; y <= 15; y += 0.5) {
+                        Location effectLoc = loc.clone().add(0, y, 0);
+                        effectLoc.getWorld().playEffect(effectLoc, Effect.STEP_SOUND, 89);
+                    }
+                }
+            }.runTaskTimer(Program.INSTANCE, 0L, 10L);
         }
     }
 }
