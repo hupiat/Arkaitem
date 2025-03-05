@@ -63,6 +63,7 @@
 # EFFECT_LIGHT_COLUMN : Un rayon lumineux similaire à celui des balises apparaît sur le cadavre.
 # EFFECT_HELL_PORTAL : Portail Infernal : Un mini portail du Nether apparaît sous le joueur tué avant de se dissiper.
 # EFFECT_SPECTRAL_MOB : Un petit mob spectral inoffensif vole autour du joueur temporairement.
+# EFFECT_FIRE : Le tueur est brièvement entouré de flammes sans prendre de dégâts.
 # EFFECT_DAMNED : Un son lugubre se joue quand un joueur est éliminé.
 # EFFECT_SHOOTING_STARS : Des particules d’étoiles descendent du ciel au moment du kill.
 # EFFECT_SMOKE : Le joueur dégage une légère fumée de couleur.
@@ -124,7 +125,7 @@ item:
       - "CANT_DROP"
       - "KEEP_ON_DEATH"
       - "UNBREAKABLE"
-      - "EFFECT_SPECTRAL_MOB"
+      - "EFFECT_FIRE"
 
   - casque_de_l_infinie:
     id: "casque_de_l_infinie"

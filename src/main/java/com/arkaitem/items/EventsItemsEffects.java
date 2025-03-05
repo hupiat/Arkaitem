@@ -317,5 +317,27 @@ public class EventsItemsEffects implements Listener, ICustomAdds {
                 }
             }.runTaskTimer(Program.INSTANCE, 0L, 2L);
         }
+
+        if (hasCustomAdd(customItem.get().getItem(), EFFECT_FIRE, event.getEntity().getKiller())) {
+            new BukkitRunnable() {
+                int ticks = 0;
+                @Override
+                public void run() {
+                    if (ticks++ >= 10) {
+                        cancel();
+                        return;
+                    }
+                    double radius = 1.0;
+                    int points = 12;
+                    for (int i = 0; i < points; i++) {
+                        double angle = (2 * Math.PI * i) / points;
+                        double offsetX = radius * Math.cos(angle);
+                        double offsetZ = radius * Math.sin(angle);
+                        event.getEntity().getKiller().getWorld().playEffect(
+                                event.getEntity().getKiller().getLocation().clone().add(offsetX, 0, offsetZ), Effect.FLAME, 0);
+                    }
+                }
+            }.runTaskTimer(Program.INSTANCE, 0L, 2L);
+        }
     }
 }
