@@ -37,8 +37,8 @@ public class EventsItemsEffects implements Listener, ICustomAdds {
             return;
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), EFFECT_GHOST, event.getEntity().getKiller())) {
-            // Nothing
+        if (hasCustomAdd(customItem.get().getItem(), EFFECT_DAMNED, event.getEntity().getKiller())) {
+            // event.getEntity().getKiller().getWorld().playSound(event.getEntity().getKiller().getLocation(), Sound.AMBIENCE_CAVE, 1.0F, 1.0F);
         }
     }
 
@@ -143,6 +143,10 @@ public class EventsItemsEffects implements Listener, ICustomAdds {
                     ticks += 2;
                 }
             }.runTaskTimer(Program.INSTANCE, 0L, 2L);
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), EFFECT_DAMNED, event.getEntity().getKiller())) {
+            event.getEntity().getKiller().getWorld().playSound(event.getEntity().getKiller().getLocation(), Sound.AMBIENCE_CAVE, 1.0F, 1.0F);
         }
     }
 }
