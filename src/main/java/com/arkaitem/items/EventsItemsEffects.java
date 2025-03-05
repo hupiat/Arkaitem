@@ -67,19 +67,20 @@ public class EventsItemsEffects implements Listener, ICustomAdds {
             return;
         }
 
-        Arrow arrow = (Arrow) event.getEntity();
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (arrow.isDead() || arrow.isOnGround()) {
-                    cancel();
-                    return;
+        if (hasCustomAdd(customItem.get().getItem(), EFFECT_CUPIDON, ((Player) event.getEntity().getShooter()).getPlayer())) {
+            Arrow arrow = (Arrow) event.getEntity();
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (arrow.isDead() || arrow.isOnGround()) {
+                        cancel();
+                        return;
+                    }
+                    Location loc = arrow.getLocation();
+                    loc.getWorld().playEffect(loc, Effect.HEART, 0);
                 }
-                Location loc = arrow.getLocation();
-                loc.getWorld().playEffect(loc, Effect.HEART, 0);
-            }
-        }.runTaskTimer(Program.INSTANCE, 0L, 2L);
+            }.runTaskTimer(Program.INSTANCE, 0L, 2L);
+        }
     }
 
     @EventHandler
