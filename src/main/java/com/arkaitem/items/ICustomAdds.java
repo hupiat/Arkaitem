@@ -40,6 +40,7 @@ public interface ICustomAdds {
     String KILLER_COMMAND = "KILLER_COMMAND";
     String HIDE_PLAYER_NAME = "HIDE_PLAYER_NAME";
     String MULTIPLICATEUR = "MULTIPLICATEUR";
+    String LOSS_POWER = "LOSS_POWER";
 
     default Set<String> getAllCustomAdds() {
         Set<String> customAdds = new HashSet<>();
