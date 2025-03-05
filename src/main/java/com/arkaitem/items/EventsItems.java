@@ -241,7 +241,12 @@ public class EventsItems implements Listener, ICustomAdds, IItemPlaceholders {
                                     player.teleport(newLocation);
                                     player.setHealth(Math.min(20, player.getHealth() + hearts));
                                     player.sendMessage(Program.INSTANCE.MESSAGES_MANAGER.getMessage("teleport_on_death", null));
-                                    DEATH_TP_COOLDOWN.put(player.getUniqueId(), new TaskTracker().startTask(Program.INSTANCE, () -> DEATH_TP_COOLDOWN.put(player.getUniqueId(), null), cooldown * 20L));
+                                    DEATH_TP_COOLDOWN.put(player.getUniqueId(), new TaskTracker().startTask(Program.INSTANCE, () ->
+                                            DEATH_TP_COOLDOWN.put(player.getUniqueId(), null), cooldown * 20L));
+                                    TaskTracker updatePlaceholderTask = new TaskTracker();
+                                    updatePlaceholderTask.startTask(Program.INSTANCE, () -> {
+                                        Program.EVENTS_ITEMS_CAPTURE.incrementPlaceholder(player, immortalite_cd, updatePlaceholderTask.getTimeLeftSeconds(), itemEventInLoop);
+                                    }, cooldown * 20L);
                                     break;
                                 }
 
