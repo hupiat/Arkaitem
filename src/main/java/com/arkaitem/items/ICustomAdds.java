@@ -47,6 +47,7 @@ public interface ICustomAdds {
     String EFFECT_GHOST = "EFFECT_GHOST";
     String EFFECT_DAMNED = "EFFECT_DAMNED";
     String EFFECT_SHOOTING_STARS = "EFFECT_SHOOTING_STARS";
+    String EFFECT_SMOKE = "EFFECT_SMOKE";
 
     default Set<String> getAllCustomAdds() {
         Set<String> customAdds = new HashSet<>();

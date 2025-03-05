@@ -61,6 +61,7 @@
 # EFFECT_GHOST : Un PNJ fantomatique du joueur tué apparaît brièvement avant de disparaître.
 # EFFECT_DAMNED : Un son lugubre se joue quand un joueur est éliminé.
 # EFFECT_SHOOTING_STARS : Des particules d’étoiles descendent du ciel au moment du kill.
+# EFFECT_SMOKE : Le joueur dégage une légère fumée de couleur.
 
 ################
 # Consommables #
@@ -119,7 +120,7 @@ item:
       - "CANT_DROP"
       - "KEEP_ON_DEATH"
       - "UNBREAKABLE"
-      - "EFFECT_SHOOTING_STARS"
+      - "EFFECT_SMOKE"
 
   - casque_de_l_infinie:
     id: "casque_de_l_infinie"

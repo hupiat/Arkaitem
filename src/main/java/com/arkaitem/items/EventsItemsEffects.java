@@ -37,10 +37,6 @@ public class EventsItemsEffects implements Listener, ICustomAdds {
         if (customItem.isEmpty()) {
             return;
         }
-
-        if (hasCustomAdd(customItem.get().getItem(), EFFECT_SHOOTING_STARS, event.getEntity().getKiller())) {
-            // nothing
-        }
     }
 
     @EventHandler
@@ -172,6 +168,26 @@ public class EventsItemsEffects implements Listener, ICustomAdds {
                     currentY -= 0.5;
                 }
             }.runTaskTimer(Program.INSTANCE, 0L, 2L);
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), EFFECT_SMOKE, event.getEntity().getKiller())) {
+            new BukkitRunnable() {
+                int count = 0;
+                @Override
+                public void run() {
+                    if (count++ >= 20) {
+                        cancel();
+                        return;
+                    }
+                    for (int i = 0; i < 5; i++) {
+                        Random rand = new Random();
+                        double offsetX = (rand.nextDouble() - 0.5) * 0.5;
+                        double offsetZ = (rand.nextDouble() - 0.5) * 0.5;
+                        Location loc = event.getEntity().getKiller().getLocation().add(0, 1.0, 0);
+                        loc.clone().add(offsetX, 0, offsetZ).getWorld().playEffect(loc, Effect.SPELL, 5);
+                    }
+                }
+            }.runTaskTimer(Program.INSTANCE, 0L, 10L);
         }
     }
 }
