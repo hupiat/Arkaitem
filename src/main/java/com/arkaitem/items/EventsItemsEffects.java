@@ -38,50 +38,7 @@ public class EventsItemsEffects implements Listener, ICustomAdds {
             return;
         }
 
-        if (hasCustomAdd(customItem.get().getItem(), EFFECT_LIGHT_COLUMN, event.getEntity().getKiller())) {
-            Location loc = event.getEntity().getLocation();
-            for (double y = loc.getY(); y <= loc.getY() + 15; y += 0.5) {
-                // Position centrale de la colonne
-                Location beamLoc = new Location(loc.getWorld(), loc.getX(), y, loc.getZ());
-                // Envoyer une grande quantité de particules pour le faisceau
-                PacketPlayOutWorldParticles packetBeam = new PacketPlayOutWorldParticles(
-                        EnumParticle.ENCHANTMENT_TABLE,
-                        true,
-                        (float) beamLoc.getX(),
-                        (float) beamLoc.getY(),
-                        (float) beamLoc.getZ(),
-                        0f, 0f, 0f,
-                        0f,
-                        20  // Augmentation de la densité
-                );
-                for (Player p : getServer().getOnlinePlayers()) {
-                    ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packetBeam);
-                }
 
-                // Créer un halo lumineux autour de la colonne
-                int haloParticles = 16;
-                double haloRadius = 0.5;
-                for (int i = 0; i < haloParticles; i++) {
-                    double angle = (2 * Math.PI / haloParticles) * i;
-                    double offsetX = haloRadius * Math.cos(angle);
-                    double offsetZ = haloRadius * Math.sin(angle);
-                    Location haloLoc = beamLoc.clone().add(offsetX, 0, offsetZ);
-                    PacketPlayOutWorldParticles packetHalo = new PacketPlayOutWorldParticles(
-                            EnumParticle.ENCHANTMENT_TABLE,
-                            true,
-                            (float) haloLoc.getX(),
-                            (float) haloLoc.getY(),
-                            (float) haloLoc.getZ(),
-                            0f, 0f, 0f,
-                            0f,
-                            1
-                    );
-                    for (Player p : getServer().getOnlinePlayers()) {
-                        ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packetHalo);
-                    }
-                }
-            }
-        }
     }
 
     @EventHandler
@@ -259,20 +216,77 @@ public class EventsItemsEffects implements Listener, ICustomAdds {
 
         if (hasCustomAdd(customItem.get().getItem(), EFFECT_LIGHT_COLUMN, event.getEntity().getKiller())) {
             Location loc = event.getEntity().getLocation();
+            for (double y = loc.getY(); y <= loc.getY() + 15; y += 0.5) {
+                Location beamLoc = new Location(loc.getWorld(), loc.getX(), y, loc.getZ());
+                PacketPlayOutWorldParticles packetBeam = new PacketPlayOutWorldParticles(
+                        EnumParticle.ENCHANTMENT_TABLE,
+                        true,
+                        (float) beamLoc.getX(),
+                        (float) beamLoc.getY(),
+                        (float) beamLoc.getZ(),
+                        0f, 0f, 0f,
+                        0f,
+                        20
+                );
+                for (Player p : getServer().getOnlinePlayers()) {
+                    ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packetBeam);
+                }
+
+                int haloParticles = 16;
+                double haloRadius = 0.5;
+                for (int i = 0; i < haloParticles; i++) {
+                    double angle = (2 * Math.PI / haloParticles) * i;
+                    double offsetX = haloRadius * Math.cos(angle);
+                    double offsetZ = haloRadius * Math.sin(angle);
+                    Location haloLoc = beamLoc.clone().add(offsetX, 0, offsetZ);
+                    PacketPlayOutWorldParticles packetHalo = new PacketPlayOutWorldParticles(
+                            EnumParticle.ENCHANTMENT_TABLE,
+                            true,
+                            (float) haloLoc.getX(),
+                            (float) haloLoc.getY(),
+                            (float) haloLoc.getZ(),
+                            0f, 0f, 0f,
+                            0f,
+                            1
+                    );
+                    for (Player p : getServer().getOnlinePlayers()) {
+                        ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packetHalo);
+                    }
+                }
+            }
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), EFFECT_HELL_PORTAL, event.getEntity().getKiller())) {
+            Location loc = event.getEntity().getLocation();
             new BukkitRunnable() {
-                int count = 0;
+                int ticks = 0;
                 @Override
                 public void run() {
-                    if(count++ >= 20) {
+                    if (ticks++ >= 20) {
                         cancel();
                         return;
                     }
-                    for(double y = 0; y <= 15; y += 0.5) {
-                        Location effectLoc = loc.clone().add(0, y, 0);
-                        effectLoc.getWorld().playEffect(effectLoc, Effect.STEP_SOUND, 89);
+                    for (double angle = 0; angle < Math.PI * 2; angle += Math.PI / 16) {
+                        double radius = 1.0;
+                        double offsetX = radius * Math.cos(angle);
+                        double offsetZ = radius * Math.sin(angle);
+                        Location effectLoc = loc.clone().add(offsetX, 0, offsetZ);
+                        PacketPlayOutWorldParticles packet = new PacketPlayOutWorldParticles(
+                                EnumParticle.PORTAL,
+                                true,
+                                (float) effectLoc.getX(),
+                                (float) effectLoc.getY(),
+                                (float) effectLoc.getZ(),
+                                0.5f, 0.5f, 0.5f,
+                                0.1f,
+                                5
+                        );
+                        for(Player p : getServer().getOnlinePlayers()) {
+                            ((CraftPlayer)p).getHandle().playerConnection.sendPacket(packet);
+                        }
                     }
                 }
-            }.runTaskTimer(Program.INSTANCE, 0L, 10L);
+            }.runTaskTimer(Program.INSTANCE, 0L, 5L);
         }
     }
 }
