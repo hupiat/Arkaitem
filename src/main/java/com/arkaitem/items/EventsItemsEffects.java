@@ -4,6 +4,7 @@ import com.arkaitem.Program;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.*;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -14,6 +15,8 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Optional;
@@ -37,8 +40,6 @@ public class EventsItemsEffects implements Listener, ICustomAdds {
         if (customItem.isEmpty()) {
             return;
         }
-
-
     }
 
     @EventHandler
@@ -287,6 +288,34 @@ public class EventsItemsEffects implements Listener, ICustomAdds {
                     }
                 }
             }.runTaskTimer(Program.INSTANCE, 0L, 5L);
+        }
+
+        if (hasCustomAdd(customItem.get().getItem(), EFFECT_SPECTRAL_MOB, event.getEntity().getKiller())) {
+            Location deathLoc = event.getEntity().getLocation();
+
+            ArmorStand spirit = deathLoc.getWorld().spawn(deathLoc, ArmorStand.class);
+            spirit.setSmall(true);
+            spirit.setGravity(false);
+            spirit.setVisible(true);
+            spirit.setMarker(true);
+
+            new BukkitRunnable() {
+                int ticks = 0;
+                @Override
+                public void run() {
+                    if (ticks++ >= 100) {
+                        spirit.remove();
+                        cancel();
+                        return;
+                    }
+                    double angle = ticks * 0.2;
+                    double radius = 1.5;
+                    double offsetX = radius * Math.cos(angle);
+                    double offsetZ = radius * Math.sin(angle);
+                    Location newLoc = deathLoc.clone().add(offsetX, 1.0, offsetZ);
+                    spirit.teleport(newLoc);
+                }
+            }.runTaskTimer(Program.INSTANCE, 0L, 2L);
         }
     }
 }
